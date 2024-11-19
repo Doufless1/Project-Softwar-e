@@ -1,14 +1,18 @@
-﻿namespace Project_Software_GUI
+﻿namespace sql_fetcher
 {
     using System;
     using System.Collections.Generic;
-    using System.Configuration;
     using Microsoft.Data.SqlClient;
 
     public class DataFetcher
     {
-        private string connection_string = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
+        private string connection_string;
 
+        public DataFetcher(string connectionString)
+        {
+            connection_string = connectionString;
+        }
+        
         public List<string>
             FetchData(string query) //Query is a SQL query that returns a single column of strings which will be returned as a list of strings
         {
