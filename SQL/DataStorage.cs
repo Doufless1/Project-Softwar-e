@@ -4,25 +4,22 @@ namespace sql_fetcher;
 
 public class DataStorage
 {
-    public List<string> Name { get; private set; }
-    public List<List<string>> Data { get; private set; }
+    public List<AccesableData> Name { get; private set; }
+    public List<List<double>> Data { get; private set; }
     private List<string> Query { get; set; }
     private readonly DataFetcher _dataFetcher;
     
     public DataStorage(DataFetcher dataFetcher) //Initialize components
     {
         _dataFetcher = dataFetcher;
-        Name = new List<string>();
+        Name = new List<AccesableData>();
         Query = new List<string>();
-        Data = new List<List<string>>();
+        Data = new List<List<double>>();
     }
     
-    public void Add (string name, string query) //This function adds a query to the list of queries to be fetched with corresponding name and fetches the data once.
+    public void Add (AccesableData name, string query) //This function adds a query to the list of queries to be fetched with corresponding name and fetches the data once.
     {
-        if (name.IsNullOrEmpty())
-        {
-            throw new ArgumentException("Name cannot be empty");
-        } if (query.IsNullOrEmpty())
+        if (query.IsNullOrEmpty())
         {
             throw new ArgumentException("Query cannot be empty");
         }

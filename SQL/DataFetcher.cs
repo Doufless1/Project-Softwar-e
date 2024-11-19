@@ -13,10 +13,10 @@
             connection_string = connectionString;
         }
         
-        public List<string>
+        public List<double>
             FetchData(string query) //Query is a SQL query that returns a single column of strings which will be returned as a list of strings
         {
-            List<string> result = new List<string>();
+            List<double> result = new List<double>();
             try
             {
                 using (SqlConnection connection = new SqlConnection(connection_string))
@@ -27,7 +27,7 @@
                     {
                         while (reader.Read())
                         {
-                            result.Add(reader.GetString(0));
+                            result.Add(reader.GetDouble(0));
                         }
                     }
                 }
