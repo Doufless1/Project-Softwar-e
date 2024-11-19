@@ -1,0 +1,340 @@
+﻿<Window x:Class="Weather_App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Weather App" Height="800" Width="400" Background="Transparent">
+    <!-- Window Resources for Animation -->
+    <Window.Resources>
+        <Storyboard x:Key="BackgroundAnimation">
+            <ColorAnimation
+                Storyboard.TargetName="GradientStop1"
+                Storyboard.TargetProperty="Color"
+                From="#FF1E90FF" To="#FF4682B4" Duration="0:0:8" AutoReverse="True" RepeatBehavior="Forever" />
+            <ColorAnimation
+                Storyboard.TargetName="GradientStop2"
+                Storyboard.TargetProperty="Color"
+                From="#FF87CEFA" To="#FFB0E0E6" Duration="0:0:8" AutoReverse="True" RepeatBehavior="Forever" />
+        </Storyboard>
+    </Window.Resources>
+
+    <!-- Window Triggers to Start Animation -->
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource BackgroundAnimation}" />
+        </EventTrigger>
+    </Window.Triggers>
+
+    <Grid>
+        <!-- Gradient Background with Named GradientStops for Animation -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#FF1E90FF" Offset="0.0" x:Name="GradientStop1" />
+                <GradientStop Color="#FF87CEFA" Offset="1.0" x:Name="GradientStop2" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!-- Top Navigation Bar -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0">
+            <TextBlock Text="HOME" FontSize="14" Foreground="White" Margin="10">
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                </TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Text="TEMPERATURE" FontSize="14" Foreground="White" Margin="10">
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                </TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Text="7 DAY" FontSize="14" Foreground="White" Margin="10">
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                </TextBlock.Effect>
+            </TextBlock>
+        </StackPanel>
+
+        <!-- Main Temperature and Weather Icon Display -->
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,50,0,0">
+            <TextBlock Text="30°C" FontSize="64" Foreground="White" FontWeight="Bold">
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.5" />
+                </TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Text="Sunny" FontSize="40" Foreground="White" FontWeight="Bold" Height="100" Width="122">
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.5" />
+                </TextBlock.Effect>
+            </TextBlock>
+            <!-- Weather Icon with Shadow -->
+            <Image Source="Pictures/sunny.png" Width="100" Height="100" Margin="0,20,0,0">
+                <Image.Effect>
+                    <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.4" />
+                </Image.Effect>
+            </Image>
+        </StackPanel>
+
+        <!-- Weekly Forecast Section -->
+        <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,150">
+            <!-- Monday -->
+            <Border Background="#33FFFFFF" CornerRadius="8" Padding="5" Margin="5">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Monday" Foreground="White" HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <Image Source="Pictures/storm.png" Width="40" Height="40" HorizontalAlignment="Center">
+                        <Image.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </Image.Effect>
+                    </Image>
+                    <TextBlock Text="20/15" Foreground="White" HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <!-- Tuesday -->
+            <Border Background="#33FFFFFF" CornerRadius="8" Padding="5" Margin="5">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Tuesday" Foreground="White" HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <Image Source="Pictures/wind.png" Width="40" Height="40" HorizontalAlignment="Center">
+                        <Image.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </Image.Effect>
+                    </Image>
+                    <TextBlock Text="18/14" Foreground="White" HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <!-- Wednesday -->
+            <Border Background="#33FFFFFF" CornerRadius="8" Padding="5" Margin="5">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Wednesday" Foreground="White" HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <Image Source="Pictures/clouds.png" Width="40" Height="40" HorizontalAlignment="Center">
+                        <Image.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </Image.Effect>
+                    </Image>
+                    <TextBlock Text="15/13" Foreground="White" HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <!-- Thursday -->
+            <Border Background="#33FFFFFF" CornerRadius="8" Padding="5" Margin="5">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Thursday" Foreground="White" HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <Image Source="Pictures/partly_cloudy.png" Width="40" Height="40" HorizontalAlignment="Center">
+                        <Image.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </Image.Effect>
+                    </Image>
+                    <TextBlock Text="23/20" Foreground="White" HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <!-- Friday -->
+            <Border Background="#33FFFFFF" CornerRadius="8" Padding="5" Margin="5">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Friday" Foreground="White" HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <Image Source="Pictures/sun.png" Width="40" Height="40" HorizontalAlignment="Center">
+                        <Image.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </Image.Effect>
+                    </Image>
+                    <TextBlock Text="28/35" Foreground="White" HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <!-- Saturday -->
+            <Border Background="#33FFFFFF" CornerRadius="8" Padding="5" Margin="5">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Saturday" Foreground="White" HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <Image Source="Pictures/rain.png" Width="40" Height="40" HorizontalAlignment="Center">
+                        <Image.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </Image.Effect>
+                    </Image>
+                    <TextBlock Text="22/18" Foreground="White" HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <!-- Sunday -->
+            <Border Background="#33FFFFFF" CornerRadius="8" Padding="5" Margin="5">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Sunday" Foreground="White" HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <Image Source="Pictures/snow.png" Width="40" Height="40" HorizontalAlignment="Center">
+                        <Image.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </Image.Effect>
+                    </Image>
+                    <TextBlock Text="-5/-15" Foreground="White" HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                        </TextBlock.Effect>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </WrapPanel>
+
+
+        <!-- Bottom Navigation Bar -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,20,0,10">
+            <!-- Search Button -->
+            <Button Width="50" Height="50" RenderTransformOrigin="0.5,0.5">
+                <!-- Hover Animations and Effects -->
+                <Button.RenderTransform>
+                    <ScaleTransform ScaleX="1.0" ScaleY="1.0" />
+                </Button.RenderTransform>
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.1" Duration="0:0:0.3" />
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.1" Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.3" />
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Button.Triggers>
+                <Button.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#FF3B8EDB" Offset="1.5" />
+                        <GradientStop Color="#FF67B7F6" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Button.Background>
+                <Button.Effect>
+                    <DropShadowEffect Color="Black" BlurRadius="8" Opacity="0.5" />
+                </Button.Effect>
+                <Image Source="Pictures/search.png" Width="30" Height="30">
+                    <Image.Effect>
+                        <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                    </Image.Effect>
+                </Image>
+            </Button>
+            <!-- Google Maps Button -->
+            <Button Width="50" Height="50" RenderTransformOrigin="0.5,0.5">
+                <!-- Hover Animations and Effects -->
+                <Button.RenderTransform>
+                    <ScaleTransform ScaleX="1.0" ScaleY="1.0" />
+                </Button.RenderTransform>
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.1" Duration="0:0:0.3" />
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.1" Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.3" />
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Button.Triggers>
+                <Button.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#FF3B8EDB" Offset="1.5" />
+                        <GradientStop Color="#FF67B7F6" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Button.Background>
+                <Button.Effect>
+                    <DropShadowEffect Color="Black" BlurRadius="8" Opacity="0.5" />
+                </Button.Effect>
+                <Image Source="Pictures/google-maps.png" Width="30" Height="30">
+                    <Image.Effect>
+                        <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                    </Image.Effect>
+                </Image>
+            </Button>
+            <!-- Settings Button -->
+            <Button Width="50" Height="50" RenderTransformOrigin="0.5,0.5">
+                <!-- Hover Animations and Effects -->
+                <Button.RenderTransform>
+                    <ScaleTransform ScaleX="1.0" ScaleY="1.0" />
+                </Button.RenderTransform>
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.1" Duration="0:0:0.3" />
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.1" Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.3" />
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Button.Triggers>
+                <Button.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#FF3B8EDB" Offset="1.5" />
+                        <GradientStop Color="#FF67B7F6" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Button.Background>
+                <Button.Effect>
+                    <DropShadowEffect Color="Black" BlurRadius="8" Opacity="0.5" />
+                </Button.Effect>
+                <Image Source="Pictures/settings.png" Width="30" Height="30">
+                    <Image.Effect>
+                        <DropShadowEffect Color="Black" BlurRadius="5" Opacity="0.3" />
+                    </Image.Effect>
+                </Image>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>
