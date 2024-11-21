@@ -53,7 +53,7 @@
 
         <!-- Main Temperature and Weather Icon Display -->
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,50,0,0">
-            <TextBlock Text="30°C" FontSize="64" Foreground="White" FontWeight="Bold">
+            <TextBlock Text="" FontSize="64" Foreground="White" FontWeight="Bold">
                 <TextBlock.Effect>
                     <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.5" />
                 </TextBlock.Effect>
@@ -247,7 +247,7 @@
                         <GradientStop Color="#FF3B8EDB" Offset="1.5" />
                         <GradientStop Color="#FF67B7F6" Offset="1.0" />
                     </LinearGradientBrush>
-                </Button.Background>
+                </Button.Background> 
                 <Button.Effect>
                     <DropShadowEffect Color="Black" BlurRadius="8" Opacity="0.5" />
                 </Button.Effect>
