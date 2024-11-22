@@ -9,29 +9,41 @@
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
-
-        <TextBlock Grid.Row="0">
-            <Run Text="Weather App" FontWeight="Bold" FontSize="24" />
-            <Run Text=" - " />
-            <!-- <Run Text="{Binding CurrentDay}" FontWeight="Bold" /> -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="85"/>
+        </Grid.ColumnDefinitions>
+        
+        <TextBlock Grid.Row="0" Grid.Column="1">
+            <!-- Current Location -->
         </TextBlock>
-        <TabControl Grid.Row="1">
-            <!-- Temperature Graph -->
-            <TabItem Header="Temperature today">
-                <wpf:CartesianChart
-                    Series="{Binding TemperatureDaySeries}"
-                    XAxes="{Binding XAxes}" />
-            </TabItem>
-
-            <!-- Humidity Graph -->
-            <TabItem Header="Humidity today">
-                <wpf:CartesianChart
-                    Series="{Binding HumidityDaySeries}"
-                    XAxes="{Binding XAxes}" />
-            </TabItem>
-        </TabControl>
+        <StackPanel Grid.Row="0" Grid.Column="0" x:Name="LocationStackPanel">
+            
+        </StackPanel>
+        
+        <!-- <TextBlock Grid.Row="0"> -->
+        <!--     <Run Text="Weather App" FontWeight="Bold" FontSize="24" /> -->
+        <!--     <Run Text=" - " /> -->
+        <!--     <Run Text="{Binding CurrentDay}" FontWeight="Bold" /> -->
+        <!-- </TextBlock> -->
+        <!-- <TabControl Grid.Row="1"> -->
+        <!--     ~1~ Temperature Graph @1@ -->
+        <!--     <TabItem Header="Temperature today"> -->
+        <!--         <wpf:CartesianChart -->
+        <!--             Series="{Binding TemperatureDaySeries}" -->
+        <!--             XAxes="{Binding XAxes}" /> -->
+        <!--     </TabItem> -->
+        <!-- -->
+        <!--     ~1~ Humidity Graph @1@ -->
+        <!--     <TabItem Header="Humidity today"> -->
+        <!--         <wpf:CartesianChart -->
+        <!--             Series="{Binding HumidityDaySeries}" -->
+        <!--             XAxes="{Binding XAxes}" /> -->
+        <!--     </TabItem> -->
+        <!-- </TabControl> -->
     </Grid>
 </Window>

@@ -3,8 +3,11 @@ using sql_fetcher;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using System.Windows.Controls;
+using Microsoft.UI.Xaml.Controls;
 using SkiaSharp;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
+using Button = System.Windows.Controls.Button;
 
 
 namespace Weather_App
@@ -23,9 +26,9 @@ namespace Weather_App
 
         //Data
         public string CurrentDay { get; set; }                                  //Based on this we can access which day it is, so for last 7 days it is CurrentDay - 7, CurrentDay -6 ... CurrentDay
-        public DateTime[] Last24Hours { get; private set; }                          //Last 24 hours
-        public  DateTime[] Last7Days { get; private set; }                            //Last 7 days
-        public DateTime[] Last30Days { get; private set; }                           //Last 30 days
+        public DateTime[] Last24Hours { get; private set; }                     //Last 24 hours
+        public  DateTime[] Last7Days { get; private set; }                      //Last 7 days
+        public DateTime[] Last30Days { get; private set; }                      //Last 30 days
         
         public double CurrentTemperature { get; private set; }                 //Current temperature
         public List<double> DayTemperature { get; private set; }               //All temperature data of today
@@ -39,6 +42,8 @@ namespace Weather_App
         public List<double> HourlyDayHumidityAverage { get; private set; }     //Average humidity of today (useful for graphing)
         public List<double> DailyWeekHumidityAverage { get; private set; }     //Average humidity of this week (useful for graphing)
         
+        //GUI
+        public List<Button> LocationButtons { get; private set; }                            //Buttons for the locations
         
         public MainWindow()
         {
@@ -49,6 +54,7 @@ namespace Weather_App
             Last24Hours = new DateTime[24];
             Last7Days = new DateTime[7];
             Last30Days = new DateTime[30];
+            LocationButtons = new List<Button>();
             
             HourlyDayTemperatureAverage = new List<double>();
             HourlyDayHumidityAverage = new List<double>();
@@ -57,13 +63,13 @@ namespace Weather_App
             DailyWeekHumidityAverage = new List<double>();
 
             //Simple GetData
-            CurrentTemperature = DataAccess.GetData(AccesableData.CurrentTemperature)[0];
-            DayTemperature = DataAccess.GetData(AccesableData.DayTemperature);
-            WeekTemperature = DataAccess.GetData(AccesableData.WeekTemperature);
+            CurrentTemperature = DataAccess.GetData(AccesableData.CurrentTemperature, Locations.Enschede)[0];
+            DayTemperature = DataAccess.GetData(AccesableData.DayTemperature, Locations.Enschede);
+            WeekTemperature = DataAccess.GetData(AccesableData.WeekTemperature, Locations.Enschede);
             
-            CurrentHumidity = DataAccess.GetData(AccesableData.CurrentHumidity)[0];
-            DayHumidity = DataAccess.GetData(AccesableData.DayHumidity);
-            WeekHumidity = DataAccess.GetData(AccesableData.CurrentHumidity);
+            CurrentHumidity = DataAccess.GetData(AccesableData.CurrentHumidity, Locations.Enschede)[0];
+            DayHumidity = DataAccess.GetData(AccesableData.DayHumidity, Locations.Enschede);
+            WeekHumidity = DataAccess.GetData(AccesableData.CurrentHumidity, Locations.Enschede);
 
             //Calculate averages
             for (int i = 0; i < 24; i++)
@@ -78,16 +84,17 @@ namespace Weather_App
                 DailyWeekHumidityAverage.Add(WeekHumidity.GetRange(i * 24 * DatapointsPerHour, 24 * DatapointsPerHour).Average());
             } //Gets the average of each day over the week and adds it to the list of averages.
 
-            for (int i = 0; i < 24; i++)
+            for (int i = 23; i >= 0; i++)
             {
                 Last24Hours[i] = DateTime.Now.AddHours(-i);
             }
-            for (int i = 0; i < 7; i++)
+
+            for (int i = 7; i >= 1; i++)
             {
                 Last7Days[i] = DateTime.Now.AddDays(-i);
             }
             
-            for (int i = 0; i < 30; i++)
+            for (int i = 29; i >= 0; i++)
             {
                 Last30Days[i] = DateTime.Now.AddDays(-i);
             }
@@ -122,8 +129,31 @@ namespace Weather_App
                 {
                     Labels = Last24Hours.Select(x => x.ToString("HH:mm")).ToArray(),
                     Name = "Time"
+                },
+                new Axis
+                {
+                    Labels = Last7Days.Select(x => x.ToString("dd/MM")).ToArray(),
+                    Name = "7 Days"
+                },
+                new Axis
+                {
+                    Labels = Last30Days.Select(x => x.ToString("dd/MM")).ToArray(),
+                    Name = "30 Days"
                 }
             ];
+
+            foreach (Locations location in Enum.GetValues(typeof(Locations)))
+            {
+                Button button = new Button()
+                {
+                    Content = $"${location}",
+                    Width = 100,
+                    Height = 50
+                };
+                LocationButtons.Add(button);
+                LocationStackPanel.Children.Add(button);
+            }
+
         }
     }
 }

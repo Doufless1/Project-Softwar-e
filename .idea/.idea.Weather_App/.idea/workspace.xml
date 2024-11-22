@@ -7,7 +7,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2cc9c639-0a35-4599-a9be-7f0fdb89d606" name="Changes" comment="Added locations into Locations.cs light support to the AccesableData.cs SQL and support for DataAccess.cs" />
+    <list default="true" id="2cc9c639-0a35-4599-a9be-7f0fdb89d606" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Weather_App/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Weather_App/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainWindow.xaml" beforeDir="false" afterPath="$PROJECT_DIR$/MainWindow.xaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainWindow.xaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MainWindow.xaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SQL/DataAccess.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SQL/DataAccess.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SQL/DataStorage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/SQL/DataStorage.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -43,6 +49,8 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/24a9cc7eca054d10a13e901c200bddd1106938/d9/acaff434/ConfigurationManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9a297a7e45534117ba648d6a8ce98a8ef60938/f7/7fc91180/HeaderedContentControl.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9359b2e0fb214322f66741cc1c5fa2398bae82d12386211f6da9f297e4c5ac7/ISeries.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/basva/RiderProjects/Project-Software/MainWindow.xaml.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/basva/RiderProjects/Project-Software/MainWindow.xaml.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
@@ -54,23 +62,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Project.Weather_App.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/basva/.dotnet/dotnet.exe",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "SolutionBuilderGeneralOptionsPage",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Project.Weather_App.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/basva/.dotnet/dotnet.exe&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;SolutionBuilderGeneralOptionsPage&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Weather_App" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
@@ -104,7 +112,7 @@
       <workItem from="1732202646413" duration="3900000" />
       <workItem from="1732206603744" duration="18000" />
       <workItem from="1732206637270" duration="4383000" />
-      <workItem from="1732262395325" duration="5526000" />
+      <workItem from="1732262395325" duration="9237000" />
     </task>
     <task id="LOCAL-00001" summary="Implemented DataStorage.cs and DataAccess.cs class in SQL directory. The datastorage class is responsible for storing the data and queries and the dataaccess class works as a placeholder main in which data in the storage can be accessed and queries can be added.">
       <option name="closed" value="true" />
@@ -138,7 +146,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732268699580</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Push merge">
+      <option name="closed" value="true" />
+      <created>1732269148178</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1732269148178</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -163,6 +179,26 @@
     <MESSAGE value="Changed names of AccesableData.cs to enum. Added variables which fetch relevant data in the MainWindow.xaml.cs" />
     <MESSAGE value="Implemented graphs for the hourly temperature and humidity over the day in MainWindow.xaml and MainWindow.xaml.cs" />
     <MESSAGE value="Added locations into Locations.cs light support to the AccesableData.cs SQL and support for DataAccess.cs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added locations into Locations.cs light support to the AccesableData.cs SQL and support for DataAccess.cs" />
+    <MESSAGE value="Push merge" />
+    <option name="LAST_COMMIT_MESSAGE" value="Push merge" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/MainWindow.xaml.cs</url>
+          <line>21</line>
+          <properties documentPath="C:\Users\basva\RiderProjects\Project-Software\MainWindow.xaml.cs" containingFunctionPresentation="Property 'TemperatureDaySeries'">
+            <startOffsets>
+              <option value="737" />
+            </startOffsets>
+            <endOffsets>
+              <option value="741" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
