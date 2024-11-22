@@ -6,8 +6,14 @@ public enum AccesableData
     DayTemperature,
     WeekTemperature,
     MonthTemperature,
+    
     CurrentHumidity,
     DayHumidity,
     WeekHumidity,
-    MonthHumidity
+    MonthHumidity,
+    
+    CurrentLight,
+    DayLight,
+    WeekLight,
+    MonthLight
 }

@@ -16,7 +16,7 @@
         <TextBlock Grid.Row="0">
             <Run Text="Weather App" FontWeight="Bold" FontSize="24" />
             <Run Text=" - " />
-            <Run Text="{Binding CurrentDay}" FontWeight="Bold" />
+            <!-- <Run Text="{Binding CurrentDay}" FontWeight="Bold" /> -->
         </TextBlock>
         <TabControl Grid.Row="1">
             <!-- Temperature Graph -->
