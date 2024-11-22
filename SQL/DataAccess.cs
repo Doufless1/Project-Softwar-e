@@ -14,7 +14,7 @@ public class DataAccess
         DataStorage.Add(AccesableData.CurrentTemperature, "SELECT TOP 1 temperature FROM temperature ORDER BY time DESC"); //placeholder query
         DataStorage.Add(AccesableData.CurrentHumidity, "SELECT TOP 1 humidity FROM humidity ORDER BY time DESC"); //placeholder query
     }
-
+    
     public List<double> GetData(AccesableData name) //Gets returns data (List<string>) of the name requested (i.e. current_temperature, current_humidity)
     {
         DataStorage.Reload();
