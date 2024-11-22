@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using sql_fetcher;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
