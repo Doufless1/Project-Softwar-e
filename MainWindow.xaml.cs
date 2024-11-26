@@ -13,8 +13,8 @@ namespace Weather_App
     public partial class MainWindow : Window
     {
         //TODO: Fill in how much datapoints per hour are fetched into the database
-        private readonly int DatapointsPerHour = 15;                         //Placeholder
-        private static readonly sql_fetcher.DataAccess DataAccess = new DataAccess();
+        private readonly int DatapointsPerHour = 1;                         //Placeholder
+        private static readonly DataAccess DataAccess = new DataAccess();
         
         //Graph stuff
         public ISeries[] TemperatureDaySeries { get; private set; }                    //Series for the graph
@@ -23,9 +23,9 @@ namespace Weather_App
         public ISeries[] HumidityWeekSeries { get; private set; }                       //Series for the graph
         public ISeries[] TemperatureMonthSeries { get; private set; }                    //Series for the graph
         public ISeries[] HumidityMonthSeries { get; private set; }                       //Series for the graph
-        public Axis[] XAxesDay { get; private set; }
-        public Axis[] XAxesWeek { get; private set; }
-        public Axis[] XAxesMonth { get; private set; }
+        public List<Axis> XAxesDay { get; set; }
+        public List<Axis> XAxesWeek { get; set; }
+        public List<Axis> XAxesMonth { get; set; }
 
         //Data
         public string CurrentDay { get; set; }                                  //Based on this we can access which day it is, so for last 7 days it is CurrentDay - 7, CurrentDay -6 ... CurrentDay
@@ -33,7 +33,7 @@ namespace Weather_App
         public  DateTime[] Last7Days { get; private set; }                      //Last 7 days
         public DateTime[] Last30Days { get; private set; }                      //Last 30 days
         
-        public double CurrentTemperature { get; private set; }                 //Current temperature
+        public double CurrentTemperature { get; set; }                 //Current temperature
         public List<double> DayTemperature { get; private set; }               //All temperature data of today
         public List<double> WeekTemperature { get; private set; }              //All temperature data of this week
         public List<double> MonthTemperature { get; private set; }             //All temperature data of this month
@@ -41,7 +41,7 @@ namespace Weather_App
         public List<double> DailyWeekTemperatureAverage { get; private set; }  //Average humidity of this week (useful for graphing)
         public List<double> DailyMonthTemperatureAverage { get; private set; } //Average temperature of this month (useful for graphing)
         
-        public double CurrentHumidity { get; private set; }                    //Current humidity
+        public double CurrentHumidity { get; set; }                    //Current humidity
         public List<double> DayHumidity { get; private set; }                  //All humidity of today
         public List<double> WeekHumidity { get; private set; }                 //All humidity of this week
         public List<double> MonthHumidity { get; private set; }                //All humidity of this month
@@ -79,38 +79,81 @@ namespace Weather_App
             
             CurrentHumidity = DataAccess.GetData(AccesableData.CurrentHumidity, Locations.Enschede)[0];
             DayHumidity = DataAccess.GetData(AccesableData.DayHumidity, Locations.Enschede);
-            WeekHumidity = DataAccess.GetData(AccesableData.CurrentHumidity, Locations.Enschede);
-            MonthHumidity = DataAccess.GetData(AccesableData.CurrentHumidity, Locations.Enschede);
+            WeekHumidity = DataAccess.GetData(AccesableData.WeekHumidity, Locations.Enschede);
+            MonthHumidity = DataAccess.GetData(AccesableData.MonthHumidity, Locations.Enschede);
             
             //Calculate averages
             for (int i = 0; i < 24; i++)
             {
-                HourlyDayTemperatureAverage.Add(DayTemperature.GetRange(i * DatapointsPerHour, DatapointsPerHour).Average());
-                HourlyDayHumidityAverage.Add(DayHumidity.GetRange(i * DatapointsPerHour, DatapointsPerHour).Average());
+                if (DayTemperature.Count > i)
+                {
+                    HourlyDayTemperatureAverage.Add(DayTemperature.GetRange(i * (DayTemperature.Count/24), DayTemperature.Count/24).Average());
+                }
+                else
+                {
+                    HourlyDayTemperatureAverage.Add(0);
+                }
+                if (DayHumidity.Count > i)
+                {
+                    HourlyDayHumidityAverage.Add(DayHumidity.GetRange(i * (DayHumidity.Count/24), DayHumidity.Count / 24).Average());
+                }
+                else
+                {
+                    HourlyDayHumidityAverage.Add(0);
+                }
             } //Gets the average of each hour over the day and adds it to the list of averages.
             
             for (int i = 0; i < 7; i++)
             {
-                DailyWeekTemperatureAverage.Add(WeekTemperature.GetRange(i * 24 * DatapointsPerHour, 24 * DatapointsPerHour).Average());
-                DailyWeekHumidityAverage.Add(WeekHumidity.GetRange(i * 24 * DatapointsPerHour, 24 * DatapointsPerHour).Average());
+                if (WeekTemperature.Count > i)
+                {
+                    DailyWeekTemperatureAverage.Add(WeekTemperature.GetRange(i * (WeekTemperature.Count/7), WeekTemperature.Count/7).Average());
+                }
+                else
+                {
+                    DailyWeekTemperatureAverage.Add(0);
+                }
+                if (WeekTemperature.Count > i)
+                {
+                    DailyWeekHumidityAverage.Add(WeekHumidity.GetRange(i * (WeekHumidity.Count/7), WeekHumidity.Count/7).Average());
+                }
+                else
+                {
+                    DailyWeekHumidityAverage.Add(0);
+                }
             } //Gets the average of each day over the week and adds it to the list of averages.
             for (int i = 0; i < 30; i++)
             {
-                DailyMonthTemperatureAverage.Add(MonthTemperature.GetRange(i * 24 * DatapointsPerHour, 24 * DatapointsPerHour).Average());
-                DailyMonthHumidityAverage.Add(MonthHumidity.GetRange(i * 24 * DatapointsPerHour, 24 * DatapointsPerHour).Average());
+                if (DailyMonthTemperatureAverage.Count > i)
+                {
+                    DailyMonthTemperatureAverage.Add(MonthTemperature.GetRange(i * (MonthTemperature.Count/30), MonthTemperature.Count/30).Average());
+                }
+                else
+                {
+                    DailyMonthTemperatureAverage.Add(0);
+                }
+
+                if (DailyMonthHumidityAverage.Count > i)
+                {
+                    DailyMonthHumidityAverage.Add(MonthHumidity.GetRange(i * (MonthHumidity.Count/30), MonthHumidity.Count/30).Average());
+                }
+                else
+                {
+                    DailyMonthHumidityAverage.Add(0);
+                }
             } //Gets the average of each day over the month and adds it to the list of averages.
             
-            for (int i = 23; i >= 0; i++)
+            for (int i = 23; i >= 0; i--)
             {
                 Last24Hours[i] = DateTime.Now.AddHours(-i);
             }
 
-            for (int i = 7; i >= 1; i++)
+            for (int i = 7; i >= 1; i--)
             {
-                Last7Days[i] = DateTime.Now.AddDays(-i);
+                Last7Days[i%7] = DateTime.Now.AddDays(-i);
             }
             
-            for (int i = 29; i >= 0; i++)
+            for (int i = 29; i >= 0; i--)
             {
                 Last30Days[i] = DateTime.Now.AddDays(-i);
             }

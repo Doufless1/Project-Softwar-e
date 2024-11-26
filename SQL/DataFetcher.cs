@@ -1,4 +1,6 @@
-﻿namespace sql_fetcher
+﻿using System.Data;
+
+namespace sql_fetcher
 {
     using System;
     using System.Collections.Generic;
@@ -23,7 +25,7 @@
                 {
                     connection.Open();
                     SqlCommand command = new SqlCommand(query, connection);
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.Default))
                     {
                         while (reader.Read())
                         {
