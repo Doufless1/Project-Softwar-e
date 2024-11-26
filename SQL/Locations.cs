@@ -2,7 +2,5 @@
 
 public enum Locations
 {
-    Enschede,
-    Wierden,
-    Gronau
+    Enschede
 }

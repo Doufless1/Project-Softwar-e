@@ -3,8 +3,6 @@ using sql_fetcher;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
-using System.Windows.Controls;
-using Microsoft.UI.Xaml.Controls;
 using SkiaSharp;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 using Button = System.Windows.Controls.Button;
@@ -90,7 +88,7 @@ namespace Weather_App
                 HourlyDayTemperatureAverage.Add(DayTemperature.GetRange(i * DatapointsPerHour, DatapointsPerHour).Average());
                 HourlyDayHumidityAverage.Add(DayHumidity.GetRange(i * DatapointsPerHour, DatapointsPerHour).Average());
             } //Gets the average of each hour over the day and adds it to the list of averages.
-
+            
             for (int i = 0; i < 7; i++)
             {
                 DailyWeekTemperatureAverage.Add(WeekTemperature.GetRange(i * 24 * DatapointsPerHour, 24 * DatapointsPerHour).Average());

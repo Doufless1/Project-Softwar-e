@@ -1,14 +1,13 @@
 ﻿namespace sql_fetcher;
-using System.Configuration;
 
 public class DataAccess
 {
     //TODO: Input correct ConnectionString linking to the SQL server
     private static readonly string ConnectionString = 
-        "Server=project-software-3.database.microsoft.net;" +
-        "Database=YourDatabaseName;" +
-        "User ID=cloud-admin;" +
-        "Password=very-good-password1;" +
+        "Server=tcp:group13.database.windows.net,1433;" +
+        "Database=weather_state;" +
+        "User ID=cloudadmin;" +
+        "Password=Group13pass;" +
         "Encrypt=True;" +
         "TrustServerCertificate=False;" +
         "Connection Timeout=30;";
@@ -20,14 +19,32 @@ public class DataAccess
         //TODO: Add all the queries for all the available options in AccesableData.cs
         foreach (Locations location in Enum.GetValues(typeof(Locations)))
         {
+            Console.WriteLine("SELECT TOP 1 temperature FROM weather ORDER BY weather.date DESC");
             DataStorage.Add(AccesableData.CurrentTemperature, location,
-                $"SELECT TOP 1 temperature FROM table WHERE location = ${location} ORDER BY time DESC");  //placeholder query
+                $"SELECT TOP 1 temperature FROM weather ORDER BY weather.date DESC");
             DataStorage.Add(AccesableData.CurrentHumidity, location,
-                $"SELECT TOP 1 humidity FROM table WHERE location = ${location} ORDER BY time DESC");     //placeholder query
+                $"SELECT TOP 1 humidity FROM weather ORDER BY weather.date DESC");
             DataStorage.Add(AccesableData.CurrentLight, location,
-                $"SELECT TOP 1 light FROM table  WHERE location = ${location} ORDER BY time DESC");                                         //placeholder query
+                $"SELECT TOP 1 luminosity FROM weather ORDER BY weather.date DESC");
+            DataStorage.Add(AccesableData.DayTemperature, location,
+                 $"SELECT temperature FROM weather WHERE date >= DATEADD(DAY, -1, GETDATE()) ORDER BY date DESC;) ORDER BY time DESC"); 
+            DataStorage.Add(AccesableData.WeekTemperature, location,
+                 $"SELECT temperature FROM weather WHERE date >= DATEADD(DAY, -7, GETDATE()) ORDER BY date DESC;) ORDER BY time DESC");
+            DataStorage.Add(AccesableData.MonthTemperature, location,
+                 $"SELECT temperature FROM weather WHERE date >= DATEADD(DAY, -30, GETDATE()) ORDER BY date DESC;) ORDER BY time DESC");
             DataStorage.Add(AccesableData.DayHumidity, location,
-                $"SELECT humidity FROM  WHERE location = ${location} AND time > DATEADD(hour, DATEDIFF(hour, -24, GETDATE()), 0) ORDER BY time DESC"); //placeholder query
+                $"SELECT humidity FROM weather WHERE date >= DATEADD(DAY, -1, GETDATE()) ORDER BY date DESC;) ORDER BY time DESC"); 
+            DataStorage.Add(AccesableData.WeekHumidity, location,
+                $"SELECT humidity FROM weather WHERE date >= DATEADD(DAY, -7, GETDATE()) ORDER BY date DESC;) ORDER BY time DESC");
+            DataStorage.Add(AccesableData.MonthHumidity, location,
+                $"SELECT humidity FROM weather WHERE date >= DATEADD(DAY, -30, GETDATE()) ORDER BY date DESC;) ORDER BY time DESC");
+            DataStorage.Add(AccesableData.DayLight, location,
+                $"SELECT luminosity FROM weather WHERE date >= DATEADD(DAY, -1, GETDATE()) ORDER BY date DESC;) ORDER BY time DESC"); 
+            DataStorage.Add(AccesableData.WeekLight, location,
+                $"SELECT luminosity FROM weather WHERE date >= DATEADD(DAY, -7, GETDATE()) ORDER BY date DESC;) ORDER BY time DESC");
+            DataStorage.Add(AccesableData.MonthLight, location,
+                $"SELECT luminosity FROM weather WHERE date >= DATEADD(DAY, -30, GETDATE()) ORDER BY date DESC;) ORDER BY time DESC");
+
         }
     }
 
