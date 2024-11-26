@@ -21,9 +21,65 @@
         <TextBlock Grid.Row="0" Grid.Column="1">
             <!-- Current Location -->
         </TextBlock>
-        <StackPanel Grid.Row="0" Grid.Column="0" x:Name="LocationStackPanel">
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" x:Name="LocationStackPanel">
             
         </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            <!-- Current Temperature -->
+            <TextBlock>
+                <Run Text="Current Temperature: "/>
+                <Run Text="{Binding CurrentTemperature}"/>
+            </TextBlock>
+            <!-- Current Humidity -->
+            <TextBlock>
+                <Run Text="Current Humidity: "/>
+                <Run Text="{Binding CurrentHumidity}"/>
+            </TextBlock>
+            <!-- Current Light Intensity -->
+        </StackPanel>
+        <TabControl Grid.Row="2" Grid.Column="1">
+            <!-- Temperature Graph -->
+            <TabItem Header="Temperature">
+                <TabControl>
+                    <TabItem Header="Day">
+                        <wpf:CartesianChart
+                            Series="{Binding TemperatureDaySeries}"
+                            XAxes="{Binding XAxesDay}" />
+                    </TabItem>
+                    <TabItem Header="Week">
+                        <wpf:CartesianChart
+                            Series="{Binding TemperatureWeekSeries}"
+                            XAxes="{Binding XAxesWeek}" />
+                    </TabItem>
+                    <TabItem Header="Month">
+                        <wpf:CartesianChart
+                            Series="{Binding TemperatureMonthSeries}"
+                            XAxes="{Binding XAxesMonth}" />
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+        
+            <!-- Humidity Graph -->
+            <TabItem Header="Temperature">
+                <TabControl>
+                    <TabItem Header="Day">
+                        <wpf:CartesianChart
+                            Series="{Binding HumidityDaySeries}"
+                            XAxes="{Binding XAxesDay}" />
+                    </TabItem>
+                    <TabItem Header="Week">
+                        <wpf:CartesianChart
+                            Series="{Binding HumidityWeekSeries}"
+                            XAxes="{Binding XAxesWeek}" />
+                    </TabItem>
+                    <TabItem Header="Month">
+                        <wpf:CartesianChart
+                            Series="{Binding HumidityMonthSeries}"
+                            XAxes="{Binding XAxesMonth}" />
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+        </TabControl>
         
         <!-- <TextBlock Grid.Row="0"> -->
         <!--     <Run Text="Weather App" FontWeight="Bold" FontSize="24" /> -->
