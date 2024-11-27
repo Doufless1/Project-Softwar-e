@@ -45,9 +45,9 @@ namespace Weather_App
 
             // Initialize data
             CurrentDay = DateTime.Now.DayOfWeek.ToString();
-            Last24Hours = Enumerable.Range(0, 24).Select(i => DateTime.Now.AddHours(-i)).ToArray();
-            Last7Days = Enumerable.Range(0, 7).Select(i => DateTime.Now.AddDays(-i)).ToArray();
-            Last30Days = Enumerable.Range(0, 30).Select(i => DateTime.Now.AddDays(-i)).ToArray();
+            Last24Hours = Enumerable.Range(0, 24).Select(i => DateTime.Now.AddHours(-i)).Reverse().ToArray();
+            Last7Days = Enumerable.Range(0, 7).Select(i => DateTime.Now.AddDays(-i)).Reverse().ToArray();
+            Last30Days = Enumerable.Range(0, 30).Select(i => DateTime.Now.AddDays(-i)).Reverse().ToArray();
             LocationButtons = new List<Button>();
 
             // Fetch data and handle null cases
