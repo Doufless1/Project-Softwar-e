@@ -1,274 +1,223 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
-using sql_fetcher;
+using System.Windows.Controls;
+using LiveCharts;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
-using Axis = LiveChartsCore.SkiaSharpView.Axis;
-using Button = System.Windows.Controls.Button;
-
+using sql_fetcher;
 
 namespace Weather_App
 {
     public partial class MainWindow : Window
     {
-        //TODO: Fill in how much datapoints per hour are fetched into the database
-        private readonly int DatapointsPerHour = 1;                         //Placeholder
+        private readonly int DatapointsPerHour = 1; // Placeholder
         private static readonly DataAccess DataAccess = new DataAccess();
-        
-        //Graph stuff
-        public ISeries[] TemperatureDaySeries { get; private set; }                    //Series for the graph
-        public ISeries[] HumidityDaySeries { get; private set; }                       //Series for the graph
-        public ISeries[] TemperatureWeekSeries { get; private set; }                    //Series for the graph
-        public ISeries[] HumidityWeekSeries { get; private set; }                       //Series for the graph
-        public ISeries[] TemperatureMonthSeries { get; private set; }                    //Series for the graph
-        public ISeries[] HumidityMonthSeries { get; private set; }                       //Series for the graph
+
+        // Graph Properties
+        public ISeries[] TemperatureDaySeries { get; private set; }
+        public ISeries[] HumidityDaySeries { get; private set; }
+        public ISeries[] TemperatureWeekSeries { get; private set; }
+        public ISeries[] HumidityWeekSeries { get; private set; }
+        public ISeries[] TemperatureMonthSeries { get; private set; }
+        public ISeries[] HumidityMonthSeries { get; private set; }
+
         public List<Axis> XAxesDay { get; set; }
         public List<Axis> XAxesWeek { get; set; }
         public List<Axis> XAxesMonth { get; set; }
 
-        //Data
-        public string CurrentDay { get; set; }                                  //Based on this we can access which day it is, so for last 7 days it is CurrentDay - 7, CurrentDay -6 ... CurrentDay
-        public DateTime[] Last24Hours { get; private set; }                     //Last 24 hours
-        public  DateTime[] Last7Days { get; private set; }                      //Last 7 days
-        public DateTime[] Last30Days { get; private set; }                      //Last 30 days
-        
-        public double CurrentTemperature { get; set; }                 //Current temperature
-        public List<double> DayTemperature { get; private set; }               //All temperature data of today
-        public List<double> WeekTemperature { get; private set; }              //All temperature data of this week
-        public List<double> MonthTemperature { get; private set; }             //All temperature data of this month
-        public List<double> HourlyDayTemperatureAverage { get; private set; }  //Average temperature of today (useful for graphing)
-        public List<double> DailyWeekTemperatureAverage { get; private set; }  //Average humidity of this week (useful for graphing)
-        public List<double> DailyMonthTemperatureAverage { get; private set; } //Average temperature of this month (useful for graphing)
-        
-        public double CurrentHumidity { get; set; }                    //Current humidity
-        public List<double> DayHumidity { get; private set; }                  //All humidity of today
-        public List<double> WeekHumidity { get; private set; }                 //All humidity of this week
-        public List<double> MonthHumidity { get; private set; }                //All humidity of this month
-        public List<double> HourlyDayHumidityAverage { get; private set; }     //Average humidity of today (useful for graphing)
-        public List<double> DailyWeekHumidityAverage { get; private set; }     //Average humidity of this week (useful for graphing)
-        public List<double> DailyMonthHumidityAverage { get; private set; } //Average temperature of this month (useful for graphing)
-        //GUI
-        public List<Button> LocationButtons { get; private set; }               //Buttons for the locations
-        
+        // Data
+        public string CurrentDay { get; set; }
+        public DateTime[] Last24Hours { get; private set; }
+        public DateTime[] Last7Days { get; private set; }
+        public DateTime[] Last30Days { get; private set; }
+        public double CurrentTemperature { get; set; }
+        public double CurrentHumidity { get; set; }
+        public List<Button> LocationButtons { get; private set; }
+
         public MainWindow()
         {
-            //Initialize everything
             InitializeComponent();
             DataContext = this;
+
+            // Initialize data
             CurrentDay = DateTime.Now.DayOfWeek.ToString();
-            Last24Hours = new DateTime[24];
-            Last7Days = new DateTime[7];
-            Last30Days = new DateTime[30];
+            Last24Hours = Enumerable.Range(0, 24).Select(i => DateTime.Now.AddHours(-i)).Reverse().ToArray();
+            Last7Days = Enumerable.Range(0, 7).Select(i => DateTime.Now.AddDays(-i)).Reverse().ToArray();
+            Last30Days = Enumerable.Range(0, 30).Select(i => DateTime.Now.AddDays(-i)).Reverse().ToArray();
             LocationButtons = new List<Button>();
-            
-            HourlyDayTemperatureAverage = new List<double>();
-            HourlyDayHumidityAverage = new List<double>();
-            
-            DailyWeekTemperatureAverage = new List<double>();
-            DailyWeekHumidityAverage = new List<double>();
-            
-            DailyMonthTemperatureAverage = new List<double>();
-            DailyMonthHumidityAverage = new List<double>();
 
-            //Simple GetData
-            CurrentTemperature = DataAccess.GetData(AccesableData.CurrentTemperature, Locations.Enschede)[0];
-            DayTemperature = DataAccess.GetData(AccesableData.DayTemperature, Locations.Enschede);
-            WeekTemperature = DataAccess.GetData(AccesableData.WeekTemperature, Locations.Enschede);
-            MonthTemperature = DataAccess.GetData(AccesableData.MonthHumidity, Locations.Enschede);
-            
-            CurrentHumidity = DataAccess.GetData(AccesableData.CurrentHumidity, Locations.Enschede)[0];
-            DayHumidity = DataAccess.GetData(AccesableData.DayHumidity, Locations.Enschede);
-            WeekHumidity = DataAccess.GetData(AccesableData.WeekHumidity, Locations.Enschede);
-            MonthHumidity = DataAccess.GetData(AccesableData.MonthHumidity, Locations.Enschede);
-            
-            //Calculate averages
-            for (int i = 0; i < 24; i++)
-            {
-                if (DayTemperature.Count > i)
-                {
-                    HourlyDayTemperatureAverage.Add(DayTemperature.GetRange(i * (DayTemperature.Count/24), DayTemperature.Count/24).Average());
-                }
-                else
-                {
-                    HourlyDayTemperatureAverage.Add(0);
-                }
-                if (DayHumidity.Count > i)
-                {
-                    HourlyDayHumidityAverage.Add(DayHumidity.GetRange(i * (DayHumidity.Count/24), DayHumidity.Count / 24).Average());
-                }
-                else
-                {
-                    HourlyDayHumidityAverage.Add(0);
-                }
-            } //Gets the average of each hour over the day and adds it to the list of averages.
-            
-            for (int i = 0; i < 7; i++)
-            {
-                if (WeekTemperature.Count > i)
-                {
-                    DailyWeekTemperatureAverage.Add(WeekTemperature.GetRange(i * (WeekTemperature.Count/7), WeekTemperature.Count/7).Average());
-                }
-                else
-                {
-                    DailyWeekTemperatureAverage.Add(0);
-                }
-                if (WeekTemperature.Count > i)
-                {
-                    DailyWeekHumidityAverage.Add(WeekHumidity.GetRange(i * (WeekHumidity.Count/7), WeekHumidity.Count/7).Average());
-                }
-                else
-                {
-                    DailyWeekHumidityAverage.Add(0);
-                }
-            } //Gets the average of each day over the week and adds it to the list of averages.
-            for (int i = 0; i < 30; i++)
-            {
-                if (DailyMonthTemperatureAverage.Count > i)
-                {
-                    DailyMonthTemperatureAverage.Add(MonthTemperature.GetRange(i * (MonthTemperature.Count/30), MonthTemperature.Count/30).Average());
-                }
-                else
-                {
-                    DailyMonthTemperatureAverage.Add(0);
-                }
+            // Fetch data and handle null cases
+            CurrentTemperature = DataAccess.GetData(AccesableData.CurrentTemperature, Locations.Enschede)?.FirstOrDefault() ?? 0;
+            CurrentHumidity = DataAccess.GetData(AccesableData.CurrentHumidity, Locations.Enschede)?.FirstOrDefault() ?? 0;
 
-                if (DailyMonthHumidityAverage.Count > i)
-                {
-                    DailyMonthHumidityAverage.Add(MonthHumidity.GetRange(i * (MonthHumidity.Count/30), MonthHumidity.Count/30).Average());
-                }
-                else
-                {
-                    DailyMonthHumidityAverage.Add(0);
-                }
-            } //Gets the average of each day over the month and adds it to the list of averages.
-            
-            for (int i = 23; i >= 0; i--)
-            {
-                Last24Hours[i] = DateTime.Now.AddHours(-i);
-            }
+            var DayTemperature = DataAccess.GetData(AccesableData.DayTemperature, Locations.Enschede) ?? new List<double>();
+            var WeekTemperature = DataAccess.GetData(AccesableData.WeekTemperature, Locations.Enschede) ?? new List<double>();
+            var MonthTemperature = DataAccess.GetData(AccesableData.MonthTemperature, Locations.Enschede) ?? new List<double>();
 
-            for (int i = 7; i >= 1; i--)
+            var DayHumidity = DataAccess.GetData(AccesableData.DayHumidity, Locations.Enschede) ?? new List<double>();
+            var WeekHumidity = DataAccess.GetData(AccesableData.WeekHumidity, Locations.Enschede) ?? new List<double>();
+            var MonthHumidity = DataAccess.GetData(AccesableData.MonthHumidity, Locations.Enschede) ?? new List<double>();
+
+            // Calculate averages safely
+            var HourlyDayTemperatureAverage = CalculateHourlyAverages(DayTemperature, 24);
+            var DailyWeekTemperatureAverage = CalculateDailyAverages(WeekTemperature, 7);
+            var DailyMonthTemperatureAverage = CalculateDailyAverages(MonthTemperature, 30);
+
+            var HourlyDayHumidityAverage = CalculateHourlyAverages(DayHumidity, 24);
+            var DailyWeekHumidityAverage = CalculateDailyAverages(WeekHumidity, 7);
+            var DailyMonthHumidityAverage = CalculateDailyAverages(MonthHumidity, 30);
+
+            // Initialize chart series
+            TemperatureDaySeries = new ISeries[]
             {
-                Last7Days[i%7] = DateTime.Now.AddDays(-i);
-            }
-            
-            for (int i = 29; i >= 0; i--)
-            {
-                Last30Days[i] = DateTime.Now.AddDays(-i);
-            }
-            
-            TemperatureDaySeries =
-            [
                 new LineSeries<double>
                 {
-                    Values = HourlyDayTemperatureAverage,
+                    Values = new ChartValues<double>(HourlyDayTemperatureAverage),
                     Fill = null,
                     Stroke = new SolidColorPaint(SKColors.Red),
                     GeometrySize = 10,
                     Name = "Temperature"
                 }
-            ];
-            
-            TemperatureWeekSeries =
-            [
+            };
+
+            HumidityDaySeries = new ISeries[]
+            {
                 new LineSeries<double>
                 {
-                    Values = DailyWeekTemperatureAverage,
+                    Values = new ChartValues<double>(HourlyDayHumidityAverage),
+                    Fill = null,
+                    Stroke = new SolidColorPaint(SKColors.SkyBlue),
+                    GeometrySize = 10,
+                    Name = "Humidity"
+                }
+            };
+
+            TemperatureWeekSeries = new ISeries[]
+            {
+                new LineSeries<double>
+                {
+                    Values = new ChartValues<double>(DailyWeekTemperatureAverage),
                     Fill = null,
                     Stroke = new SolidColorPaint(SKColors.Red),
                     GeometrySize = 10,
                     Name = "Temperature"
                 }
-            ];
-            
-            TemperatureMonthSeries =
-                [
-                    new LineSeries<double>
-                    {
-                        Values = DailyMonthTemperatureAverage,
-                        Fill = null,
-                        Stroke = new SolidColorPaint(SKColors.Red),
-                        GeometrySize = 10,
-                        Name = "Temperature"
-                    }
-                ];
-            
-            HumidityDaySeries =
-            [
+            };
+
+            HumidityWeekSeries = new ISeries[]
+            {
                 new LineSeries<double>
                 {
-                    Values = HourlyDayHumidityAverage,
+                    Values = new ChartValues<double>(DailyWeekHumidityAverage),
                     Fill = null,
                     Stroke = new SolidColorPaint(SKColors.SkyBlue),
                     GeometrySize = 10,
                     Name = "Humidity"
                 }
-            ];
-            
-            HumidityWeekSeries =
-            [
+            };
+
+            TemperatureMonthSeries = new ISeries[]
+            {
                 new LineSeries<double>
                 {
-                    Values = DailyWeekHumidityAverage,
+                    Values = new ChartValues<double>(DailyMonthTemperatureAverage),
+                    Fill = null,
+                    Stroke = new SolidColorPaint(SKColors.Red),
+                    GeometrySize = 10,
+                    Name = "Temperature"
+                }
+            };
+
+            HumidityMonthSeries = new ISeries[]
+            {
+                new LineSeries<double>
+                {
+                    Values = new ChartValues<double>(DailyMonthHumidityAverage),
                     Fill = null,
                     Stroke = new SolidColorPaint(SKColors.SkyBlue),
                     GeometrySize = 10,
                     Name = "Humidity"
                 }
-            ];
-            
-            HumidityMonthSeries =
-                [
-                    new LineSeries<double>
-                    {
-                        Values = DailyMonthHumidityAverage,
-                        Fill = null,
-                        Stroke = new SolidColorPaint(SKColors.SkyBlue),
-                        GeometrySize = 10,
-                        Name = "Humidity"
-                    }
-                ];
-            
-            XAxesDay =
-            [
+            };
+
+            // Initialize axes
+            XAxesDay = new List<Axis>
+            {
                 new Axis
                 {
                     Labels = Last24Hours.Select(x => x.ToString("HH:mm")).ToArray(),
                     Name = "Time"
                 }
-            ];
-            
-            XAxesWeek =
-            [
+            };
+
+            XAxesWeek = new List<Axis>
+            {
                 new Axis
                 {
                     Labels = Last7Days.Select(x => x.ToString("dd/MM")).ToArray(),
                     Name = "Time"
                 }
-            ];
-            
-            XAxesMonth =
-            [
+            };
+
+            XAxesMonth = new List<Axis>
+            {
                 new Axis
                 {
                     Labels = Last30Days.Select(x => x.ToString("dd/MM")).ToArray(),
                     Name = "Time"
                 }
-            ];
+            };
 
+            // Create location buttons
             foreach (Locations location in Enum.GetValues(typeof(Locations)))
             {
-                Button button = new Button()
+                Button button = new Button
                 {
-                    Content = $"${location}",
+                    Content = location.ToString(),
                     Width = 100,
                     Height = 50
                 };
                 LocationButtons.Add(button);
-                LocationStackPanel.Children.Add(button);
+                LocationStackPanel.Children.Add(button); // Ensure LocationStackPanel is not null
             }
+        }
 
+        private static List<double> CalculateHourlyAverages(List<double> data, int hours)
+        {
+            var averages = new List<double>();
+            for (int i = 0; i < hours; i++)
+            {
+                if (data.Count > i)
+                {
+                    averages.Add(data.GetRange(i * (data.Count / hours), data.Count / hours).Average());
+                }
+                else
+                {
+                    averages.Add(0);
+                }
+            }
+            return averages;
+        }
+
+        private static List<double> CalculateDailyAverages(List<double> data, int days)
+        {
+            var averages = new List<double>();
+            for (int i = 0; i < days; i++)
+            {
+                if (data.Count > i)
+                {
+                    averages.Add(data.GetRange(i * (data.Count / days), data.Count / days).Average());
+                }
+                else
+                {
+                    averages.Add(0);
+                }
+            }
+            return averages;
         }
     }
 }
