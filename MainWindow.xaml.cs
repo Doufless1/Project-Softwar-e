@@ -159,7 +159,7 @@ namespace Weather_App
             {
                 new Axis
                 {
-                    Labels = Last7Days.Select(x => x.ToString("DD/MM")).ToArray(),
+                    Labels = Last7Days.Select(x => x.ToString("dd/MM")).ToArray(),
                     Name = "Date (DD/MM)"
                 }
             };
@@ -168,7 +168,7 @@ namespace Weather_App
             {
                 new Axis
                 {
-                    Labels = Last30Days.Select(x => x.ToString("DD/MM")).ToArray(),
+                    Labels = Last30Days.Select(x => x.ToString("dd/MM")).ToArray(),
                     Name = "Date (DD/MM)"
                 }
             };
