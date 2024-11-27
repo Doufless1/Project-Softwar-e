@@ -1,4 +1,4 @@
-﻿namespace sql_fetcher;
+﻿﻿namespace sql_fetcher;
 
 public class DataAccess
 {

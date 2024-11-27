@@ -1,83 +1,70 @@
 ﻿<Window x:Class="Weather_App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:weatherApp="clr-namespace:Weather_App"
-        xmlns:wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        xmlns:wpf="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView"
+        xmlns:wpf1="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         Title="Weather App" Height="450" Width="800">
-
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20" />
-            <RowDefinition Height="20" />
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="20*" />
+            <RowDefinition Height="20*" />
+            <RowDefinition Height="60*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="15"/>
-            <ColumnDefinition Width="85"/>
+            <ColumnDefinition Width="15*" />
+            <ColumnDefinition Width="85*" />
         </Grid.ColumnDefinitions>
         
-        <TextBlock Grid.Row="0" Grid.Column="1">
-            <!-- Current Location -->
-        </TextBlock>
+        <!-- Current Location Placeholder -->
+        <TextBlock Grid.Row="0" Grid.Column="1" Text="Current Location Placeholder" />
         
+        <!-- StackPanel for Locations -->
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" x:Name="LocationStackPanel">
-            
         </StackPanel>
+        
+        <!-- Temperature and Humidity Info -->
         <StackPanel Grid.Row="1" Grid.Column="1">
-            <!-- Current Temperature -->
             <TextBlock>
-                <Run Text="Current Temperature: "/>
-                <Run Text="{Binding CurrentTemperature}"/>
+                <Run Text="Current Temperature: " />
+                <Run Text="{Binding CurrentTemperature}" />
             </TextBlock>
-            <!-- Current Humidity -->
             <TextBlock>
-                <Run Text="Current Humidity: "/>
-                <Run Text="{Binding CurrentHumidity}"/>
+                <Run Text="Current Humidity: " />
+                <Run Text="{Binding CurrentHumidity}" />
             </TextBlock>
-            <!-- Current Light Intensity -->
         </StackPanel>
-        <!-- <TabControl Grid.Row="2" Grid.Column="1"> -->
-        <!--     ~1~ Temperature Graph @1@ -->
-        <!--     <TabItem Header="Temperature"> -->
-        <!--         <TabControl> -->
-        <!--             <TabItem Header="Day"> -->
-        <!--                 <wpf:CartesianChart -->
-        <!--                     Series="{Binding TemperatureDaySeries}" -->
-        <!--                     XAxis="{Binding XAxesDay}" /> -->
-        <!--             </TabItem> -->
-        <!--             <TabItem Header="Week"> -->
-        <!--                 <wpf:CartesianChart -->
-        <!--                     Series="{Binding TemperatureWeekSeries}" -->
-        <!--                     XAxesWeek="{Binding XAxesWeek}" /> -->
-        <!--             </TabItem> -->
-        <!--             <TabItem Header="Month"> -->
-        <!--                 <wpf:CartesianChart -->
-        <!--                     Series="{Binding TemperatureMonthSeries}" -->
-        <!--                     XAxesMonth="{Binding XAxesMonth}" /> -->
-        <!--             </TabItem> -->
-        <!--         </TabControl> -->
-        <!--     </TabItem> -->
-        <!-- -->
-        <!--     ~1~ Humidity Graph @1@ -->
-        <!--     <TabItem Header="Temperature"> -->
-        <!--         <TabControl> -->
-        <!--             <TabItem Header="Day"> -->
-        <!--                 <wpf:CartesianChart -->
-        <!--                     Series="{Binding HumidityDaySeries}" -->
-        <!--                     XAxes="{Binding XAxesDay}" /> -->
-        <!--             </TabItem> -->
-        <!--             <TabItem Header="Week"> -->
-        <!--                 <wpf:CartesianChart -->
-        <!--                     Series="{Binding HumidityWeekSeries}" -->
-        <!--                     XAxes="{Binding XAxesWeek}" /> -->
-        <!--             </TabItem> -->
-        <!--             <TabItem Header="Month"> -->
-        <!--                 <wpf:CartesianChart -->
-        <!--                     Series="{Binding HumidityMonthSeries}" -->
-        <!--                     XAxes="{Binding XAxesMonth}" /> -->
-        <!--             </TabItem> -->
-        <!--         </TabControl> -->
-        <!--     </TabItem> -->
-        <!-- </TabControl> -->
+        
+        <!-- TabControl for Charts -->
+        <TabControl Grid.Row="2" Grid.Column="1">
+            <!-- Temperature Tab -->
+            <TabItem Header="Temperature">
+                <TabControl>
+                    <TabItem Header="Day">
+                        <wpf1:CartesianChart Series="{Binding TemperatureDaySeries}" XAxes="{Binding XAxesDay}" />
+                    </TabItem>
+                    <TabItem Header="Week">
+                        <wpf1:CartesianChart Series="{Binding TemperatureWeekSeries}" XAxes="{Binding XAxesWeek}" />
+                    </TabItem>
+                    <TabItem Header="Month">
+                        <wpf1:CartesianChart Series="{Binding TemperatureMonthSeries}" XAxes="{Binding XAxesMonth}" />
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            
+            <!-- Humidity Tab -->
+            <TabItem Header="Humidity">
+                <TabControl>
+                    <TabItem Header="Day">
+                        <wpf1:CartesianChart Series="{Binding HumidityDaySeries}" XAxes="{Binding XAxesDay}" />
+                    </TabItem>
+                    <TabItem Header="Week">
+                        <wpf1:CartesianChart Series="{Binding HumidityWeekSeries}" XAxes="{Binding XAxesWeek}" />
+                    </TabItem>
+                    <TabItem Header="Month">
+                        <wpf1:CartesianChart Series="{Binding HumidityMonthSeries}" XAxes="{Binding XAxesMonth}" />
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>
