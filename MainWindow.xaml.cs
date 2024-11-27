@@ -36,6 +36,8 @@ namespace Weather_App
         public DateTime[] Last30Days { get; private set; }
         public double CurrentTemperature { get; set; }
         public double CurrentHumidity { get; set; }
+        
+        public List<string> CurrentLocation { get; set; }
         public List<Button> LocationButtons { get; private set; }
 
         public MainWindow()
@@ -49,7 +51,9 @@ namespace Weather_App
             Last7Days = Enumerable.Range(0, 7).Select(i => DateTime.Now.AddDays(-i)).Reverse().ToArray();
             Last30Days = Enumerable.Range(0, 30).Select(i => DateTime.Now.AddDays(-i)).Reverse().ToArray();
             LocationButtons = new List<Button>();
-
+            CurrentLocation = new List<string>();
+            CurrentLocation.Add(Locations.Enschede.ToString());
+            
             // Fetch data and handle null cases
             CurrentTemperature = DataAccess.GetData(AccesableData.CurrentTemperature, Locations.Enschede)?.FirstOrDefault() ?? 0;
             CurrentHumidity = DataAccess.GetData(AccesableData.CurrentHumidity, Locations.Enschede)?.FirstOrDefault() ?? 0;
@@ -176,14 +180,28 @@ namespace Weather_App
             // Create location buttons
             foreach (Locations location in Enum.GetValues(typeof(Locations)))
             {
+                var current_location = location.ToString();
                 Button button = new Button
                 {
-                    Content = location.ToString(),
+                    Content = current_location,
                     Width = 100,
-                    Height = 50
+                    Height = 50,
+                };
+                button.Click += (sender, args) =>
+                {
+                    if(CurrentLocation.Contains(current_location)) 
+                        CurrentLocation.Remove(current_location);
+                    else 
+                        CurrentLocation.Add(current_location);
+                    
+                    CurrentLocationBlock.Text = "";
+                    foreach(string location in CurrentLocation)
+                    {
+                        CurrentLocationBlock.Text += location + " ";
+                    }
                 };
                 LocationButtons.Add(button);
-                LocationStackPanel.Children.Add(button); // Ensure LocationStackPanel is not null
+                LocationStackPanel.Children.Add(button);
             }
         }
 

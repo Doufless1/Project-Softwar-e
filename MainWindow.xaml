@@ -16,7 +16,7 @@
         </Grid.ColumnDefinitions>
         
         <!-- Current Location Placeholder -->
-        <TextBlock Grid.Row="0" Grid.Column="1" Text="Current Location Placeholder" />
+        <TextBlock Grid.Row="0" Grid.Column="1" x:Name="CurrentLocationBlock" Text="{Binding CurrentLocation}" />
         
         <!-- StackPanel for Locations -->
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" x:Name="LocationStackPanel">
