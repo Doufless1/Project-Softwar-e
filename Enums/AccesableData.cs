@@ -1,4 +1,4 @@
-﻿namespace sql_fetcher;
+﻿namespace enums;
 
 public enum AccesableData
 {

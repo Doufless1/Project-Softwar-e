@@ -1,8 +1,8 @@
 ﻿﻿namespace sql_fetcher;
+ using enums;
 
 public class DataAccess
 {
-    //TODO: Input correct ConnectionString linking to the SQL server
     private static readonly string ConnectionString = 
         "Server=tcp:group13.database.windows.net,1433;" +
         "Database=weather_state;" +
@@ -26,23 +26,23 @@ public class DataAccess
             DataStorage.Add(AccesableData.CurrentLight, location,
                 $"SELECT TOP 1 luminosity FROM weather ORDER BY weather.date DESC");
             DataStorage.Add(AccesableData.DayTemperature, location,
-                 $"SELECT temperature FROM weather WHERE date >= DATEADD(DAY, -1, GETDATE()) ORDER BY date DESC"); 
+                $"SELECT temperature FROM weather WHERE date >= DATEADD(DAY, -1, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC");
             DataStorage.Add(AccesableData.WeekTemperature, location,
-                 $"SELECT temperature FROM weather WHERE date >= DATEADD(DAY, -7, GETDATE()) ORDER BY date DESC");
+                 $"SELECT temperature FROM weather WHERE date >= DATEADD(DAY, -7, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC");
             DataStorage.Add(AccesableData.MonthTemperature, location,
-                 $"SELECT temperature FROM weather WHERE date >= DATEADD(DAY, -30, GETDATE()) ORDER BY date DESC");
+                 $"SELECT temperature FROM weather WHERE date >= DATEADD(DAY, -30, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC");
             DataStorage.Add(AccesableData.DayHumidity, location,
-                $"SELECT humidity FROM weather WHERE date >= DATEADD(DAY, -1, GETDATE()) ORDER BY date DESC"); 
+                $"SELECT humidity FROM weather WHERE date >= DATEADD(DAY, -1, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC"); 
             DataStorage.Add(AccesableData.WeekHumidity, location,
-                $"SELECT humidity FROM weather WHERE date >= DATEADD(DAY, -7, GETDATE()) ORDER BY date DESC");
+                $"SELECT humidity FROM weather WHERE date >= DATEADD(DAY, -7, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC");
             DataStorage.Add(AccesableData.MonthHumidity, location,
-                $"SELECT humidity FROM weather WHERE date >= DATEADD(DAY, -30, GETDATE()) ORDER BY date DESC");
+                $"SELECT humidity FROM weather WHERE date >= DATEADD(DAY, -30, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC");
             DataStorage.Add(AccesableData.DayLight, location,
-                $"SELECT luminosity FROM weather WHERE date >= DATEADD(DAY, -1, GETDATE()) ORDER BY date DESC"); 
+                $"SELECT luminosity FROM weather WHERE date >= DATEADD(DAY, -1, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC"); 
             DataStorage.Add(AccesableData.WeekLight, location,
-                $"SELECT luminosity FROM weather WHERE date >= DATEADD(DAY, -7, GETDATE()) ORDER BY date DESC");
+                $"SELECT luminosity FROM weather WHERE date >= DATEADD(DAY, -7, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC");
             DataStorage.Add(AccesableData.MonthLight, location,
-                $"SELECT luminosity FROM weather WHERE date >= DATEADD(DAY, -30, GETDATE()) ORDER BY date DESC");
+                $"SELECT luminosity FROM weather WHERE date >= DATEADD(DAY, -30, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC");
 
         }
     }

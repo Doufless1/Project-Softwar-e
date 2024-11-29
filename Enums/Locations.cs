@@ -1,9 +1,9 @@
-﻿namespace sql_fetcher;
+﻿namespace enums;
 
 public enum Locations
 {
-    Enschede,
     Wierden,
+    Saxion,
     Gronau,
-    Saxion
+    Own
 }

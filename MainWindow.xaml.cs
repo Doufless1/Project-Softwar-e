@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using LiveCharts;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using sql_fetcher;
+using Backend;
+using enums;
 
 namespace Weather_App
 {
@@ -37,8 +40,9 @@ namespace Weather_App
         public double CurrentTemperature { get; set; }
         public double CurrentHumidity { get; set; }
         
-        public List<string> CurrentLocation { get; set; }
+        public List<Locations> CurrentLocations { get; set; }
         public List<Button> LocationButtons { get; private set; }
+        public Dictionary<Locations, Dictionary<GraphDataEnum, List<double>>> graphData { get; set; }
 
         public MainWindow()
         {
@@ -51,103 +55,123 @@ namespace Weather_App
             Last7Days = Enumerable.Range(0, 7).Select(i => DateTime.Now.AddDays(-i)).Reverse().ToArray();
             Last30Days = Enumerable.Range(0, 30).Select(i => DateTime.Now.AddDays(-i)).Reverse().ToArray();
             LocationButtons = new List<Button>();
-            CurrentLocation = new List<string>();
-            CurrentLocation.Add(Locations.Enschede.ToString());
+            CurrentLocations = new List<Locations>();
+            CurrentLocations.Add(Locations.Wierden);
+            graphData = new Dictionary<Locations, Dictionary<GraphDataEnum, List<double>>>();
             
             // Fetch data and handle null cases
-            CurrentTemperature = DataAccess.GetData(AccesableData.CurrentTemperature, Locations.Enschede)?.FirstOrDefault() ?? 0;
-            CurrentHumidity = DataAccess.GetData(AccesableData.CurrentHumidity, Locations.Enschede)?.FirstOrDefault() ?? 0;
-
-            var DayTemperature = DataAccess.GetData(AccesableData.DayTemperature, Locations.Enschede) ?? new List<double>();
-            var WeekTemperature = DataAccess.GetData(AccesableData.WeekTemperature, Locations.Enschede) ?? new List<double>();
-            var MonthTemperature = DataAccess.GetData(AccesableData.MonthTemperature, Locations.Enschede) ?? new List<double>();
-
-            var DayHumidity = DataAccess.GetData(AccesableData.DayHumidity, Locations.Enschede) ?? new List<double>();
-            var WeekHumidity = DataAccess.GetData(AccesableData.WeekHumidity, Locations.Enschede) ?? new List<double>();
-            var MonthHumidity = DataAccess.GetData(AccesableData.MonthHumidity, Locations.Enschede) ?? new List<double>();
-
-            // Calculate averages safely
-            var HourlyDayTemperatureAverage = CalculateHourlyAverages(DayTemperature, 24);
-            var DailyWeekTemperatureAverage = CalculateDailyAverages(WeekTemperature, 7);
-            var DailyMonthTemperatureAverage = CalculateDailyAverages(MonthTemperature, 30);
-
-            var HourlyDayHumidityAverage = CalculateHourlyAverages(DayHumidity, 24);
-            var DailyWeekHumidityAverage = CalculateDailyAverages(WeekHumidity, 7);
-            var DailyMonthHumidityAverage = CalculateDailyAverages(MonthHumidity, 30);
-
+            //TODO: Add multiple location support for current temperature and humidity
+            CurrentTemperature = DataAccess.GetData(AccesableData.CurrentTemperature, Locations.Wierden)?.FirstOrDefault() ?? 0;
+            CurrentHumidity = DataAccess.GetData(AccesableData.CurrentHumidity, Locations.Wierden)?.FirstOrDefault() ?? 0;
+            
+            // Fetch graph data
+            void RefreshData()
+            {
+                foreach (Locations location in Enum.GetValues(typeof(Locations)))
+                {
+                    graphData[location] = new GraphData().FetchGraphData(location);
+                }
+            }
+            RefreshData();
+            
+            
             // Initialize chart series
-            TemperatureDaySeries = new ISeries[]
+            foreach (Locations location in CurrentLocations)
             {
-                new LineSeries<double>
+                TemperatureDaySeries = new ISeries[]
                 {
-                    Values = new ChartValues<double>(HourlyDayTemperatureAverage),
-                    Fill = null,
-                    Stroke = new SolidColorPaint(SKColors.Red),
-                    GeometrySize = 10,
-                    Name = "Temperature (°C)", 
-                   
-                }
-            };
+                    new LineSeries<double>
+                    {
+                        Values =
+                            new ChartValues<double>(graphData[location][GraphDataEnum.HourlyDayTemperatureAverage]),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = "Temperature (°C)",
+                    }
+                };
+            }
+            
+            foreach (Locations location in CurrentLocations)
+            {
+                HumidityDaySeries = new ISeries[]
+                {
+                    new LineSeries<double>
+                    {
+                        Values =
+                            new ChartValues<double>(graphData[location][GraphDataEnum.HourlyDayHumidityAverage]),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = "Humidity (%)",
+                    }
+                };
+            }
+            
+            foreach (Locations location in CurrentLocations)
+            {
+                TemperatureWeekSeries = new ISeries[]
+                {
+                    new LineSeries<double>
+                    {
+                        Values =
+                            new ChartValues<double>(graphData[location][GraphDataEnum.DailyWeekTemperatureAverage]),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = "Temperature (°C)",
+                    }
+                };
+            }
+            
 
-            HumidityDaySeries = new ISeries[]
+            foreach (Locations location in CurrentLocations)
             {
-                new LineSeries<double>
+                HumidityWeekSeries = new ISeries[]
                 {
-                    Values = new ChartValues<double>(HourlyDayHumidityAverage),
-                    Fill = null,
-                    Stroke = new SolidColorPaint(SKColors.SkyBlue),
-                    GeometrySize = 10,
-                    Name = "Humidity (%)"
-                }
-            };
+                    new LineSeries<double>
+                    {
+                        Values =
+                            new ChartValues<double>(graphData[location][GraphDataEnum.DailyWeekHumidityAverage]),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = "Humidity (%)",
+                    }
+                };
+            }
 
-            TemperatureWeekSeries = new ISeries[]
+            foreach (Locations location in CurrentLocations)
             {
-                new LineSeries<double>
+                TemperatureMonthSeries = new ISeries[]
                 {
-                    Values = new ChartValues<double>(DailyWeekTemperatureAverage),
-                    Fill = null,
-                    Stroke = new SolidColorPaint(SKColors.Red),
-                    GeometrySize = 10,
-                    Name = "Temperature (°C)"
-                }
-            };
+                    new LineSeries<double>
+                    {
+                        Values =
+                            new ChartValues<double>(graphData[location][GraphDataEnum.DailyMonthTemperatureAverage]),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = "Temperature (°C)",
+                    }
+                };
+            }
 
-            HumidityWeekSeries = new ISeries[]
+            foreach (Locations location in CurrentLocations)
             {
-                new LineSeries<double>
+                HumidityMonthSeries = new ISeries[]
                 {
-                    Values = new ChartValues<double>(DailyWeekHumidityAverage),
-                    Fill = null,
-                    Stroke = new SolidColorPaint(SKColors.SkyBlue),
-                    GeometrySize = 10,
-                    Name = "Humidity (%)"
-                }
-            };
-
-            TemperatureMonthSeries = new ISeries[]
-            {
-                new LineSeries<double>
-                {
-                    Values = new ChartValues<double>(DailyMonthTemperatureAverage),
-                    Fill = null,
-                    Stroke = new SolidColorPaint(SKColors.Red),
-                    GeometrySize = 10,
-                    Name = "Temperature (°C)"
-                }
-            };
-
-            HumidityMonthSeries = new ISeries[]
-            {
-                new LineSeries<double>
-                {
-                    Values = new ChartValues<double>(DailyMonthHumidityAverage),
-                    Fill = null,
-                    Stroke = new SolidColorPaint(SKColors.SkyBlue),
-                    GeometrySize = 10,
-                    Name = "Humidity (%)"
-                }
-            };
+                    new LineSeries<double>
+                    {
+                        Values =
+                            new ChartValues<double>(graphData[location][GraphDataEnum.DailyMonthHumidityAverage]),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = "Humidity (%)",
+                    }
+                };
+            }
 
             // Initialize axes
             XAxesDay = new List<Axis>
@@ -180,7 +204,7 @@ namespace Weather_App
             // Create location buttons
             foreach (Locations location in Enum.GetValues(typeof(Locations)))
             {
-                var current_location = location.ToString();
+                var current_location = location;
                 Button button = new Button
                 {
                     Content = current_location,
@@ -189,54 +213,26 @@ namespace Weather_App
                 };
                 button.Click += (sender, args) =>
                 {
-                    if(CurrentLocation.Contains(current_location)) 
-                        CurrentLocation.Remove(current_location);
+                    if(CurrentLocations.Contains(current_location)) 
+                        CurrentLocations.Remove(current_location);
                     else 
-                        CurrentLocation.Add(current_location);
+                        CurrentLocations.Add(current_location);
                     
                     CurrentLocationBlock.Text = "";
-                    foreach(string location in CurrentLocation)
+                    foreach(Locations location in CurrentLocations)
                     {
-                        CurrentLocationBlock.Text += location + " ";
+                        CurrentLocationBlock.Text += location.ToString() + " ";
                     }
+                    if(button.Background == Brushes.LightBlue)
+                        button.Background = Brushes.LightGray;
+                    else button.Background = Brushes.LightBlue;
                 };
                 LocationButtons.Add(button);
                 LocationStackPanel.Children.Add(button);
+                RefreshData();
             }
         }
 
-        private static List<double> CalculateHourlyAverages(List<double> data, int hours)
-        {
-            var averages = new List<double>();
-            for (int i = 0; i < hours; i++)
-            {
-                if (data.Count > i)
-                {
-                    averages.Add(data.GetRange(i * (data.Count / hours), data.Count / hours).Average());
-                }
-                else
-                {
-                    averages.Add(0);
-                }
-            }
-            return averages;
-        }
 
-        private static List<double> CalculateDailyAverages(List<double> data, int days)
-        {
-            var averages = new List<double>();
-            for (int i = 0; i < days; i++)
-            {
-                if (data.Count > i)
-                {
-                    averages.Add(data.GetRange(i * (data.Count / days), data.Count / days).Average());
-                }
-                else
-                {
-                    averages.Add(0);
-                }
-            }
-            return averages;
-        }
     }
 }
