@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using Microsoft.IdentityModel.Tokens;
 
 namespace sql_fetcher
 {
@@ -31,6 +32,8 @@ namespace sql_fetcher
                         {
                             result.Add(reader.GetDouble(0));
                         }
+
+                        if (result.IsNullOrEmpty()) throw new Exception("No data could be fetched for: " + query);
                     }
                 }
 

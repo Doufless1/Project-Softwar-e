@@ -1,6 +1,6 @@
 namespace enums;
 
-public enum GraphDataEnum
+public enum FrontendReadyData
 {
     HourlyDayTemperatureAverage,
     DailyWeekTemperatureAverage,
@@ -12,5 +12,12 @@ public enum GraphDataEnum
     
     HourlyDayLightAverage,
     DailyWeekLightAverage,
-    DailyMonthLightAverage
+    DailyMonthLightAverage,
+    
+    CurrentTemperature,
+    CurrentHumidity,
+    CurrentLight,
+    
+    BatteryStatus,
+    SignalToNoiseRatio
 }

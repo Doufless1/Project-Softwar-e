@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using LiveCharts;
 using LiveChartsCore;
@@ -21,12 +22,16 @@ namespace Weather_App
         private static readonly DataAccess DataAccess = new DataAccess();
 
         // Graph Properties
-        public ISeries[] TemperatureDaySeries { get; private set; }
-        public ISeries[] HumidityDaySeries { get; private set; }
-        public ISeries[] TemperatureWeekSeries { get; private set; }
-        public ISeries[] HumidityWeekSeries { get; private set; }
-        public ISeries[] TemperatureMonthSeries { get; private set; }
-        public ISeries[] HumidityMonthSeries { get; private set; }
+        public List<ISeries> TemperatureDaySeries { get; private set; }
+        public List<ISeries> HumidityDaySeries { get; private set; }
+        public List<ISeries> LightDaySeries { get; set; }
+        public List<ISeries> TemperatureWeekSeries { get; private set; }
+        public List<ISeries> HumidityWeekSeries { get; private set; }
+        public List<ISeries> LightWeekSeries { get; set; }
+
+        public List<ISeries> TemperatureMonthSeries { get; private set; }
+        public List<ISeries> HumidityMonthSeries { get; private set; }
+        public List<ISeries> LightMonthSeries { get; set; }
 
         public List<Axis> XAxesDay { get; set; }
         public List<Axis> XAxesWeek { get; set; }
@@ -39,15 +44,17 @@ namespace Weather_App
         public DateTime[] Last30Days { get; private set; }
         public double CurrentTemperature { get; set; }
         public double CurrentHumidity { get; set; }
+        public double CurrentLight { get; set; }
         
         public List<Locations> CurrentLocations { get; set; }
         public List<Button> LocationButtons { get; private set; }
-        public Dictionary<Locations, Dictionary<GraphDataEnum, List<double>>> graphData { get; set; }
+        public Dictionary<Locations, Dictionary<FrontendReadyData, List<double>>> graphData { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
             DataContext = this;
+            
 
             // Initialize data
             CurrentDay = DateTime.Now.DayOfWeek.ToString();
@@ -57,121 +64,27 @@ namespace Weather_App
             LocationButtons = new List<Button>();
             CurrentLocations = new List<Locations>();
             CurrentLocations.Add(Locations.Wierden);
-            graphData = new Dictionary<Locations, Dictionary<GraphDataEnum, List<double>>>();
             
-            // Fetch data and handle null cases
-            //TODO: Add multiple location support for current temperature and humidity
-            CurrentTemperature = DataAccess.GetData(AccesableData.CurrentTemperature, Locations.Wierden)?.FirstOrDefault() ?? 0;
-            CurrentHumidity = DataAccess.GetData(AccesableData.CurrentHumidity, Locations.Wierden)?.FirstOrDefault() ?? 0;
+            TemperatureDaySeries = new List<ISeries>();
+            HumidityDaySeries = new List<ISeries>();
+            LightDaySeries = new List<ISeries>();
+                
+            TemperatureWeekSeries = new List<ISeries>();
+            HumidityWeekSeries = new List<ISeries>();
+            LightWeekSeries = new List<ISeries>();
+                
+            TemperatureMonthSeries = new List<ISeries>();
+            HumidityMonthSeries = new List<ISeries>();
+            LightMonthSeries = new List<ISeries>();
             
-            // Fetch graph data
-            void RefreshData()
+            GraphData graphDataObject = new GraphData();
+            
+            graphData = new Dictionary<Locations, Dictionary<FrontendReadyData, List<double>>>();
+            foreach (Locations location in Locations.GetValues(typeof(Locations)))
             {
-                foreach (Locations location in Enum.GetValues(typeof(Locations)))
-                {
-                    graphData[location] = new GraphData().FetchGraphData(location);
-                }
+                graphData[location] = graphDataObject.FetchGraphData(location);
             }
             RefreshData();
-            
-            
-            // Initialize chart series
-            foreach (Locations location in CurrentLocations)
-            {
-                TemperatureDaySeries = new ISeries[]
-                {
-                    new LineSeries<double>
-                    {
-                        Values =
-                            new ChartValues<double>(graphData[location][GraphDataEnum.HourlyDayTemperatureAverage]),
-                        Fill = null,
-                        Stroke = new SolidColorPaint(SKColors.Red),
-                        GeometrySize = 10,
-                        Name = "Temperature (°C)",
-                    }
-                };
-            }
-            
-            foreach (Locations location in CurrentLocations)
-            {
-                HumidityDaySeries = new ISeries[]
-                {
-                    new LineSeries<double>
-                    {
-                        Values =
-                            new ChartValues<double>(graphData[location][GraphDataEnum.HourlyDayHumidityAverage]),
-                        Fill = null,
-                        Stroke = new SolidColorPaint(SKColors.Red),
-                        GeometrySize = 10,
-                        Name = "Humidity (%)",
-                    }
-                };
-            }
-            
-            foreach (Locations location in CurrentLocations)
-            {
-                TemperatureWeekSeries = new ISeries[]
-                {
-                    new LineSeries<double>
-                    {
-                        Values =
-                            new ChartValues<double>(graphData[location][GraphDataEnum.DailyWeekTemperatureAverage]),
-                        Fill = null,
-                        Stroke = new SolidColorPaint(SKColors.Red),
-                        GeometrySize = 10,
-                        Name = "Temperature (°C)",
-                    }
-                };
-            }
-            
-
-            foreach (Locations location in CurrentLocations)
-            {
-                HumidityWeekSeries = new ISeries[]
-                {
-                    new LineSeries<double>
-                    {
-                        Values =
-                            new ChartValues<double>(graphData[location][GraphDataEnum.DailyWeekHumidityAverage]),
-                        Fill = null,
-                        Stroke = new SolidColorPaint(SKColors.Red),
-                        GeometrySize = 10,
-                        Name = "Humidity (%)",
-                    }
-                };
-            }
-
-            foreach (Locations location in CurrentLocations)
-            {
-                TemperatureMonthSeries = new ISeries[]
-                {
-                    new LineSeries<double>
-                    {
-                        Values =
-                            new ChartValues<double>(graphData[location][GraphDataEnum.DailyMonthTemperatureAverage]),
-                        Fill = null,
-                        Stroke = new SolidColorPaint(SKColors.Red),
-                        GeometrySize = 10,
-                        Name = "Temperature (°C)",
-                    }
-                };
-            }
-
-            foreach (Locations location in CurrentLocations)
-            {
-                HumidityMonthSeries = new ISeries[]
-                {
-                    new LineSeries<double>
-                    {
-                        Values =
-                            new ChartValues<double>(graphData[location][GraphDataEnum.DailyMonthHumidityAverage]),
-                        Fill = null,
-                        Stroke = new SolidColorPaint(SKColors.Red),
-                        GeometrySize = 10,
-                        Name = "Humidity (%)",
-                    }
-                };
-            }
 
             // Initialize axes
             XAxesDay = new List<Axis>
@@ -213,26 +126,151 @@ namespace Weather_App
                 };
                 button.Click += (sender, args) =>
                 {
-                    if(CurrentLocations.Contains(current_location)) 
+                    if (CurrentLocations.Contains(current_location))
+                    {
                         CurrentLocations.Remove(current_location);
-                    else 
+                        button.Background = Brushes.LightGray;
+                    }
+                    else
+                    {
                         CurrentLocations.Add(current_location);
-                    
+                        button.Background = Brushes.LightBlue;
+                    }
                     CurrentLocationBlock.Text = "";
                     foreach(Locations location in CurrentLocations)
                     {
                         CurrentLocationBlock.Text += location.ToString() + " ";
                     }
-                    if(button.Background == Brushes.LightBlue)
-                        button.Background = Brushes.LightGray;
-                    else button.Background = Brushes.LightBlue;
+                    RefreshData();
+                };
+                
+                MenuItem menuItem = new MenuItem();
+                menuItem.Header = "Battery Status";
+                menuItem.Click += (sender, args) =>
+                {
+                    MessageBox.Show("Battery Status: " +
+                                    graphData[current_location][FrontendReadyData.BatteryStatus].FirstOrDefault());
+                };
+                    
+                MenuItem menuItem2 = new MenuItem();
+                menuItem2.Header = "Signal to Noise Ratio";
+                menuItem2.Click += (sender, args) =>
+                {
+                    MessageBox.Show("Signal to Noise Ratio: " +
+                                    graphData[current_location][FrontendReadyData.SignalToNoiseRatio].FirstOrDefault());
+                };
+                    
+                ContextMenu contextMenu = new ContextMenu();
+                contextMenu.Items.Add(menuItem);
+                contextMenu.Items.Add(menuItem2);
+                
+                button.MouseRightButtonDown += (sender, args) =>
+                {
+                    contextMenu.PlacementTarget = button;
+                    contextMenu.IsOpen = true;
                 };
                 LocationButtons.Add(button);
                 LocationStackPanel.Children.Add(button);
-                RefreshData();
             }
         }
 
+        void RefreshData()
+        {
+            CurrentTemperature = 0;
+            CurrentHumidity = 0;
+            CurrentLight = 0;
+            
+            TemperatureDaySeries.Clear();
+            HumidityDaySeries.Clear();
+            LightDaySeries.Clear();
+                
+            TemperatureWeekSeries.Clear();
+            HumidityWeekSeries.Clear();
+            LightWeekSeries.Clear();
+                
+            TemperatureMonthSeries.Clear();
+            HumidityMonthSeries.Clear();
+            LightMonthSeries.Clear();
+            
+            // Initialize chart series
+            foreach (Locations location in CurrentLocations)
+            {
+                CurrentTemperature = graphData[location][FrontendReadyData.CurrentTemperature].FirstOrDefault();
+                CurrentHumidity = graphData[location][FrontendReadyData.CurrentHumidity].FirstOrDefault();
+                CurrentLight = graphData[location][FrontendReadyData.CurrentLight].FirstOrDefault();
+                
+                TemperatureDaySeries.Add(
+                    new LineSeries<double>
+                    {
+                        Values = new ChartValues<double>(
+                            graphData[location][FrontendReadyData.HourlyDayTemperatureAverage]),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = "Temperature (°C)",
+                    });
 
+                HumidityDaySeries.Add(
+                    new LineSeries<double>
+                    {
+                        Values = new ChartValues<double>(
+                            graphData[location][FrontendReadyData.HourlyDayHumidityAverage]),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = "Humidity (%)",
+                    }
+                );
+
+                TemperatureWeekSeries.Add(
+                    new LineSeries<double>
+                    {
+                        Values =
+                            new ChartValues<double>(graphData[location][FrontendReadyData.DailyWeekTemperatureAverage]),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = "Temperature (°C)",
+                    }
+                );
+                
+                HumidityWeekSeries.Add(
+                    new LineSeries<double>
+                    {
+                        Values =
+                            new ChartValues<double>(graphData[location][FrontendReadyData.DailyWeekHumidityAverage]),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = "Humidity (%)",
+                    }
+                );
+
+                TemperatureMonthSeries.Add(
+                    new LineSeries<double>
+                    {
+                        Values =
+                            new ChartValues<double>(
+                                graphData[location][FrontendReadyData.DailyMonthTemperatureAverage]),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = "Temperature (°C)",
+                    }
+                );
+
+                HumidityMonthSeries.Add(
+                    new LineSeries<double>
+                    {
+                        Values =
+                            new ChartValues<double>(graphData[location][FrontendReadyData.DailyMonthHumidityAverage]),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = "Humidity (%)",
+                    }
+                );
+            }
+        }
     }
 }

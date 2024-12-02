@@ -4,6 +4,5 @@ public enum Locations
 {
     Wierden,
     Saxion,
-    Gronau,
-    Own
+    Gronau
 }

@@ -15,5 +15,8 @@ public enum AccesableData
     CurrentLight,
     DayLight,
     WeekLight,
-    MonthLight
+    MonthLight,
+    
+    BatteryStatus,
+    SignalToNoiseRatio
 }
