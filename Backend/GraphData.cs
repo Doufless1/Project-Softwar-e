@@ -41,25 +41,47 @@ public class GraphData
         CurrentLight = new List<double>();
         BatteryStatus = new List<double>();
         SignalToNoiseRatio = new List<double>();
-        
-        DayTemperature = DataAccess.GetData(AccesableData.DayTemperature, location) ?? new List<double>();
-        WeekTemperature = DataAccess.GetData(AccesableData.WeekTemperature, location) ?? new List<double>();
-        MonthTemperature = DataAccess.GetData(AccesableData.MonthTemperature, location) ?? new List<double>();
 
-        DayHumidity = DataAccess.GetData(AccesableData.DayHumidity, location) ?? new List<double>();
-        WeekHumidity = DataAccess.GetData(AccesableData.WeekHumidity, location) ?? new List<double>();
-        MonthHumidity = DataAccess.GetData(AccesableData.MonthHumidity, location) ?? new List<double>();
+        WeekTemperature = new List<double>();
+        WeekHumidity = new List<double>();
+        WeekLight = new List<double>();
+
+        MonthTemperature = new List<double>();
+        MonthHumidity = new List<double>();
+        MonthLight = new List<double>();
         
-        DayLight = DataAccess.GetData(AccesableData.DayLight, location) ?? new List<double>();
-        WeekLight = DataAccess.GetData(AccesableData.WeekLight, location) ?? new List<double>();
-        MonthLight = DataAccess.GetData(AccesableData.MonthLight, location) ?? new List<double>();
+        DayTemperature = DataAccess.GetData(AccesableData.DayTemperature, 1, location) ?? new List<double>();
+        DayHumidity = DataAccess.GetData(AccesableData.DayHumidity, 1, location) ?? new List<double>();
+        DayLight = DataAccess.GetData(AccesableData.DayLight, 1, location) ?? new List<double>();
+
+        for (int i = 1; i < 31; i++)
+        {
+            List<double> currentTemperatureList = new List<double>();
+            List<double> currentHumidityList = new List<double>();
+            List<double> currentLightList = new List<double>();
+
+            currentTemperatureList = DataAccess.GetData(AccesableData.DayTemperature, i, location);
+            currentHumidityList = DataAccess.GetData(AccesableData.DayHumidity, i, location);
+            currentLightList = DataAccess.GetData(AccesableData.DayLight, i, location);
+
+            if (i < 8)
+            {
+                WeekTemperature.Add(currentTemperatureList.Any() ? currentTemperatureList.Average() : 0);
+                WeekHumidity.Add(currentHumidityList.Any() ? currentHumidityList.Average() : 0);
+                WeekLight.Add(currentLightList.Any() ? currentLightList.Average() : 0);
+            }
+
+            MonthTemperature.Add(currentTemperatureList.Any() ? currentTemperatureList.Average() : 0);
+            MonthHumidity.Add(currentHumidityList.Any() ? currentHumidityList.Average() : 0);
+            MonthLight.Add(currentLightList.Any() ? currentLightList.Average() : 0);
+        }
         
-        CurrentTemperature.Add(DataAccess.GetData(AccesableData.CurrentTemperature, location)?.FirstOrDefault() ?? 0);
-        CurrentHumidity.Add(DataAccess.GetData(AccesableData.CurrentHumidity, location)?.FirstOrDefault() ?? 0);
-        CurrentLight.Add(DataAccess.GetData(AccesableData.CurrentLight, location)?.FirstOrDefault() ?? 0);
+        CurrentTemperature.Add(DataAccess.GetData(AccesableData.CurrentTemperature, 0, location)?.FirstOrDefault() ?? 0);
+        CurrentHumidity.Add(DataAccess.GetData(AccesableData.CurrentHumidity, 0, location)?.FirstOrDefault() ?? 0);
+        CurrentLight.Add(DataAccess.GetData(AccesableData.CurrentLight, 0, location)?.FirstOrDefault() ?? 0);
         
-        BatteryStatus.Add(DataAccess.GetData(AccesableData.BatteryStatus, location)?.FirstOrDefault() ?? 0);
-        SignalToNoiseRatio.Add(DataAccess.GetData(AccesableData.SignalToNoiseRatio, location)?.FirstOrDefault() ?? 0);
+        BatteryStatus.Add(DataAccess.GetData(AccesableData.BatteryStatus, 0, location)?.FirstOrDefault() ?? 0);
+        SignalToNoiseRatio.Add(DataAccess.GetData(AccesableData.SignalToNoiseRatio, 0, location)?.FirstOrDefault() ?? 0);
         
         // Calculate averages safely
         List<double>? hourlyDayTemperatureAverage = CalculateAverages(DayTemperature, 24);

@@ -9,6 +9,7 @@ public class DataStorage
     public List<List<double>> Data { get; private set; }
     private List<string> Query { get; set; }
     public List<Locations> Location { get; private set; }
+    public List<int> DayFromNow { get; private set;  }
     private readonly DataFetcher _dataFetcher;
     
     public DataStorage(DataFetcher dataFetcher) //Initialize components
@@ -18,9 +19,10 @@ public class DataStorage
         Location = new List<Locations>();
         Query = new List<string>();
         Data = new List<List<double>>();
+        DayFromNow = new List<int>();
     }
     
-    public void Add (AccesableData name, Locations location, string query) //This function adds a query to the list of queries to be fetched with corresponding name and fetches the data once.
+    public void Add (AccesableData name, int dayFromNow, Locations location, string query) //This function adds a query to the list of queries to be fetched with corresponding name and fetches the data once.
     {
         if (query.IsNullOrEmpty())
         {
@@ -33,6 +35,7 @@ public class DataStorage
             Location.Add(location);
             Query.Add(query);
             Data.Add(_dataFetcher.FetchData(query));
+            DayFromNow.Add(dayFromNow);
         }
         catch
         {
