@@ -17,6 +17,13 @@ public enum AccesableData
     WeekLight,
     MonthLight,
     
-    BatteryStatus,
-    SignalToNoiseRatio
+    CurrentPressure,
+    DayPressure,
+    WeekPressure,
+    MonthPressure,
+    
+    BatteryVoltage,
+    SignalToNoiseRatio,
+    ModelId,
+    BatteryPercentage
 }

@@ -1,11 +1,11 @@
-﻿﻿namespace sql_fetcher;
+﻿﻿﻿namespace sql_fetcher;
  using enums;
 
 public class DataAccess
 {
     private static readonly string ConnectionString = 
         "Server=tcp:group13.database.windows.net,1433;" +
-        "Database=weather_state_old;" +
+        "Database=weather_state;" +
         "User ID=cloudadmin;" +
         "Password=Group13pass;" +
         "Encrypt=True;" +
@@ -16,8 +16,6 @@ public class DataAccess
 
     public DataAccess() //Initializes queries in DataStorage.cs with the queries to be fetched
     {
-        //TODO: Add all the queries for all the available options in AccesableData.cs
-        //TODO: Clean this up to current_day, current_day - 1, current_day - 2, etc. Current version requires a lot of data to be fetched and is taking a long time. Also it's not precise.
         foreach (Locations location in Enum.GetValues(typeof(Locations)))
         {
             //Current datapoints
@@ -27,39 +25,32 @@ public class DataAccess
                 $"SELECT TOP 1 humidity FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
             DataStorage.Add(AccesableData.CurrentLight, 0, location,
                 $"SELECT TOP 1 luminosity FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
-            DataStorage.Add(AccesableData.BatteryStatus, 0, location,
-                $"SELECT TOP 1 battery_voltage FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND battery_voltage IS NOT NULL ORDER BY weather.date DESC");
-            DataStorage.Add(AccesableData.SignalToNoiseRatio, 0, location,
-                $"SELECT TOP 1 SNR FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND SNR IS NOT NULL ORDER BY weather.date DESC");
+            DataStorage.Add(AccesableData.CurrentLight, 0, location,
+                $"SELECT TOP 1 luminosity FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
+            DataStorage.Add(AccesableData.CurrentPressure, 0, location,
+                $"SELECT TOP 1 pressure FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
+
+            DataStorage.Add(AccesableData.BatteryVoltage, 0, location,
+                $"SELECT battery_voltage FROM dbo.device WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND battery_voltage IS NOT NULL");   
+            DataStorage.Add(AccesableData.BatteryPercentage, 0, location,
+                $"SELECT battery_percentage FROM dbo.device WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND battery_percentage IS NOT NULL");   
+
             
             //Past datapoints
             for (int i = 1; i < 31; i++)
             {
                 // Generate date range for the query
-                string dateRangeQuery = $"BETWEEN DATEADD(DAY, -{i + 1}, GETDATE()) AND DATEADD(DAY, -{i}, GETDATE())";
+                string dateRangeQuery = $"BETWEEN DATEADD(DAY, -{i}, GETDATE()) AND DATEADD(DAY, -{i - 1}, GETDATE())";
 
                 DataStorage.Add(AccesableData.DayTemperature, i, location,
-                    $"SELECT temperature FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
+                    $"SELECT temperature FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}' AND temperature IS NOT NULL");
                 DataStorage.Add(AccesableData.DayHumidity, i, location,
-                    $"SELECT humidity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
+                    $"SELECT humidity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}' AND humidity IS NOT NULL");
                 DataStorage.Add(AccesableData.DayLight, i, location,
-                    $"SELECT luminosity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
+                    $"SELECT luminosity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}' AND luminosity IS NOT NULL");
+                DataStorage.Add(AccesableData.DayPressure, i, location,
+                    $"SELECT pressure FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}' AND pressure IS NOT NULL");
             }
-
-
-            // DataStorage.Add(AccesableData.WeekTemperature, location,
-            //      $"SELECT temperature FROM weather WHERE date >= DATEADD(DAY, -7, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC");
-            // DataStorage.Add(AccesableData.MonthTemperature, location,
-            //      $"SELECT temperature FROM weather WHERE date >= DATEADD(DAY, -30, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC");
-            // DataStorage.Add(AccesableData.WeekHumidity, location,
-            //     $"SELECT humidity FROM weather WHERE date >= DATEADD(DAY, -7, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC");
-            // DataStorage.Add(AccesableData.MonthHumidity, location,
-            //     $"SELECT humidity FROM weather WHERE date >= DATEADD(DAY, -30, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC");
-            // DataStorage.Add(AccesableData.WeekLight, location,
-            //     $"SELECT luminosity FROM weather WHERE date >= DATEADD(DAY, -7, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC");
-            // DataStorage.Add(AccesableData.MonthLight, location,
-            //     $"SELECT luminosity FROM weather WHERE date >= DATEADD(DAY, -30, GETDATE()) AND deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY date DESC");
-            
         }
     }
 

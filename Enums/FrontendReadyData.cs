@@ -14,10 +14,17 @@ public enum FrontendReadyData
     DailyWeekLightAverage,
     DailyMonthLightAverage,
     
+    HourlyDayPressureAverage,
+    DailyWeekPressureAverage,
+    DailyMonthPressureAverage,
+    
     CurrentTemperature,
     CurrentHumidity,
     CurrentLight,
+    CurrentPressure,
     
-    BatteryStatus,
+    BatteryVoltage,
+    BatteryPercentage,
+    ModelId,
     SignalToNoiseRatio
 }

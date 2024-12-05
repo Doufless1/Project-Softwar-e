@@ -64,6 +64,36 @@
                     </TabItem>
                 </TabControl>
             </TabItem>
+            
+            <!-- Luminosity Tab -->
+            <TabItem Header="Luminosity">
+                <TabControl>
+                    <TabItem Header="Day">
+                        <wpf1:CartesianChart Series="{Binding LightDaySeries}" XAxes="{Binding XAxesDay}" />
+                    </TabItem>
+                    <TabItem Header="Week">
+                        <wpf1:CartesianChart Series="{Binding LightWeekSeries}" XAxes="{Binding XAxesWeek}" />
+                    </TabItem>
+                    <TabItem Header="Month">
+                        <wpf1:CartesianChart Series="{Binding LightMonthSeries}" XAxes="{Binding XAxesMonth}" />
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            
+            <!-- Pressure Tab -->
+            <TabItem Header="Air Pressure">
+                <TabControl>
+                    <TabItem Header="Day">
+                        <wpf1:CartesianChart Series="{Binding PressureDaySeries}" XAxes="{Binding XAxesDay}" />
+                    </TabItem>
+                    <TabItem Header="Week">
+                        <wpf1:CartesianChart Series="{Binding PressureWeekSeries}" XAxes="{Binding XAxesWeek}" />
+                    </TabItem>
+                    <TabItem Header="Month">
+                        <wpf1:CartesianChart Series="{Binding PressureMonthSeries}" XAxes="{Binding XAxesMonth}" />
+                    </TabItem>
+                </TabControl>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>
