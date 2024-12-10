@@ -1,69 +1,111 @@
-﻿﻿﻿namespace sql_fetcher;
- using enums;
+﻿using System;
+using System.Collections.Generic;
+using enums;
 
-public class DataAccess
+namespace sql_fetcher
 {
-    private static readonly string ConnectionString = 
-        "Server=tcp:group13.database.windows.net,1433;" +
-        "Database=weather_state;" +
-        "User ID=cloudadmin;" +
-        "Password=Group13pass;" +
-        "Encrypt=True;" +
-        "TrustServerCertificate=False;" +
-        "Connection Timeout=30;";
-    private static readonly DataFetcher DataFetcher = new DataFetcher(ConnectionString);
-    private static readonly DataStorage DataStorage = new DataStorage(DataFetcher);
-
-    public DataAccess() //Initializes queries in DataStorage.cs with the queries to be fetched
+    public class DataAccess
     {
-        foreach (Locations location in Enum.GetValues(typeof(Locations)))
+        private static readonly string ConnectionString =
+            "Server=tcp:group13.database.windows.net,1433;" +
+            "Database=weather_state;" +
+            "User ID=cloudadmin;" +
+            "Password=Group13pass;" +
+            "Encrypt=True;" +
+            "TrustServerCertificate=False;" +
+            "Connection Timeout=30;";
+
+        private static readonly DataFetcher DataFetcher = new DataFetcher(ConnectionString);
+        private static readonly DataStorage DataStorage = new DataStorage(DataFetcher);
+
+        public DataAccess()
         {
-            ILocationEnum locationEnum = new LocationEnum(location);
-            //Current datapoints
-            DataStorage.Add(AccesableData.CurrentTemperature, 0, locationEnum,
-                $"SELECT TOP 1 temperature FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
-            DataStorage.Add(AccesableData.CurrentHumidity, 0, locationEnum,
-                $"SELECT TOP 1 humidity FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
-            DataStorage.Add(AccesableData.CurrentLight, 0, locationEnum,
-                $"SELECT TOP 1 luminosity FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
-            DataStorage.Add(AccesableData.CurrentLight, 0, locationEnum,
-                $"SELECT TOP 1 luminosity FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
-            DataStorage.Add(AccesableData.CurrentPressure, 0, locationEnum,
-                $"SELECT TOP 1 pressure FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
-
-            DataStorage.Add(AccesableData.BatteryVoltage, 0, locationEnum,
-                $"SELECT battery_voltage FROM dbo.device WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND battery_voltage IS NOT NULL");   
-            DataStorage.Add(AccesableData.BatteryPercentage, 0, locationEnum,
-                $"SELECT battery_percentage FROM dbo.device WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND battery_percentage IS NOT NULL");   
-
-            
-            //Past datapoints
-            for (int i = 1; i < 31; i++)
+            try
             {
-                // Generate date range for the query
-                string dateRangeQuery = $"BETWEEN DATEADD(DAY, -{i}, GETDATE()) AND DATEADD(DAY, -{i - 1}, GETDATE())";
+                // Initialize queries in DataStorage.cs with the queries to be fetched
+                foreach (Locations location in Enum.GetValues(typeof(Locations)))
+                {
+                    try
+                    {
+                        // Current datapoints
+                        DataStorage.Add(AccesableData.CurrentTemperature, 0, location,
+                            $"SELECT TOP 1 temperature FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
+                        DataStorage.Add(AccesableData.CurrentHumidity, 0, location,
+                            $"SELECT TOP 1 humidity FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
+                        DataStorage.Add(AccesableData.CurrentLight, 0, location,
+                            $"SELECT TOP 1 luminosity FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
+                        DataStorage.Add(AccesableData.BatteryPercentage, 0, location,
+                            $@"SELECT d.battery_percentage
+                       FROM dbo.device d
+                       where d.deviceID LIKE '%{location.ToString().ToLower()}'");
+                        DataStorage.Add(AccesableData.SignalToNoiseRatio, 0, location,
+                            $"SELECT TOP 1 avg_rssi FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND avg_rssi IS NOT NULL ORDER BY deviceID ASC");
 
-                DataStorage.Add(AccesableData.DayTemperature, i, locationEnum,
-                    $"SELECT temperature FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}' AND temperature IS NOT NULL");
-                DataStorage.Add(AccesableData.DayHumidity, i, locationEnum,
-                    $"SELECT humidity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}' AND humidity IS NOT NULL");
-                DataStorage.Add(AccesableData.DayLight, i, locationEnum,
-                    $"SELECT luminosity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}' AND luminosity IS NOT NULL");
-                DataStorage.Add(AccesableData.DayPressure, i, locationEnum,
-                    $"SELECT pressure FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}' AND pressure IS NOT NULL");
+                        // Past datapoints
+                        for (int i = 1; i < 31; i++)
+                        {
+                            try
+                            {
+                                // Generate date range for the query
+                                string dateRangeQuery = $"BETWEEN DATEADD(DAY, -{i}, GETDATE()) AND DATEADD(DAY, -{i - 1}, GETDATE())";
+
+                                DataStorage.Add(AccesableData.DayTemperature, i, location,
+                                    $"SELECT temperature FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
+                                DataStorage.Add(AccesableData.DayHumidity, i, location,
+                                    $"SELECT humidity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
+                                DataStorage.Add(AccesableData.DayLight, i, location,
+                                    $"SELECT luminosity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
+                                DataStorage.Add(AccesableData.DayPressure, i, location,
+                                    $"SELECT pressure FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
+                                DataStorage.Add(AccesableData.SignalToNoiseRatio, 0, location,
+                                    $"SELECT TOP 1 avg_rssi FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND avg_rssi IS NOT NULL ORDER BY deviceID ASC");
+
+                            }
+                            catch (Exception ex)
+                            {
+                                LogException($"Error while adding past data for day {i} and location {location}", ex);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogException($"Error while adding current data for location {location}", ex);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogException("Error in DataAccess constructor", ex);
+                throw new InvalidOperationException("Failed to initialize data access.", ex);
             }
         }
-    }
 
-    public List<double> GetData(AccesableData name, int dayFromNow, ILocationEnum location) //Gets returns data (List<string>) of the name requested (i.e. current_temperature, current_humidity)
-    {
-        for(int i = 0; i < DataStorage.Name.Count; i++)
+        public List<double> GetData(AccesableData name, int dayFromNow, Locations location)
         {
-            if (DataStorage.Name[i] == name && DataStorage.Location[i] == location && DataStorage.DayFromNow[i] == dayFromNow)
+            try
             {
-                return DataStorage.Data[i];
+                for (int i = 0; i < DataStorage.Name.Count; i++)
+                {
+                    if (DataStorage.Name[i] == name && DataStorage.Location[i] == location &&
+                        DataStorage.DayFromNow[i] == dayFromNow)
+                    {
+                        return DataStorage.Data[i];
+                    }
+                }
             }
+            catch (Exception ex)
+            {
+                LogException($"Error while fetching data for {name}, dayFromNow: {dayFromNow}, location: {location}", ex);
+            }
+
+            // Return an empty list if no data found or an error occurred
+            return new List<double>();
         }
-        return new List<double>();
+
+        private void LogException(string context, Exception ex)
+        {
+            // Log exception with context
+            Console.WriteLine($"{context}: {ex.Message}\n{ex.StackTrace}");
+        }
     }
 }

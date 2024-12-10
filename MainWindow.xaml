@@ -14,11 +14,48 @@
             <ColumnDefinition Width="85*" />
         </Grid.ColumnDefinitions>
         
+        
+        
         <!-- Current Location Placeholder -->
-        <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" x:Name="CurrentLocationBlock" />
+        <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" x:Name="CurrentLocationBlock"/>
+        
         
         <!-- StackPanel for Locations -->
-        <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="LocationStackPanel"></StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" x:Name="LocationStackPanel">
+        </StackPanel>
+        
+        <!-- Temperature and Humidity Info -->
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            <TextBlock>
+                <Run Text="Current Temperature: " />
+                <Run Text="{Binding CurrentTemperature}" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="Current Humidity: " />
+                <Run Text="{Binding CurrentHumidity}" />
+            </TextBlock>
+            <TextBlock FontSize = "16" FontWeight="Bold">
+                <Run Text="{Binding SelectedBatteryPercentageText,  Mode=OneWay}" />
+                </TextBlock>
+            
+            
+             <!-- Battery Visual Representation -->
+            <Grid Width="150" Height="40" Background="LightGray" Margin="5">
+                <!-- Battery Bar -->
+                <Rectangle x:Name="BatteryLevel" 
+                           Width="{Binding BatteryWidth, Mode=OneWay}" 
+                           Fill="{Binding BatteryColor, Mode=OneWay}" 
+                           HorizontalAlignment="Left" 
+                           Height="40" />
+                <!-- Battery Cap -->
+                <Rectangle Width="15" 
+                           HorizontalAlignment="Right" 
+                           Fill="Black" 
+                           Height="20" 
+                           VerticalAlignment="Center" />
+            </Grid>
+        </StackPanel>
+     
         
         <!-- TabControl for Charts -->
         <TabControl Grid.Row="2" Grid.Column="1">

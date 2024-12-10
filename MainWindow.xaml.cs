@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using Windows.Devices.SmartCards;
 using LiveCharts;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
@@ -17,7 +17,7 @@ using enums;
 
 namespace Weather_App
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private readonly int DatapointsPerHour = 1; // Placeholder
         private static readonly DataAccess DataAccess = new DataAccess();
@@ -27,16 +27,19 @@ namespace Weather_App
         public List<ISeries> HumidityDaySeries { get; private set; }
         public List<ISeries> LightDaySeries { get; set; }
         public List<ISeries> PressureDaySeries { get; set; }
-        
+        public List<ISeries> LuminosityDaySeries { get; set; }
+
         public List<ISeries> TemperatureWeekSeries { get; private set; }
         public List<ISeries> HumidityWeekSeries { get; private set; }
         public List<ISeries> LightWeekSeries { get; set; }
         public List<ISeries> PressureWeekSeries { get; set; }
+        public List<ISeries> LuminosityWeekSeries { get; set; }
 
         public List<ISeries> TemperatureMonthSeries { get; private set; }
         public List<ISeries> HumidityMonthSeries { get; private set; }
         public List<ISeries> LightMonthSeries { get; set; }
         public List<ISeries> PressureMonthSeries { get; set; }
+        public List<ISeries> LuminosityMonthSeries { get; set; }
 
         public List<Axis> XAxesDay { get; set; }
         public List<Axis> XAxesWeek { get; set; }
@@ -51,21 +54,81 @@ namespace Weather_App
         public double CurrentHumidity { get; set; }
         public double CurrentLight { get; set; }
         public double CurrentPressure { get; set; }
-        
-        public double CurrentBatteryPercentage { get; set; }
+
+
         public double CurrentSignalToNoiseRatio { get; set; }
         public double CurrentModelId { get; set; }
         public double CurrentBatteryVoltage { get; set; }
         
+        public double CurrentBatteryPercentage { get; set; }
+
         public List<Locations> CurrentLocations { get; set; }
         public List<Button> LocationButtons { get; private set; }
         public Dictionary<Locations, Dictionary<FrontendReadyData, List<double>>> graphData { get; set; }
+        public event PropertyChangedEventHandler? PropertyChanged;
+        
+        private double _selectedBatteryPercentage;
+        
+        private double _batteryWidth;
+        public double BatteryWidth
+        {
+            get => _batteryWidth;
+            set
+            {
+                _batteryWidth = value;
+                RaisePropertyChanged(nameof(BatteryWidth));
+            }
+        }
+        
+        private Brush _batteryColor = Brushes.Green;
+        public Brush BatteryColor
+        {
+            get => _batteryColor;
+            set
+            {
+                _batteryColor = value;
+                RaisePropertyChanged(nameof(BatteryColor));
+            }
+        }
 
-        public MainWindow()
+// Helper Method to Update Color
+        private void UpdateBatteryColor(double percentage)
+        {
+            if (percentage > 75)
+                BatteryColor = Brushes.Green;
+            else if (percentage > 50)
+                BatteryColor = Brushes.Yellow;
+            else if (percentage > 25)
+                BatteryColor = Brushes.Orange;
+            else
+                BatteryColor = Brushes.Red;
+        }
+
+        public double SelectedBatteryPercentage
+        {
+            get => _selectedBatteryPercentage;
+            set
+            {
+               
+                    _selectedBatteryPercentage = value;
+                    RaisePropertyChanged(nameof(SelectedBatteryPercentage));
+                    RaisePropertyChanged(nameof(SelectedBatteryPercentageText));
+                    
+                    BatteryWidth = (_selectedBatteryPercentage / 100) * 100; // Max width of 80
+                    UpdateBatteryColor(_selectedBatteryPercentage);
+            }
+        }
+
+        public string SelectedBatteryPercentageText => $"{SelectedBatteryPercentage:F2}%";
+        
+    
+
+
+    public MainWindow()
         {
             InitializeComponent();
             DataContext = this;
-            
+            SelectedBatteryPercentage = 50;
 
             // Initialize data
             CurrentDay = DateTime.Now.DayOfWeek.ToString();
@@ -75,27 +138,32 @@ namespace Weather_App
             LocationButtons = new List<Button>();
             CurrentLocations = new List<Locations>();
             CurrentLocations.Add(Locations.Wierden);
-            
+
             TemperatureDaySeries = new List<ISeries>();
             HumidityDaySeries = new List<ISeries>();
             LightDaySeries = new List<ISeries>();
             PressureDaySeries = new List<ISeries>();
-                
+
             TemperatureWeekSeries = new List<ISeries>();
             HumidityWeekSeries = new List<ISeries>();
             LightWeekSeries = new List<ISeries>();
             PressureWeekSeries = new List<ISeries>();
-                
+
             TemperatureMonthSeries = new List<ISeries>();
             HumidityMonthSeries = new List<ISeries>();
             LightMonthSeries = new List<ISeries>();
             PressureMonthSeries = new List<ISeries>();
-            
+
             GraphData graphDataObject = new GraphData();
-            
+
             graphData = new Dictionary<Locations, Dictionary<FrontendReadyData, List<double>>>();
-            Enum.GetValues(typeof(Locations)).Cast<Locations>().Select(location => new LocationEnum(location)).ToList().ForEach(location => graphData[location.GetLocationEnum()] = new Dictionary<FrontendReadyData, List<double>>());
+            foreach (Locations location in Locations.GetValues(typeof(Locations)))
+            {
+                graphData[location] = graphDataObject.FetchGraphData(location);
+            }
+
             RefreshData();
+            
 
             // Initialize axes
             XAxesDay = new List<Axis>
@@ -125,6 +193,7 @@ namespace Weather_App
                 }
             };
 
+            // Create location buttons
             // Create location buttons
             foreach (Locations location in Enum.GetValues(typeof(Locations)))
             {
@@ -168,10 +237,20 @@ namespace Weather_App
                 batteryStatus.Header = "Battery Status";
                 batteryStatus.Click += (sender, args) =>
                 {
-                    MessageBox.Show("Battery Status: " +
-                                    graphData[current_location][FrontendReadyData.BatteryVoltage].FirstOrDefault());
+                    if (graphData[current_location].ContainsKey(FrontendReadyData.BatteryPercentage))
+                    {
+                        SelectedBatteryPercentage = graphData[current_location][FrontendReadyData.BatteryPercentage].FirstOrDefault();
+                    }
+                    else
+                    {
+                        SelectedBatteryPercentage = 0; // Default value
+                    }
+
+                    Console.WriteLine($"This is the battery %: {SelectedBatteryPercentage}");
+                    MessageBox.Show($"Battery Percentage for {current_location}: {SelectedBatteryPercentage:F2}%", "Battery Percentage", MessageBoxButton.OK, MessageBoxImage.Information);
                 };
-                    
+                
+
                 MenuItem snr = new MenuItem();
                 snr.Header = "Signal to Noise Ratio";
                 snr.Click += (sender, args) =>
@@ -179,11 +258,11 @@ namespace Weather_App
                     MessageBox.Show("Signal to Noise Ratio: " +
                                     graphData[current_location][FrontendReadyData.SignalToNoiseRatio].FirstOrDefault());
                 };
-                
+
                 ContextMenu contextMenu = new ContextMenu();
                 contextMenu.Items.Add(batteryStatus);
                 contextMenu.Items.Add(snr);
-                
+
                 button.MouseRightButtonDown += (sender, args) =>
                 {
                     contextMenu.PlacementTarget = button;
@@ -193,34 +272,41 @@ namespace Weather_App
                 LocationStackPanel.Children.Add(button);
             }
         }
-
+        
+    
+        protected void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        
         void RefreshData()
         {
             CurrentTemperature = 0;
             CurrentHumidity = 0;
             CurrentLight = 0;
             CurrentPressure = 0;
-            
+
             CurrentBatteryPercentage = 0;
+            SelectedBatteryPercentage = 0;
             CurrentSignalToNoiseRatio = 0;
             CurrentModelId = 0;
             CurrentBatteryVoltage = 0;
-            
+
             TemperatureDaySeries.Clear();
             HumidityDaySeries.Clear();
             LightDaySeries.Clear();
             PressureDaySeries.Clear();
-                
+
             TemperatureWeekSeries.Clear();
             HumidityWeekSeries.Clear();
             LightWeekSeries.Clear();
             PressureWeekSeries.Clear();
-                
+
             TemperatureMonthSeries.Clear();
             HumidityMonthSeries.Clear();
             LightMonthSeries.Clear();
             PressureMonthSeries.Clear();
-            
+
             // Initialize chart series
             foreach (Locations location in CurrentLocations)
             {
@@ -228,12 +314,12 @@ namespace Weather_App
                 CurrentHumidity = graphData[location][FrontendReadyData.CurrentHumidity].FirstOrDefault();
                 CurrentLight = graphData[location][FrontendReadyData.CurrentLight].FirstOrDefault();
                 CurrentPressure = graphData[location][FrontendReadyData.CurrentPressure].FirstOrDefault();
-                
+
                 CurrentBatteryPercentage = graphData[location][FrontendReadyData.BatteryPercentage].FirstOrDefault();
                 CurrentSignalToNoiseRatio = graphData[location][FrontendReadyData.SignalToNoiseRatio].FirstOrDefault();
                 CurrentModelId = graphData[location][FrontendReadyData.ModelId].FirstOrDefault();
                 CurrentBatteryVoltage = graphData[location][FrontendReadyData.BatteryVoltage].FirstOrDefault();
-                
+
                 TemperatureDaySeries.Add(
                     new LineSeries<double>
                     {
@@ -242,7 +328,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Temperature {location.ToString()} (°C)",
+                        Name = $"Temperature {location} (°C)",
                     });
 
                 HumidityDaySeries.Add(
@@ -253,10 +339,10 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Humidity {location.ToString()} (%)",
+                        Name = $"Humidity {location} (%)",
                     }
                 );
-                
+
                 PressureDaySeries.Add(
                     new LineSeries<double>
                     {
@@ -265,10 +351,10 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Pressure {location.ToString()} (Pa)",
+                        Name = $"Pressure {location} (Pa)",
                     }
                 );
-                
+
                 LightDaySeries.Add(
                     new LineSeries<double>
                     {
@@ -277,7 +363,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Luminosity {location.ToString()} (%)",
+                        Name = $"Luminosity {location} (lux)",
                     }
                 );
 
@@ -289,10 +375,10 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Temperature {location.ToString()} (°C)",
+                        Name = $"Temperature {location} (°C)",
                     }
                 );
-                
+
                 HumidityWeekSeries.Add(
                     new LineSeries<double>
                     {
@@ -301,10 +387,10 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Humidity {location.ToString()} (%)",
+                        Name = $"Humidity {location} (%)",
                     }
                 );
-                
+
                 PressureWeekSeries.Add(
                     new LineSeries<double>
                     {
@@ -313,10 +399,10 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Pressure {location.ToString()} (Pa)",
+                        Name = $"Pressure {location} (Pa)",
                     }
                 );
-                
+
                 LightWeekSeries.Add(
                     new LineSeries<double>
                     {
@@ -325,7 +411,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Luminosity {location.ToString()} (%)",
+                        Name = $"Luminosity {location} (lux)",
                     }
                 );
 
@@ -338,7 +424,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Temperature {location.ToString()} (°C)",
+                        Name = $"Temperature {location} (°C)",
                     }
                 );
 
@@ -350,10 +436,10 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Humidity {location.ToString()} (%)",
+                        Name = $"Humidity {location} (%)",
                     }
                 );
-                
+
                 LightMonthSeries.Add(
                     new LineSeries<double>
                     {
@@ -362,10 +448,10 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Luminosity {location.ToString()} (%)",
+                        Name = $"Luminosity {location} (lux)",
                     }
                 );
-                
+
                 PressureMonthSeries.Add(
                     new LineSeries<double>
                     {
@@ -374,7 +460,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Pressure {location.ToString()} (Pa)",
+                        Name = $"Pressure {location} (Pa)",
                     }
                 );
             }
