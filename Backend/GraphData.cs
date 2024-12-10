@@ -145,7 +145,7 @@ public class GraphData
             { FrontendReadyData.CurrentPressure, CurrentPressure},
             {FrontendReadyData.CurrentLight, CurrentLight},
             {FrontendReadyData.BatteryVoltage, BatteryVoltage},
-            {FrontendReadyData.BatteryPercentage, BatteryVoltage},
+            {FrontendReadyData.BatteryPercentage, BatteryPercentage},
             {FrontendReadyData.ModelId, ModelID},
             {FrontendReadyData.SignalToNoiseRatio, SignalToNoiseRatio}
         };
