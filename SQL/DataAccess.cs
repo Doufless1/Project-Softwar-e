@@ -18,21 +18,22 @@ public class DataAccess
     {
         foreach (Locations location in Enum.GetValues(typeof(Locations)))
         {
+            ILocationEnum locationEnum = new LocationEnum(location);
             //Current datapoints
-            DataStorage.Add(AccesableData.CurrentTemperature, 0, location,
+            DataStorage.Add(AccesableData.CurrentTemperature, 0, locationEnum,
                 $"SELECT TOP 1 temperature FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
-            DataStorage.Add(AccesableData.CurrentHumidity, 0, location,
+            DataStorage.Add(AccesableData.CurrentHumidity, 0, locationEnum,
                 $"SELECT TOP 1 humidity FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
-            DataStorage.Add(AccesableData.CurrentLight, 0, location,
+            DataStorage.Add(AccesableData.CurrentLight, 0, locationEnum,
                 $"SELECT TOP 1 luminosity FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
-            DataStorage.Add(AccesableData.CurrentLight, 0, location,
+            DataStorage.Add(AccesableData.CurrentLight, 0, locationEnum,
                 $"SELECT TOP 1 luminosity FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
-            DataStorage.Add(AccesableData.CurrentPressure, 0, location,
+            DataStorage.Add(AccesableData.CurrentPressure, 0, locationEnum,
                 $"SELECT TOP 1 pressure FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
 
-            DataStorage.Add(AccesableData.BatteryVoltage, 0, location,
+            DataStorage.Add(AccesableData.BatteryVoltage, 0, locationEnum,
                 $"SELECT battery_voltage FROM dbo.device WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND battery_voltage IS NOT NULL");   
-            DataStorage.Add(AccesableData.BatteryPercentage, 0, location,
+            DataStorage.Add(AccesableData.BatteryPercentage, 0, locationEnum,
                 $"SELECT battery_percentage FROM dbo.device WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND battery_percentage IS NOT NULL");   
 
             
@@ -42,19 +43,19 @@ public class DataAccess
                 // Generate date range for the query
                 string dateRangeQuery = $"BETWEEN DATEADD(DAY, -{i}, GETDATE()) AND DATEADD(DAY, -{i - 1}, GETDATE())";
 
-                DataStorage.Add(AccesableData.DayTemperature, i, location,
+                DataStorage.Add(AccesableData.DayTemperature, i, locationEnum,
                     $"SELECT temperature FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}' AND temperature IS NOT NULL");
-                DataStorage.Add(AccesableData.DayHumidity, i, location,
+                DataStorage.Add(AccesableData.DayHumidity, i, locationEnum,
                     $"SELECT humidity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}' AND humidity IS NOT NULL");
-                DataStorage.Add(AccesableData.DayLight, i, location,
+                DataStorage.Add(AccesableData.DayLight, i, locationEnum,
                     $"SELECT luminosity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}' AND luminosity IS NOT NULL");
-                DataStorage.Add(AccesableData.DayPressure, i, location,
+                DataStorage.Add(AccesableData.DayPressure, i, locationEnum,
                     $"SELECT pressure FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}' AND pressure IS NOT NULL");
             }
         }
     }
 
-    public List<double> GetData(AccesableData name, int dayFromNow, Locations location) //Gets returns data (List<string>) of the name requested (i.e. current_temperature, current_humidity)
+    public List<double> GetData(AccesableData name, int dayFromNow, ILocationEnum location) //Gets returns data (List<string>) of the name requested (i.e. current_temperature, current_humidity)
     {
         for(int i = 0; i < DataStorage.Name.Count; i++)
         {

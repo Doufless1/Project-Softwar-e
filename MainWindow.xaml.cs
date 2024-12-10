@@ -27,19 +27,16 @@ namespace Weather_App
         public List<ISeries> HumidityDaySeries { get; private set; }
         public List<ISeries> LightDaySeries { get; set; }
         public List<ISeries> PressureDaySeries { get; set; }
-        public List<ISeries> LuminosityDaySeries { get; set; }
         
         public List<ISeries> TemperatureWeekSeries { get; private set; }
         public List<ISeries> HumidityWeekSeries { get; private set; }
         public List<ISeries> LightWeekSeries { get; set; }
         public List<ISeries> PressureWeekSeries { get; set; }
-        public List<ISeries> LuminosityWeekSeries { get; set; }
 
         public List<ISeries> TemperatureMonthSeries { get; private set; }
         public List<ISeries> HumidityMonthSeries { get; private set; }
         public List<ISeries> LightMonthSeries { get; set; }
         public List<ISeries> PressureMonthSeries { get; set; }
-        public List<ISeries> LuminosityMonthSeries { get; set; }
 
         public List<Axis> XAxesDay { get; set; }
         public List<Axis> XAxesWeek { get; set; }
@@ -97,10 +94,7 @@ namespace Weather_App
             GraphData graphDataObject = new GraphData();
             
             graphData = new Dictionary<Locations, Dictionary<FrontendReadyData, List<double>>>();
-            foreach (Locations location in Locations.GetValues(typeof(Locations)))
-            {
-                graphData[location] = graphDataObject.FetchGraphData(location);
-            }
+            Enum.GetValues(typeof(Locations)).Cast<Locations>().Select(location => new LocationEnum(location)).ToList().ForEach(location => graphData[location.GetLocationEnum()] = new Dictionary<FrontendReadyData, List<double>>());
             RefreshData();
 
             // Initialize axes
@@ -153,12 +147,21 @@ namespace Weather_App
                         CurrentLocations.Add(current_location);
                         button.Background = Brushes.LightBlue;
                     }
-                    CurrentLocationBlock.Text = "";
+                    RefreshData();
+
+                    CurrentLocationBlock.Children.Clear();
                     foreach(Locations location in CurrentLocations)
                     {
-                        CurrentLocationBlock.Text += location.ToString() + " ";
+                        TextBox tb = new TextBox
+                        {
+                            Text =
+                                $"Current temperature in {location} is: {graphData[current_location][FrontendReadyData.CurrentTemperature].FirstOrDefault()} °C\n" +
+                                $"Current humidity in {location} is: {graphData[current_location][FrontendReadyData.CurrentHumidity].FirstOrDefault()} %\n" +
+                                $"Current luminosity in {location} is: {graphData[current_location][FrontendReadyData.CurrentLight].FirstOrDefault()} %\n" +
+                                $"Current pressure in {location} is: {graphData[current_location][FrontendReadyData.CurrentPressure].FirstOrDefault()} Pa\n"
+                        };
+                        CurrentLocationBlock.Children.Add(tb);
                     }
-                    RefreshData();
                 };
                 
                 MenuItem batteryStatus = new MenuItem();
@@ -239,7 +242,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Temperature {location} (°C)",
+                        Name = $"Temperature {location.ToString()} (°C)",
                     });
 
                 HumidityDaySeries.Add(
@@ -250,7 +253,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Humidity {location} (%)",
+                        Name = $"Humidity {location.ToString()} (%)",
                     }
                 );
                 
@@ -262,7 +265,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Pressure {location} (Pa)",
+                        Name = $"Pressure {location.ToString()} (Pa)",
                     }
                 );
                 
@@ -274,7 +277,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Luminosity {location} (lux)",
+                        Name = $"Luminosity {location.ToString()} (%)",
                     }
                 );
 
@@ -286,7 +289,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Temperature {location} (°C)",
+                        Name = $"Temperature {location.ToString()} (°C)",
                     }
                 );
                 
@@ -298,7 +301,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Humidity {location} (%)",
+                        Name = $"Humidity {location.ToString()} (%)",
                     }
                 );
                 
@@ -310,7 +313,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Pressure {location} (Pa)",
+                        Name = $"Pressure {location.ToString()} (Pa)",
                     }
                 );
                 
@@ -322,7 +325,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Luminosity {location} (lux)",
+                        Name = $"Luminosity {location.ToString()} (%)",
                     }
                 );
 
@@ -335,7 +338,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Temperature {location} (°C)",
+                        Name = $"Temperature {location.ToString()} (°C)",
                     }
                 );
 
@@ -347,7 +350,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Humidity {location} (%)",
+                        Name = $"Humidity {location.ToString()} (%)",
                     }
                 );
                 
@@ -359,7 +362,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Luminosity {location} (lux)",
+                        Name = $"Luminosity {location.ToString()} (%)",
                     }
                 );
                 
@@ -371,7 +374,7 @@ namespace Weather_App
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Pressure {location} (Pa)",
+                        Name = $"Pressure {location.ToString()} (Pa)",
                     }
                 );
             }

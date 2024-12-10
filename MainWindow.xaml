@@ -15,23 +15,10 @@
         </Grid.ColumnDefinitions>
         
         <!-- Current Location Placeholder -->
-        <TextBlock Grid.Row="0" Grid.Column="1" x:Name="CurrentLocationBlock" Text="{Binding CurrentLocations}" />
+        <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" x:Name="CurrentLocationBlock" />
         
         <!-- StackPanel for Locations -->
-        <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" x:Name="LocationStackPanel">
-        </StackPanel>
-        
-        <!-- Temperature and Humidity Info -->
-        <StackPanel Grid.Row="1" Grid.Column="1">
-            <TextBlock>
-                <Run Text="Current Temperature: " />
-                <Run Text="{Binding CurrentTemperature}" />
-            </TextBlock>
-            <TextBlock>
-                <Run Text="Current Humidity: " />
-                <Run Text="{Binding CurrentHumidity}" />
-            </TextBlock>
-        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" x:Name="LocationStackPanel"></StackPanel>
         
         <!-- TabControl for Charts -->
         <TabControl Grid.Row="2" Grid.Column="1">

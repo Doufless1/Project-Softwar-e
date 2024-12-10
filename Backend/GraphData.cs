@@ -44,7 +44,7 @@ public class GraphData
         DataAccess = new DataAccess() ?? throw new ArgumentNullException("DataAccess cannot be null");
     }
 
-    public Dictionary<FrontendReadyData, List<double>> FetchGraphData(Locations location)
+    public Dictionary<FrontendReadyData, List<double>> FetchGraphData(ILocationEnum location)
     {
         CurrentTemperature = new List<double>();
         CurrentHumidity = new List<double>();
