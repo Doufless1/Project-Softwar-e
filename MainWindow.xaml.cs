@@ -194,6 +194,7 @@ namespace Weather_App
             };
 
             // Create location buttons
+            // Create location buttons
             foreach (Locations location in Enum.GetValues(typeof(Locations)))
             {
                 var current_location = location;
@@ -213,17 +214,23 @@ namespace Weather_App
                     else
                     {
                         CurrentLocations.Add(current_location);
-                        SelectedBatteryPercentage = graphData[current_location][FrontendReadyData.BatteryPercentage].FirstOrDefault();
                         button.Background = Brushes.LightBlue;
                     }
-
-                    CurrentLocationBlock.Text = "";
-                    foreach (Locations location in CurrentLocations)
-                    {
-                        CurrentLocationBlock.Text += location.ToString() + " ";
-                    }
-
                     RefreshData();
+
+                    CurrentLocationBlock.Children.Clear();
+                    foreach(Locations location in CurrentLocations)
+                    {
+                        TextBox tb = new TextBox
+                        {
+                            Text =
+                                $"Current temperature in {location} is: {graphData[current_location][FrontendReadyData.CurrentTemperature].FirstOrDefault()} °C\n" +
+                                $"Current humidity in {location} is: {graphData[current_location][FrontendReadyData.CurrentHumidity].FirstOrDefault()} %\n" +
+                                $"Current luminosity in {location} is: {graphData[current_location][FrontendReadyData.CurrentLight].FirstOrDefault()} %\n" +
+                                $"Current pressure in {location} is: {graphData[current_location][FrontendReadyData.CurrentPressure].FirstOrDefault()} Pa\n"
+                        };
+                        CurrentLocationBlock.Children.Add(tb);
+                    }
                 };
                 
                 MenuItem batteryStatus = new MenuItem();
