@@ -6,3 +6,4 @@ public enum Locations
     Saxion,
     Gronau
 }
+

@@ -157,9 +157,9 @@ namespace Weather_App
             GraphData graphDataObject = new GraphData();
 
             graphData = new Dictionary<Locations, Dictionary<FrontendReadyData, List<double>>>();
-            foreach (Locations location in Locations.GetValues(typeof(Locations)))
+            foreach (Locations location in Enum.GetValues(typeof(Locations)))
             {
-                graphData[location] = graphDataObject.FetchGraphData(location);
+                graphData.Add(location, graphDataObject.FetchGraphData(location.ToString(), Device_IDs.Mkr_Saxion));
             }
 
             RefreshData();

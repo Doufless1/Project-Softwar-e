@@ -80,14 +80,15 @@ namespace sql_fetcher
             }
         }
 
-        public List<double> GetData(AccesableData name, int dayFromNow, Locations location)
+        public List<double> GetData(AccesableData name, int dayFromNow, string gatewayID, Device_IDs deviceID)
         {
             try
             {
                 for (int i = 0; i < DataStorage.Name.Count; i++)
                 {
-                    if (DataStorage.Name[i] == name && DataStorage.Location[i] == location &&
-                        DataStorage.DayFromNow[i] == dayFromNow)
+                    if (DataStorage.Name[i] == name && DataStorage.GatewayID[i] == gatewayID 
+                                                    && DataStorage.DeviceID[i] == deviceID 
+                                                    && DataStorage.DayFromNow[i] == dayFromNow)
                     {
                         return DataStorage.Data[i];
                     }
@@ -95,7 +96,7 @@ namespace sql_fetcher
             }
             catch (Exception ex)
             {
-                LogException($"Error while fetching data for {name}, dayFromNow: {dayFromNow}, location: {location}", ex);
+                LogException($"Error fetching data for GatewayID: {gatewayID}, DeviceID: {deviceID}", ex);
             }
 
             // Return an empty list if no data found or an error occurred

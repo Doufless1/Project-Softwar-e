@@ -12,11 +12,16 @@ public class DataStorage
     public List<int> DayFromNow { get; private set;  }
     private readonly DataFetcher _dataFetcher;
     
+    public List<string> GatewayID { get; private set; } 
+    public List<Device_IDs> DeviceID { get; private set; }
+    
     public DataStorage(DataFetcher dataFetcher) //Initialize components
     {
         _dataFetcher = dataFetcher;
         Name = new List<AccesableData>();
         Location = new List<Locations>();
+        GatewayID = new List<string>();
+        DeviceID = new List<Device_IDs>();
         Query = new List<string>();
         Data = new List<List<double>>();
         DayFromNow = new List<int>();
