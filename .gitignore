@@ -1,3 +1,33 @@
-.vs/
+# Build artifacts
 bin/
 obj/
+
+# User-specific files
+*.csproj.user
+*.suo
+*.user
+
+# IDE files
+.vs/
+.idea/
+.vscode/
+
+# Generated files
+*.g.cs
+*.g.i.cs
+
+# Logs
+*.log
+
+# Environment settings
+appsettings.Development.json
+secrets.json
+
+# Library files
+wwwroot/lib/
+
+# OS-specific files
+Thumbs.db
+.DS_Store
+
+.gitignore
