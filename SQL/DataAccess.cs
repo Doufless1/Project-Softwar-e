@@ -17,16 +17,38 @@ namespace sql_fetcher
 
         private static readonly DataFetcher DataFetcher = new DataFetcher(ConnectionString);
         private static readonly DataStorage DataStorage = new DataStorage(DataFetcher);
+        private static readonly GatewayDataStorage GatewayDataStorage = new GatewayDataStorage(DataFetcher);
 
         public DataAccess()
         {
             try
             {
                 // Initialize queries in DataStorage.cs with the queries to be fetched
-                foreach (Locations location in Enum.GetValues(typeof(Locations)))
+                foreach (string location in Devices.GetDevices())
                 {
                     try
                     {
+                        GatewayDataStorage.Add(AccesableData.longitude,  location,
+                            $"SELECT longitude FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                        GatewayDataStorage.Add(AccesableData.latitude,  location,
+                            $"SELECT latitude FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                        GatewayDataStorage.Add(AccesableData.altitude,  location,
+                            $"SELECT altitude FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                        GatewayDataStorage.Add(AccesableData.avgRssi,  location,
+                            $"SELECT avg_rssi FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                        GatewayDataStorage.Add(AccesableData.avgSnr,  location,
+                            $"SELECT avg_snr FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                        GatewayDataStorage.Add(AccesableData.maxRssi,  location,
+                            $"SELECT max_rssi FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                        GatewayDataStorage.Add(AccesableData.MinRssi,  location,
+                            $"SELECT min_rssi FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                        GatewayDataStorage.Add(AccesableData.MaxSnr,  location,
+                            $"SELECT max_snr FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                        GatewayDataStorage.Add(AccesableData.MinSnr,  location,
+                            $"SELECT min_snr FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+
+
+                        
                         // Current datapoints
                         DataStorage.Add(AccesableData.CurrentTemperature, 0, location,
                             $"SELECT TOP 1 temperature FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
@@ -80,7 +102,7 @@ namespace sql_fetcher
             }
         }
 
-        public List<double> GetData(AccesableData name, int dayFromNow, Locations location)
+        public List<double> GetData(AccesableData name, int dayFromNow, string location)
         {
             try
             {

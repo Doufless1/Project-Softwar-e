@@ -25,5 +25,15 @@ public enum AccesableData
     BatteryVoltage,
     SignalToNoiseRatio,
     ModelId,
-    BatteryPercentage
+    BatteryPercentage,
+    
+    longitude,
+    latitude,
+    altitude,
+    avgRssi,
+    avgSnr,
+    maxRssi,
+    MinRssi,
+    MaxSnr,
+    MinSnr
 }

@@ -62,9 +62,9 @@ namespace Weather_App
         
         public double CurrentBatteryPercentage { get; set; }
 
-        public List<Locations> CurrentLocations { get; set; }
+        public List<string> CurrentLocations { get; set; }
         public List<Button> LocationButtons { get; private set; }
-        public Dictionary<Locations, Dictionary<FrontendReadyData, List<double>>> graphData { get; set; }
+        public Dictionary<string, Dictionary<FrontendReadyData, List<double>>> graphData { get; set; }
         public event PropertyChangedEventHandler? PropertyChanged;
         
         private double _selectedBatteryPercentage;
@@ -136,8 +136,8 @@ namespace Weather_App
             Last7Days = Enumerable.Range(0, 7).Select(i => DateTime.Now.AddDays(-i)).Reverse().ToArray();
             Last30Days = Enumerable.Range(0, 30).Select(i => DateTime.Now.AddDays(-i)).Reverse().ToArray();
             LocationButtons = new List<Button>();
-            CurrentLocations = new List<Locations>();
-            CurrentLocations.Add(Locations.Wierden);
+            CurrentLocations = new List<string>();
+            // CurrentLocations.Add(Locations.Wierden);
 
             TemperatureDaySeries = new List<ISeries>();
             HumidityDaySeries = new List<ISeries>();
@@ -156,8 +156,8 @@ namespace Weather_App
 
             GraphData graphDataObject = new GraphData();
 
-            graphData = new Dictionary<Locations, Dictionary<FrontendReadyData, List<double>>>();
-            foreach (Locations location in Locations.GetValues(typeof(Locations)))
+            graphData = new Dictionary<string, Dictionary<FrontendReadyData, List<double>>>();
+            foreach (string location in Devices.GetDevices())
             {
                 graphData[location] = graphDataObject.FetchGraphData(location);
             }
@@ -195,13 +195,13 @@ namespace Weather_App
 
             // Create location buttons
             // Create location buttons
-            foreach (Locations location in Enum.GetValues(typeof(Locations)))
+            foreach (string location in Devices.GetDevices())
             {
                 var current_location = location;
                 Button button = new Button
                 {
                     Content = current_location,
-                    Width = 100,
+                    Width = Double.NaN,
                     Height = 50,
                 };
                 button.Click += (sender, args) =>
@@ -219,7 +219,7 @@ namespace Weather_App
                     RefreshData();
 
                     CurrentLocationBlock.Children.Clear();
-                    foreach(Locations location in CurrentLocations)
+                    foreach(string location in CurrentLocations)
                     {
                         TextBox tb = new TextBox
                         {
@@ -308,7 +308,7 @@ namespace Weather_App
             PressureMonthSeries.Clear();
 
             // Initialize chart series
-            foreach (Locations location in CurrentLocations)
+            foreach (string location in CurrentLocations)
             {
                 CurrentTemperature = graphData[location][FrontendReadyData.CurrentTemperature].FirstOrDefault();
                 CurrentHumidity = graphData[location][FrontendReadyData.CurrentHumidity].FirstOrDefault();
