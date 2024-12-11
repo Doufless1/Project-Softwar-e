@@ -8,26 +8,21 @@ public class DataStorage
     public List<AccesableData> Name { get; private set; }
     public List<List<double>> Data { get; private set; }
     private List<string> Query { get; set; }
-    public List<Locations> Location { get; private set; }
+    public List<string> Location { get; private set; }
     public List<int> DayFromNow { get; private set;  }
     private readonly DataFetcher _dataFetcher;
-    
-    public List<string> GatewayID { get; private set; } 
-    public List<Device_IDs> DeviceID { get; private set; }
     
     public DataStorage(DataFetcher dataFetcher) //Initialize components
     {
         _dataFetcher = dataFetcher;
         Name = new List<AccesableData>();
-        Location = new List<Locations>();
-        GatewayID = new List<string>();
-        DeviceID = new List<Device_IDs>();
+        Location = new List<string>();
         Query = new List<string>();
         Data = new List<List<double>>();
         DayFromNow = new List<int>();
     }
     
-    public void Add (AccesableData name, int dayFromNow, Locations location, string query) //This function adds a query to the list of queries to be fetched with corresponding name and fetches the data once.
+    public void Add (AccesableData name, int dayFromNow, string location, string query) //This function adds a query to the list of queries to be fetched with corresponding name and fetches the data once.
     {
         if (query.IsNullOrEmpty())
         {
