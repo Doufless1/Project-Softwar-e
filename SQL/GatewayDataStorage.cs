@@ -3,11 +3,11 @@ using enums;
 
 public class GatewayDataStorage
 {
-    List<AccesableData> Name { get; set; }
-    List<List<double>> Data { get; set; }
-    List<string> Query { get; set; }
-    List<string> Location { get; set; }
-    List<string> Gateways { get; set; }
+    public List<AccesableData> Name { get; private set; }
+    public List<List<double>> Data { get; private set; }
+    public List<string> Query { get; private set; }
+    public List<string> Location { get; private set; }
+    public List<string> Gateways { get; private set; }
     
     private readonly DataFetcher _dataFetcher;
     

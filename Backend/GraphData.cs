@@ -1,7 +1,3 @@
-using System.Security.Cryptography.X509Certificates;
-using System.Windows.Documents;
-using Microsoft.IdentityModel.Tokens;
-
 namespace Backend;
 using sql_fetcher;
 using enums;
@@ -34,10 +30,10 @@ public class GraphData
     
     private List<double>? BatteryVoltage { get; set; }
     private List<double>? BatteryPercentage { get; set; }
-    private List<double>? SignalToNoiseRatio { get; set; }
     private List<double>? ModelID { get; set; }
     
     private DataAccess DataAccess { get; set; }
+    private GatewayDataStorage GatewayDataStorage { get; set; }
     
     public GraphData()
     {
@@ -54,8 +50,6 @@ public class GraphData
         BatteryVoltage = new List<double>();
         BatteryPercentage = new List<double>();
         ModelID = new List<double>();
-        SignalToNoiseRatio = new List<double>();
-        
         
         WeekTemperature = new List<double>();
         WeekHumidity = new List<double>();
@@ -68,10 +62,10 @@ public class GraphData
         MonthPressure = new List<double>();
         
         
-        DayTemperature = DataAccess.GetData(AccesableData.DayTemperature, 1, location) ?? new List<double>();
-        DayHumidity = DataAccess.GetData(AccesableData.DayHumidity, 1, location) ?? new List<double>();
-        DayLight = DataAccess.GetData(AccesableData.DayLight, 1, location) ?? new List<double>();
-        DayPressure = DataAccess.GetData(AccesableData.DayPressure, 1, location) ?? new List<double>();
+        DayTemperature = DataAccess.GetWeatherData(AccesableData.DayTemperature, 1, location) ?? new List<double>();
+        DayHumidity = DataAccess.GetWeatherData(AccesableData.DayHumidity, 1, location) ?? new List<double>();
+        DayLight = DataAccess.GetWeatherData(AccesableData.DayLight, 1, location) ?? new List<double>();
+        DayPressure = DataAccess.GetWeatherData(AccesableData.DayPressure, 1, location) ?? new List<double>();
         
         for (int i = 1; i < 31; i++)
         {
@@ -80,10 +74,10 @@ public class GraphData
             List<double> currentLightList = new List<double>();
             List<double> currentPressureList = new List<double>();
 
-            currentTemperatureList = DataAccess.GetData(AccesableData.DayTemperature, i, location);
-            currentHumidityList = DataAccess.GetData(AccesableData.DayHumidity, i, location);
-            currentLightList = DataAccess.GetData(AccesableData.DayLight, i, location);
-            currentPressureList = DataAccess.GetData(AccesableData.DayPressure, i, location);
+            currentTemperatureList = DataAccess.GetWeatherData(AccesableData.DayTemperature, i, location);
+            currentHumidityList = DataAccess.GetWeatherData(AccesableData.DayHumidity, i, location);
+            currentLightList = DataAccess.GetWeatherData(AccesableData.DayLight, i, location);
+            currentPressureList = DataAccess.GetWeatherData(AccesableData.DayPressure, i, location);
 
             if (i < 8)
             {
@@ -99,15 +93,14 @@ public class GraphData
             MonthPressure.Add(currentPressureList.Any() ? currentPressureList.Average() : 0);
         }
         
-        CurrentTemperature.Add(DataAccess.GetData(AccesableData.CurrentTemperature, 0, location)?.FirstOrDefault() ?? 0);
-        CurrentHumidity.Add(DataAccess.GetData(AccesableData.CurrentHumidity, 0, location)?.FirstOrDefault() ?? 0);
-        CurrentLight.Add(DataAccess.GetData(AccesableData.CurrentLight, 0, location)?.FirstOrDefault() ?? 0);
-        CurrentPressure.Add(DataAccess.GetData(AccesableData.CurrentPressure, 0, location)?.FirstOrDefault() ?? 0);
+        CurrentTemperature.Add(DataAccess.GetWeatherData(AccesableData.CurrentTemperature, 0, location)?.FirstOrDefault() ?? 0);
+        CurrentHumidity.Add(DataAccess.GetWeatherData(AccesableData.CurrentHumidity, 0, location)?.FirstOrDefault() ?? 0);
+        CurrentLight.Add(DataAccess.GetWeatherData(AccesableData.CurrentLight, 0, location)?.FirstOrDefault() ?? 0);
+        CurrentPressure.Add(DataAccess.GetWeatherData(AccesableData.CurrentPressure, 0, location)?.FirstOrDefault() ?? 0);
         
-        BatteryVoltage.Add(DataAccess.GetData(AccesableData.BatteryVoltage, 0, location)?.FirstOrDefault() ?? 0);
-        SignalToNoiseRatio.Add(DataAccess.GetData(AccesableData.SignalToNoiseRatio, 0, location)?.FirstOrDefault() ?? 0);
-        ModelID.Add(DataAccess.GetData(AccesableData.ModelId, 0, location)?.FirstOrDefault() ?? 0);
-        BatteryPercentage.Add(DataAccess.GetData(AccesableData.BatteryPercentage, 0, location)?.FirstOrDefault() ?? 0);
+        BatteryVoltage.Add(DataAccess.GetWeatherData(AccesableData.BatteryVoltage, 0, location)?.FirstOrDefault() ?? 0);
+        ModelID.Add(DataAccess.GetWeatherData(AccesableData.ModelId, 0, location)?.FirstOrDefault() ?? 0);
+        BatteryPercentage.Add(DataAccess.GetWeatherData(AccesableData.BatteryPercentage, 0, location)?.FirstOrDefault() ?? 0);
         
     // Calculate averages safely`
     List<double>? hourlyDayTemperatureAverage = CalculateAverages(DayTemperature, 24)?.AsEnumerable().Reverse().ToList();
@@ -146,11 +139,32 @@ public class GraphData
             {FrontendReadyData.CurrentLight, CurrentLight},
             {FrontendReadyData.BatteryVoltage, BatteryVoltage},
             {FrontendReadyData.BatteryPercentage, BatteryPercentage},
-            {FrontendReadyData.ModelId, ModelID},
-            {FrontendReadyData.SignalToNoiseRatio, SignalToNoiseRatio}
+            {FrontendReadyData.ModelId, ModelID}
         };
-    } 
+    }
     
+    public Dictionary<string, Dictionary<AccesableData, double>> FetchGatewayData(string location)
+    {
+        DataAccess.FetchGateways(location);
+        Dictionary<string, Dictionary<AccesableData, double>> result = new Dictionary<string, Dictionary<AccesableData, double>>();
+        foreach (string gateway in DataAccess.FetchGateways(location))
+        {
+            result.Add(gateway, new Dictionary<AccesableData, double>
+            {
+                {AccesableData.maxRssi, DataAccess.GetGatewayData(AccesableData.maxRssi, gateway)},
+                {AccesableData.MinRssi, DataAccess.GetGatewayData(AccesableData.MinRssi, gateway)},
+                {AccesableData.MaxSnr, DataAccess.GetGatewayData(AccesableData.MaxSnr, gateway)},
+                {AccesableData.MinSnr, DataAccess.GetGatewayData(AccesableData.MinSnr, gateway)},
+                {AccesableData.avgRssi, DataAccess.GetGatewayData(AccesableData.avgRssi, gateway)},
+                {AccesableData.avgSnr, DataAccess.GetGatewayData(AccesableData.avgSnr, gateway)},
+                {AccesableData.longitude, DataAccess.GetGatewayData(AccesableData.longitude, gateway)},
+                {AccesableData.latitude, DataAccess.GetGatewayData(AccesableData.latitude, gateway)},
+                {AccesableData.altitude, DataAccess.GetGatewayData(AccesableData.altitude, gateway)}
+            });
+        }
+        return result;
+    }
+
 
     private static List<double> CalculateAverages(List<double> data, int datapoints)
     {

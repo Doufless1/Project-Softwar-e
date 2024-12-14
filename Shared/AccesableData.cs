@@ -35,5 +35,6 @@ public enum AccesableData
     maxRssi,
     MinRssi,
     MaxSnr,
-    MinSnr
+    MinSnr,
+    GatewayAmount
 }

@@ -29,24 +29,26 @@ namespace sql_fetcher
                     try
                     {
                         GatewayDataStorage.Add(AccesableData.longitude,  location,
-                            $"SELECT longitude FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                            $"SELECT longitude FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
                         GatewayDataStorage.Add(AccesableData.latitude,  location,
-                            $"SELECT latitude FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                            $"SELECT latitude FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
                         GatewayDataStorage.Add(AccesableData.altitude,  location,
-                            $"SELECT altitude FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                            $"SELECT altitude FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
                         GatewayDataStorage.Add(AccesableData.avgRssi,  location,
-                            $"SELECT avg_rssi FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                            $"SELECT avg_rssi FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
                         GatewayDataStorage.Add(AccesableData.avgSnr,  location,
-                            $"SELECT avg_snr FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                            $"SELECT avg_snr FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
                         GatewayDataStorage.Add(AccesableData.maxRssi,  location,
-                            $"SELECT max_rssi FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                            $"SELECT max_rssi FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
                         GatewayDataStorage.Add(AccesableData.MinRssi,  location,
-                            $"SELECT min_rssi FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                            $"SELECT min_rssi FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
                         GatewayDataStorage.Add(AccesableData.MaxSnr,  location,
-                            $"SELECT max_snr FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
+                            $"SELECT max_snr FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
                         GatewayDataStorage.Add(AccesableData.MinSnr,  location,
-                            $"SELECT min_snr FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND gatewayID = 'gateway_input'");
-
+                            $"SELECT min_snr FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
+                        
+                        DataStorage.Add(AccesableData.GatewayAmount, 0, location,
+                            $"SELECT COUNT(*) FROM gateway WHERE deviceID LIKE '%{location.ToLower()}'");
 
                         
                         // Current datapoints
@@ -80,7 +82,7 @@ namespace sql_fetcher
                                 DataStorage.Add(AccesableData.DayPressure, i, location,
                                     $"SELECT pressure FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
                                 DataStorage.Add(AccesableData.SignalToNoiseRatio, 0, location,
-                                    $"SELECT TOP 1 avg_rssi FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND avg_rssi IS NOT NULL ORDER BY deviceID ASC");
+                                    $"SELECT TOP 1 avg_rssi FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND avg_rssi IS NOT NULL ORDER BY deviceID ASC");
 
                             }
                             catch (Exception ex)
@@ -102,7 +104,7 @@ namespace sql_fetcher
             }
         }
 
-        public List<double> GetData(AccesableData name, int dayFromNow, string location)
+        public List<double> GetWeatherData(AccesableData name, int dayFromNow, string location)
         {
             try
             {
@@ -124,6 +126,43 @@ namespace sql_fetcher
             return new List<double>();
         }
 
+        public double GetGatewayData(AccesableData name, string gateway)
+        {
+            try
+            {
+                for (int i = 0; i < GatewayDataStorage.Name.Count; i++)
+                {
+                    if (GatewayDataStorage.Name[i] == name && GatewayDataStorage.Gateways[i] == gateway)
+                    {
+                        return GatewayDataStorage.Data[i][0];
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogException($"Error while fetching data for {name}, gateway: {gateway}", ex);
+            }
+            return -1;
+        }
+
+        public List<string> FetchGateways (string location)
+        {
+            List<string> gateways = new List<string>();
+            try
+            {
+                for (int i = 0; i < GatewayDataStorage.Gateways.Count; i++)
+                {
+                    if(GatewayDataStorage.Location[i] == location && !gateways.Contains(GatewayDataStorage.Gateways[i])) gateways.Add(GatewayDataStorage.Gateways[i]);
+                }
+                return gateways;
+            }
+            catch (Exception ex)
+            {
+                LogException($"Error while fetching gateways for location {location}", ex);
+            }
+            return gateways;
+        }
+        
         private void LogException(string context, Exception ex)
         {
             // Log exception with context
