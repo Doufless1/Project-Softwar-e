@@ -32,7 +32,7 @@ public class GatewayDataStorage
                 Name.Add(name);
                 Location.Add(location);
                 Gateways.Add(_dataFetcher.FetchString($"WITH OrderedRows AS " +
-                                                    $"(SELECT *, ROW_NUMBER() OVER (ORDER BY latitude) AS RowNum " +
+                                                    $"(SELECT *, ROW_NUMBER() OVER (ORDER BY Latitude) AS RowNum " +
                                                     $"FROM gateway " +
                                                     $"WHERE deviceID = '{location}')" +
                                                     $"SELECT gatewayID FROM OrderedRows WHERE RowNum = {i + 1};"));

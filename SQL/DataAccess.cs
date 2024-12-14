@@ -28,17 +28,17 @@ namespace sql_fetcher
                 {
                     try
                     {
-                        GatewayDataStorage.Add(AccesableData.longitude,  location,
-                            $"SELECT longitude FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
-                        GatewayDataStorage.Add(AccesableData.latitude,  location,
-                            $"SELECT latitude FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
-                        GatewayDataStorage.Add(AccesableData.altitude,  location,
-                            $"SELECT altitude FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
-                        GatewayDataStorage.Add(AccesableData.avgRssi,  location,
+                        GatewayDataStorage.Add(AccesableData.Longitude,  location,
+                            $"SELECT Longitude FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
+                        GatewayDataStorage.Add(AccesableData.Latitude,  location,
+                            $"SELECT Latitude FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
+                        GatewayDataStorage.Add(AccesableData.Altitude,  location,
+                            $"SELECT Altitude FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
+                        GatewayDataStorage.Add(AccesableData.AvgRssi,  location,
                             $"SELECT avg_rssi FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
-                        GatewayDataStorage.Add(AccesableData.avgSnr,  location,
+                        GatewayDataStorage.Add(AccesableData.AvgSnr,  location,
                             $"SELECT avg_snr FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
-                        GatewayDataStorage.Add(AccesableData.maxRssi,  location,
+                        GatewayDataStorage.Add(AccesableData.MaxRssi,  location,
                             $"SELECT max_rssi FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
                         GatewayDataStorage.Add(AccesableData.MinRssi,  location,
                             $"SELECT min_rssi FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND gatewayID = 'gateway_input'");
@@ -52,8 +52,10 @@ namespace sql_fetcher
 
                         
                         // Current datapoints
-                        DataStorage.Add(AccesableData.CurrentTemperature, 0, location,
-                            $"SELECT TOP 1 temperature FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
+                        DataStorage.Add(AccesableData.CurrentInsideTemperature, 0, location,
+                            $"SELECT TOP 1 inside_temperature FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
+                        DataStorage.Add(AccesableData.CurrentOutsideTemperature, 0, location,
+                            $"SELECT TOP 1 external_temperature FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
                         DataStorage.Add(AccesableData.CurrentHumidity, 0, location,
                             $"SELECT TOP 1 humidity FROM weather WHERE deviceID LIKE '%{location.ToString().ToLower()}' ORDER BY weather.date DESC");
                         DataStorage.Add(AccesableData.CurrentLight, 0, location,
@@ -73,8 +75,10 @@ namespace sql_fetcher
                                 // Generate date range for the query
                                 string dateRangeQuery = $"BETWEEN DATEADD(DAY, -{i}, GETDATE()) AND DATEADD(DAY, -{i - 1}, GETDATE())";
 
-                                DataStorage.Add(AccesableData.DayTemperature, i, location,
-                                    $"SELECT temperature FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
+                                DataStorage.Add(AccesableData.DayInsideTemperature, i, location,
+                                    $"SELECT inside_temperature FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
+                                DataStorage.Add(AccesableData.DayOutsideTemperature, i, location,
+                                    $"SELECT external_temperature FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
                                 DataStorage.Add(AccesableData.DayHumidity, i, location,
                                     $"SELECT humidity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
                                 DataStorage.Add(AccesableData.DayLight, i, location,

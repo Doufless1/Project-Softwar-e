@@ -2,9 +2,13 @@ namespace enums;
 
 public enum FrontendReadyData
 {
-    HourlyDayTemperatureAverage,
-    DailyWeekTemperatureAverage,
-    DailyMonthTemperatureAverage,
+    HourlyDayInsideTemperatureAverage,
+    DailyWeekInsideTemperatureAverage,
+    DailyMonthInsideTemperatureAverage,
+    
+    HourlyDayOutsideTemperatureAverage,
+    DailyWeekOutsideTemperatureAverage,
+    DailyMonthOutsideTemperatureAverage,
     
     HourlyDayHumidityAverage,
     DailyWeekHumidityAverage,
@@ -18,13 +22,13 @@ public enum FrontendReadyData
     DailyWeekPressureAverage,
     DailyMonthPressureAverage,
     
-    CurrentTemperature,
+    CurrentInsideTemperature,
+    CurrentOutsideTemperature,
     CurrentHumidity,
     CurrentLight,
     CurrentPressure,
     
     BatteryVoltage,
     BatteryPercentage,
-    ModelId,
-    SignalToNoiseRatio
+    ModelId
 }

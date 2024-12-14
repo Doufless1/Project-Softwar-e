@@ -2,37 +2,32 @@
 
 public enum AccesableData
 {
-    CurrentTemperature,
-    DayTemperature,
-    WeekTemperature,
-    MonthTemperature,
+    CurrentInsideTemperature,
+    DayInsideTemperature,
+    
+    CurrentOutsideTemperature,
+    DayOutsideTemperature,
     
     CurrentHumidity,
     DayHumidity,
-    WeekHumidity,
-    MonthHumidity,
     
     CurrentLight,
     DayLight,
-    WeekLight,
-    MonthLight,
     
     CurrentPressure,
     DayPressure,
-    WeekPressure,
-    MonthPressure,
     
     BatteryVoltage,
     SignalToNoiseRatio,
     ModelId,
     BatteryPercentage,
     
-    longitude,
-    latitude,
-    altitude,
-    avgRssi,
-    avgSnr,
-    maxRssi,
+    Longitude,
+    Latitude,
+    Altitude,
+    AvgRssi,
+    AvgSnr,
+    MaxRssi,
     MinRssi,
     MaxSnr,
     MinSnr,

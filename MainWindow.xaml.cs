@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Media;
 using LiveCharts;
 using LiveChartsCore;
@@ -23,19 +19,22 @@ namespace Weather_App
         private static readonly DataAccess DataAccess = new DataAccess();
 
         // Graph Properties
-        public List<ISeries> TemperatureDaySeries { get; private set; }
+        public List<ISeries> InsideTemperatureDaySeries { get; private set; }
+        public List<ISeries> OutsideTemperatureDaySeries { get; private set; }
         public List<ISeries> HumidityDaySeries { get; private set; }
         public List<ISeries> LightDaySeries { get; set; }
         public List<ISeries> PressureDaySeries { get; set; }
         public List<ISeries> LuminosityDaySeries { get; set; }
 
-        public List<ISeries> TemperatureWeekSeries { get; private set; }
+        public List<ISeries> InsideTemperatureWeekSeries { get; private set; }
+        public List<ISeries> OutsideTemperatureWeekSeries { get; private set; }
         public List<ISeries> HumidityWeekSeries { get; private set; }
         public List<ISeries> LightWeekSeries { get; set; }
         public List<ISeries> PressureWeekSeries { get; set; }
         public List<ISeries> LuminosityWeekSeries { get; set; }
 
-        public List<ISeries> TemperatureMonthSeries { get; private set; }
+        public List<ISeries> InsideTemperatureMonthSeries { get; private set; }
+        public List<ISeries> OutsideTemperatureMonthSeries { get; private set; }
         public List<ISeries> HumidityMonthSeries { get; private set; }
         public List<ISeries> LightMonthSeries { get; set; }
         public List<ISeries> PressureMonthSeries { get; set; }
@@ -50,7 +49,8 @@ namespace Weather_App
         public DateTime[] Last24Hours { get; private set; }
         public DateTime[] Last7Days { get; private set; }
         public DateTime[] Last30Days { get; private set; }
-        public double CurrentTemperature { get; set; }
+        public double CurrentInsideTemperature { get; set; }
+        public double CurrentOutsideTemperature { get; set; }
         public double CurrentHumidity { get; set; }
         public double CurrentLight { get; set; }
         public double CurrentPressure { get; set; }
@@ -110,7 +110,6 @@ namespace Weather_App
             get => _selectedBatteryPercentage;
             set
             {
-               
                     _selectedBatteryPercentage = value;
                     RaisePropertyChanged(nameof(SelectedBatteryPercentage));
                     RaisePropertyChanged(nameof(SelectedBatteryPercentageText));
@@ -140,17 +139,20 @@ namespace Weather_App
             CurrentLocations = new List<string>();
             // CurrentLocations.Add(Locations.Wierden);
 
-            TemperatureDaySeries = new List<ISeries>();
+            InsideTemperatureDaySeries = new List<ISeries>();
+            OutsideTemperatureDaySeries = new List<ISeries>();
             HumidityDaySeries = new List<ISeries>();
             LightDaySeries = new List<ISeries>();
             PressureDaySeries = new List<ISeries>();
 
-            TemperatureWeekSeries = new List<ISeries>();
+            InsideTemperatureWeekSeries = new List<ISeries>();
+            OutsideTemperatureWeekSeries = new List<ISeries>();
             HumidityWeekSeries = new List<ISeries>();
             LightWeekSeries = new List<ISeries>();
             PressureWeekSeries = new List<ISeries>();
 
-            TemperatureMonthSeries = new List<ISeries>();
+            InsideTemperatureMonthSeries = new List<ISeries>();
+            OutsideTemperatureMonthSeries = new List<ISeries>();
             HumidityMonthSeries = new List<ISeries>();
             LightMonthSeries = new List<ISeries>();
             PressureMonthSeries = new List<ISeries>();
@@ -228,10 +230,12 @@ namespace Weather_App
                         TextBox tb = new TextBox
                         {
                             Text =
-                                $"Current temperature in {location} is: {GraphData[current_location][FrontendReadyData.CurrentTemperature].FirstOrDefault()} °C\n" +
-                                $"Current humidity in {location} is: {GraphData[current_location][FrontendReadyData.CurrentHumidity].FirstOrDefault()} %\n" +
-                                $"Current luminosity in {location} is: {GraphData[current_location][FrontendReadyData.CurrentLight].FirstOrDefault()} %\n" +
-                                $"Current pressure in {location} is: {GraphData[current_location][FrontendReadyData.CurrentPressure].FirstOrDefault()} Pa\n"
+                                $"{location.ToUpper()} \n" +
+                                $"Current inside temperature: {(GraphData[location][FrontendReadyData.CurrentInsideTemperature].FirstOrDefault() == -100 ? "N/A" : GraphData[location][FrontendReadyData.CurrentInsideTemperature].FirstOrDefault().ToString())} °C\n" +
+                                $"Current outside temperature: {(GraphData[location][FrontendReadyData.CurrentOutsideTemperature].FirstOrDefault() == -100 ? "N/A" : GraphData[location][FrontendReadyData.CurrentOutsideTemperature].FirstOrDefault().ToString())} °C\n" +
+                                $"Current humidity: {(GraphData[location][FrontendReadyData.CurrentHumidity].FirstOrDefault() == -100 ? "N/A" : GraphData[location][FrontendReadyData.CurrentHumidity].FirstOrDefault().ToString())} %\n" +
+                                $"Current luminosity: {(GraphData[location][FrontendReadyData.CurrentLight].FirstOrDefault() == -100 ? "N/A" : GraphData[location][FrontendReadyData.CurrentLight].FirstOrDefault().ToString())} %\n" +
+                                $"Current pressure: {(GraphData[location][FrontendReadyData.CurrentPressure].FirstOrDefault() == -100 ? "N/A" : GraphData[location][FrontendReadyData.CurrentPressure].FirstOrDefault().ToString())} Pa\n"                        
                         };
                         CurrentLocationBlock.Children.Add(tb);
                     }
@@ -254,15 +258,29 @@ namespace Weather_App
                     MessageBox.Show($"Battery Percentage for {current_location}: {SelectedBatteryPercentage:F2}%", "Battery Percentage", MessageBoxButton.OK, MessageBoxImage.Information);
                 };
                 
-                // MenuItem gateways = new MenuItem();
-                // gateways.Header = "Gateways";
-                // gateways.Click += (sender, args) =>
-                // {
-                //     MessageBox.Show("Gateways: " +
-                //                     GraphData[current_location][FrontendReadyData.ModelId].FirstOrDefault());
-                // };
+                MenuItem gateways = new MenuItem();
+                gateways.Header = "Gateways";
+                gateways.Click += (sender, args) =>
+                {
+                    string message = $"{location} is currently connected to the following gateways:\n";
+                    foreach (var gateway in GatewayData[location])
+                    {
+                        message += $"{gateway.Key}:\n";
+                        message += $"\t Latitude {gateway.Value[AccesableData.Latitude]}\n";
+                        message += $"\t Longitude {gateway.Value[AccesableData.Longitude]}\n";
+                        message += $"\t Altitude {gateway.Value[AccesableData.Altitude]}\n";
+                        message += $"\t Average RSSI {gateway.Value[AccesableData.AvgRssi]}\n";
+                        message += $"\t Max RSSI {gateway.Value[AccesableData.MaxRssi]}\n";
+                        message += $"\t Min RSSI {gateway.Value[AccesableData.MinRssi]}\n";
+                        message += $"\t Average SNR {gateway.Value[AccesableData.AvgSnr]}\n";
+                        message += $"\t Max SNR {gateway.Value[AccesableData.MaxSnr]}\n";
+                        message += $"\t Min SNR {gateway.Value[AccesableData.MinSnr]}\n";
+                    }
+                    MessageBox.Show(message, "Gateways", MessageBoxButton.OK, MessageBoxImage.Information);
+                };
                 ContextMenu contextMenu = new ContextMenu();
                 contextMenu.Items.Add(batteryStatus);
+                contextMenu.Items.Add(gateways);
 
                 button.MouseRightButtonDown += (sender, args) =>
                 {
@@ -282,7 +300,8 @@ namespace Weather_App
         
         void RefreshData()
         {
-            CurrentTemperature = 0;
+            CurrentInsideTemperature = 0;
+            CurrentOutsideTemperature = 0;
             CurrentHumidity = 0;
             CurrentLight = 0;
             CurrentPressure = 0;
@@ -293,17 +312,20 @@ namespace Weather_App
             CurrentModelId = 0;
             CurrentBatteryVoltage = 0;
 
-            TemperatureDaySeries.Clear();
+            InsideTemperatureDaySeries.Clear();
+            OutsideTemperatureDaySeries.Clear();
             HumidityDaySeries.Clear();
             LightDaySeries.Clear();
             PressureDaySeries.Clear();
 
-            TemperatureWeekSeries.Clear();
+            InsideTemperatureWeekSeries.Clear();
+            OutsideTemperatureWeekSeries.Clear();
             HumidityWeekSeries.Clear();
             LightWeekSeries.Clear();
             PressureWeekSeries.Clear();
 
-            TemperatureMonthSeries.Clear();
+            InsideTemperatureMonthSeries.Clear();
+            OutsideTemperatureMonthSeries.Clear();
             HumidityMonthSeries.Clear();
             LightMonthSeries.Clear();
             PressureMonthSeries.Clear();
@@ -311,7 +333,8 @@ namespace Weather_App
             // Initialize chart series
             foreach (string location in CurrentLocations)
             {
-                CurrentTemperature = GraphData[location][FrontendReadyData.CurrentTemperature].FirstOrDefault();
+                CurrentInsideTemperature = GraphData[location][FrontendReadyData.CurrentInsideTemperature].FirstOrDefault();
+                CurrentOutsideTemperature = GraphData[location][FrontendReadyData.CurrentInsideTemperature].FirstOrDefault();
                 CurrentHumidity = GraphData[location][FrontendReadyData.CurrentHumidity].FirstOrDefault();
                 CurrentLight = GraphData[location][FrontendReadyData.CurrentLight].FirstOrDefault();
                 CurrentPressure = GraphData[location][FrontendReadyData.CurrentPressure].FirstOrDefault();
@@ -320,22 +343,34 @@ namespace Weather_App
                 CurrentModelId = GraphData[location][FrontendReadyData.ModelId].FirstOrDefault();
                 CurrentBatteryVoltage = GraphData[location][FrontendReadyData.BatteryVoltage].FirstOrDefault();
 
-                TemperatureDaySeries.Add(
+                InsideTemperatureDaySeries.Add(
                     new LineSeries<double>
                     {
                         Values = new ChartValues<double>(
-                            GraphData[location][FrontendReadyData.HourlyDayTemperatureAverage]),
+                            GraphData[location][FrontendReadyData.HourlyDayInsideTemperatureAverage].Where(value => value != -100)),
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Temperature {location} (°C)",
+                        Name = $"Inside temperature {location} (°C)",
                     });
+                
+                OutsideTemperatureDaySeries.Add(
+                    new LineSeries<double>
+                    {
+                        Values = new ChartValues<double>(
+                            GraphData[location][FrontendReadyData.HourlyDayOutsideTemperatureAverage].Where(value => value != -100)),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = $"Outside temperature {location} (°C)",
+                    }
+                );
 
                 HumidityDaySeries.Add(
                     new LineSeries<double>
                     {
                         Values = new ChartValues<double>(
-                            GraphData[location][FrontendReadyData.HourlyDayHumidityAverage]),
+                            GraphData[location][FrontendReadyData.HourlyDayHumidityAverage].Where(value => value != -100)),
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
@@ -347,7 +382,7 @@ namespace Weather_App
                     new LineSeries<double>
                     {
                         Values = new ChartValues<double>(
-                            GraphData[location][FrontendReadyData.HourlyDayPressureAverage]),
+                            GraphData[location][FrontendReadyData.HourlyDayPressureAverage].Where(value => value != -100)),
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
@@ -359,7 +394,7 @@ namespace Weather_App
                     new LineSeries<double>
                     {
                         Values = new ChartValues<double>(
-                            GraphData[location][FrontendReadyData.HourlyDayLightAverage]),
+                            GraphData[location][FrontendReadyData.HourlyDayLightAverage].Where(value => value != -100)),
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
@@ -367,15 +402,27 @@ namespace Weather_App
                     }
                 );
 
-                TemperatureWeekSeries.Add(
+                InsideTemperatureWeekSeries.Add(
                     new LineSeries<double>
                     {
                         Values =
-                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyWeekTemperatureAverage]),
+                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyWeekInsideTemperatureAverage].Where(value => value != -100)),
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Temperature {location} (°C)",
+                        Name = $"Inside temperature {location} (°C)",
+                    }
+                );
+                
+                OutsideTemperatureWeekSeries.Add(
+                    new LineSeries<double>
+                    {
+                        Values =
+                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyWeekOutsideTemperatureAverage].Where(value => value != -100)),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = $"Outside temperature {location} (°C)",
                     }
                 );
 
@@ -383,7 +430,7 @@ namespace Weather_App
                     new LineSeries<double>
                     {
                         Values =
-                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyWeekHumidityAverage]),
+                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyWeekHumidityAverage].Where(value => value != -100)),
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
@@ -395,7 +442,7 @@ namespace Weather_App
                     new LineSeries<double>
                     {
                         Values =
-                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyWeekPressureAverage]),
+                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyWeekPressureAverage].Where(value => value != -100)),
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
@@ -407,7 +454,7 @@ namespace Weather_App
                     new LineSeries<double>
                     {
                         Values =
-                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyWeekLightAverage]),
+                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyWeekLightAverage].Where(value => value != -100)),
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
@@ -415,16 +462,29 @@ namespace Weather_App
                     }
                 );
 
-                TemperatureMonthSeries.Add(
+                InsideTemperatureMonthSeries.Add(
                     new LineSeries<double>
                     {
                         Values =
                             new ChartValues<double>(
-                                GraphData[location][FrontendReadyData.DailyMonthTemperatureAverage]),
+                                GraphData[location][FrontendReadyData.DailyMonthInsideTemperatureAverage].Where(value => value != -100)),
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
-                        Name = $"Temperature {location} (°C)",
+                        Name = $"Inside temperature {location} (°C)",
+                    }
+                );
+                
+                OutsideTemperatureMonthSeries.Add(
+                    new LineSeries<double>
+                    {
+                        Values =
+                            new ChartValues<double>(
+                                GraphData[location][FrontendReadyData.DailyMonthOutsideTemperatureAverage].Where(value => value != -100)),
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.Red),
+                        GeometrySize = 10,
+                        Name = $"Outside temperature {location} (°C)",
                     }
                 );
 
@@ -432,7 +492,7 @@ namespace Weather_App
                     new LineSeries<double>
                     {
                         Values =
-                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyMonthHumidityAverage]),
+                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyMonthHumidityAverage].Where(value => value != -100)),
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
@@ -444,7 +504,7 @@ namespace Weather_App
                     new LineSeries<double>
                     {
                         Values =
-                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyMonthLightAverage]),
+                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyMonthLightAverage].Where(value => value != -100)),
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,
@@ -456,7 +516,7 @@ namespace Weather_App
                     new LineSeries<double>
                     {
                         Values =
-                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyMonthPressureAverage]),
+                            new ChartValues<double>(GraphData[location][FrontendReadyData.DailyMonthPressureAverage].Where(value => value != -100)),
                         Fill = null,
                         Stroke = new SolidColorPaint(SKColors.Red),
                         GeometrySize = 10,

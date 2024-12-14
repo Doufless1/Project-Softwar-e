@@ -9,7 +9,6 @@ public class Devices
             "mkr-wierden",
             "lht-saxion",
             "mkr-saxion",
-            "mkr-gronau",
             "lht-gronau"
         ];
     }
