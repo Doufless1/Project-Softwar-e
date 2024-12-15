@@ -65,19 +65,34 @@
         </StackPanel>
      
         
-        <!-- TabControl for Charts -->
+        <!-- Tab Control for Charts -->
         <TabControl Grid.Row="2" Grid.Column="1">
-            <!-- Temperature Tab -->
-            <TabItem Header="Temperature">
+            <!-- Inside temperature Tab -->
+            <TabItem Header="Inside temperature">
                 <TabControl>
                     <TabItem Header="Day">
-                        <wpf1:CartesianChart Series="{Binding TemperatureDaySeries}" XAxes="{Binding XAxesDay}" />
+                        <wpf1:CartesianChart Series="{Binding InsideTemperatureDaySeries}" XAxes="{Binding XAxesDay}" />
                     </TabItem>
                     <TabItem Header="Week">
-                        <wpf1:CartesianChart Series="{Binding TemperatureWeekSeries}" XAxes="{Binding XAxesWeek}" />
+                        <wpf1:CartesianChart Series="{Binding InsideTemperatureWeekSeries}" XAxes="{Binding XAxesWeek}" />
                     </TabItem>
                     <TabItem Header="Month">
-                        <wpf1:CartesianChart Series="{Binding TemperatureMonthSeries}" XAxes="{Binding XAxesMonth}" />
+                        <wpf1:CartesianChart Series="{Binding InsideTemperatureMonthSeries}" XAxes="{Binding XAxesMonth}" />
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            
+            <!-- Outside Temperature Tab -->
+            <TabItem Header="Outside temperature">
+                <TabControl>
+                    <TabItem Header="Day">
+                        <wpf1:CartesianChart Series="{Binding OutsideTemperatureDaySeries}" XAxes="{Binding XAxesDay}" />
+                    </TabItem>
+                    <TabItem Header="Week">
+                        <wpf1:CartesianChart Series="{Binding OutsideTemperatureWeekSeries}" XAxes="{Binding XAxesWeek}" />
+                    </TabItem>
+                    <TabItem Header="Month">
+                        <wpf1:CartesianChart Series="{Binding OutsideTemperatureMonthSeries}" XAxes="{Binding XAxesMonth}" />
                     </TabItem>
                 </TabControl>
             </TabItem>

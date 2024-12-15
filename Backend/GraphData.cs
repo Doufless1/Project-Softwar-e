@@ -4,9 +4,13 @@ using enums;
 
 public class GraphData
 {
-    private List<double>? DayTemperature { get; set; } 
-    private List<double>? WeekTemperature { get; set; }
-    private List<double>? MonthTemperature { get; set; }
+    private List<double>? DayInsideTemperature { get; set; } 
+    private List<double>? WeekInsideTemperature { get; set; }
+    private List<double>? MonthInsideTemperature { get; set; }
+    
+    private List<double>? DayOutsideTemperature { get; set; }
+    private List<double>? WeekOutsideTemperature { get; set; }
+    private List<double>? MonthOutsideTemperature { get; set; }
     
     private List<double>? DayHumidity { get; set; }
     private List<double>? WeekHumidity { get; set; }
@@ -22,7 +26,8 @@ public class GraphData
     private List<double>? MonthPressure { get; set; }
     
     
-    private List<double>? CurrentTemperature { get; set; }
+    private List<double>? CurrentInsideTemperature { get; set; }
+    private List<double>? CurrentOutsideTemperature { get; set; }
     private List<double>? CurrentHumidity { get; set; }
     private List<double>? CurrentLight { get; set; }
     private List<double>? CurrentPressure { get; set; }
@@ -33,8 +38,7 @@ public class GraphData
     private List<double>? ModelID { get; set; }
     
     private DataAccess DataAccess { get; set; }
-    private GatewayDataStorage GatewayDataStorage { get; set; }
-    
+
     public GraphData()
     {
         DataAccess = new DataAccess() ?? throw new ArgumentNullException("DataAccess cannot be null");
@@ -42,7 +46,8 @@ public class GraphData
 
     public Dictionary<FrontendReadyData, List<double>> FetchGraphData(string location)
     {
-        CurrentTemperature = new List<double>();
+        CurrentInsideTemperature = new List<double>();
+        CurrentOutsideTemperature = new List<double>();
         CurrentHumidity = new List<double>();
         CurrentLight = new List<double>();
         CurrentPressure = new List<double>();
@@ -51,62 +56,74 @@ public class GraphData
         BatteryPercentage = new List<double>();
         ModelID = new List<double>();
         
-        WeekTemperature = new List<double>();
+        WeekInsideTemperature = new List<double>();
+        WeekOutsideTemperature = new List<double>();
         WeekHumidity = new List<double>();
         WeekLight = new List<double>();
         WeekPressure = new List<double>();
         
-        MonthTemperature = new List<double>();
+        MonthInsideTemperature = new List<double>();
+        MonthOutsideTemperature = new List<double>();
         MonthHumidity = new List<double>();
         MonthLight = new List<double>();
         MonthPressure = new List<double>();
         
         
-        DayTemperature = DataAccess.GetWeatherData(AccesableData.DayTemperature, 1, location) ?? new List<double>();
+        DayInsideTemperature = DataAccess.GetWeatherData(AccesableData.DayInsideTemperature, 1, location) ?? new List<double>();
+        DayOutsideTemperature = DataAccess.GetWeatherData(AccesableData.DayOutsideTemperature, 1, location) ?? new List<double>();
         DayHumidity = DataAccess.GetWeatherData(AccesableData.DayHumidity, 1, location) ?? new List<double>();
         DayLight = DataAccess.GetWeatherData(AccesableData.DayLight, 1, location) ?? new List<double>();
         DayPressure = DataAccess.GetWeatherData(AccesableData.DayPressure, 1, location) ?? new List<double>();
         
         for (int i = 1; i < 31; i++)
         {
-            List<double> currentTemperatureList = new List<double>();
+            List<double> currentInsideTemperatureList = new List<double>();
+            List<double> currentOutsideTemperatureList = new List<double>();
             List<double> currentHumidityList = new List<double>();
             List<double> currentLightList = new List<double>();
             List<double> currentPressureList = new List<double>();
 
-            currentTemperatureList = DataAccess.GetWeatherData(AccesableData.DayTemperature, i, location);
+            currentInsideTemperatureList = DataAccess.GetWeatherData(AccesableData.DayInsideTemperature, i, location);
+            currentOutsideTemperatureList = DataAccess.GetWeatherData(AccesableData.DayOutsideTemperature, i, location);
             currentHumidityList = DataAccess.GetWeatherData(AccesableData.DayHumidity, i, location);
             currentLightList = DataAccess.GetWeatherData(AccesableData.DayLight, i, location);
             currentPressureList = DataAccess.GetWeatherData(AccesableData.DayPressure, i, location);
 
             if (i < 8)
             {
-                WeekTemperature.Add(currentTemperatureList.Any() ? currentTemperatureList.Average() : 0);
+                WeekInsideTemperature.Add(currentInsideTemperatureList.Any() ? currentInsideTemperatureList.Average() : 0);
+                WeekOutsideTemperature.Add(currentOutsideTemperatureList.Any() ? currentOutsideTemperatureList.Average() : 0);
                 WeekHumidity.Add(currentHumidityList.Any() ? currentHumidityList.Average() : 0);
                 WeekLight.Add(currentLightList.Any() ? currentLightList.Average() : 0);
                 WeekPressure.Add(currentPressureList.Any() ? currentPressureList.Average() : 0);
             }
 
-            MonthTemperature.Add(currentTemperatureList.Any() ? currentTemperatureList.Average() : 0);
+            MonthInsideTemperature.Add(currentInsideTemperatureList.Any() ? currentInsideTemperatureList.Average() : 0);
+            MonthOutsideTemperature.Add(currentOutsideTemperatureList.Any() ? currentOutsideTemperatureList.Average() : 0);
             MonthHumidity.Add(currentHumidityList.Any() ? currentHumidityList.Average() : 0);
             MonthLight.Add(currentLightList.Any() ? currentLightList.Average() : 0);
             MonthPressure.Add(currentPressureList.Any() ? currentPressureList.Average() : 0);
         }
         
-        CurrentTemperature.Add(DataAccess.GetWeatherData(AccesableData.CurrentTemperature, 0, location)?.FirstOrDefault() ?? 0);
-        CurrentHumidity.Add(DataAccess.GetWeatherData(AccesableData.CurrentHumidity, 0, location)?.FirstOrDefault() ?? 0);
-        CurrentLight.Add(DataAccess.GetWeatherData(AccesableData.CurrentLight, 0, location)?.FirstOrDefault() ?? 0);
-        CurrentPressure.Add(DataAccess.GetWeatherData(AccesableData.CurrentPressure, 0, location)?.FirstOrDefault() ?? 0);
+        CurrentInsideTemperature.Add(DataAccess.GetWeatherData(AccesableData.CurrentInsideTemperature, 0, location)?.FirstOrDefault() ?? -100);
+        CurrentOutsideTemperature.Add(DataAccess.GetWeatherData(AccesableData.CurrentOutsideTemperature, 0, location)?.FirstOrDefault() ?? -100);
+        CurrentHumidity.Add(DataAccess.GetWeatherData(AccesableData.CurrentHumidity, 0, location)?.FirstOrDefault() ?? -100);
+        CurrentLight.Add(DataAccess.GetWeatherData(AccesableData.CurrentLight, 0, location)?.FirstOrDefault() ?? -100);
+        CurrentPressure.Add(DataAccess.GetWeatherData(AccesableData.CurrentPressure, 0, location)?.FirstOrDefault() ?? -100);
         
-        BatteryVoltage.Add(DataAccess.GetWeatherData(AccesableData.BatteryVoltage, 0, location)?.FirstOrDefault() ?? 0);
-        ModelID.Add(DataAccess.GetWeatherData(AccesableData.ModelId, 0, location)?.FirstOrDefault() ?? 0);
-        BatteryPercentage.Add(DataAccess.GetWeatherData(AccesableData.BatteryPercentage, 0, location)?.FirstOrDefault() ?? 0);
+        BatteryVoltage.Add(DataAccess.GetWeatherData(AccesableData.BatteryVoltage, 0, location)?.FirstOrDefault() ?? -100);
+        ModelID.Add(DataAccess.GetWeatherData(AccesableData.ModelId, 0, location)?.FirstOrDefault() ?? -100);
+        BatteryPercentage.Add(DataAccess.GetWeatherData(AccesableData.BatteryPercentage, 0, location)?.FirstOrDefault() ?? -100);
         
     // Calculate averages safely`
-    List<double>? hourlyDayTemperatureAverage = CalculateAverages(DayTemperature, 24)?.AsEnumerable().Reverse().ToList();
-    List<double>? dailyWeekTemperatureAverage = WeekTemperature?.AsEnumerable().Reverse().ToList();
-    List<double>? dailyMonthTemperatureAverage = MonthTemperature?.AsEnumerable().Reverse().ToList();
-
+    List<double>? hourlyDayInsideTemperatureAverage = CalculateAverages(DayInsideTemperature, 24)?.AsEnumerable().Reverse().ToList();
+    List<double>? dailyWeekInsideTemperatureAverage = WeekInsideTemperature?.AsEnumerable().Reverse().ToList();
+    List<double>? dailyMonthInsideTemperatureAverage = MonthInsideTemperature?.AsEnumerable().Reverse().ToList();
+    
+    List<double>? hourlyDayOutsideTemperatureAverage = CalculateAverages(DayOutsideTemperature, 24)?.AsEnumerable().Reverse().ToList();
+    List<double>? dailyWeekOutsideTemperatureAverage = WeekOutsideTemperature?.AsEnumerable().Reverse().ToList();
+    List<double>? dailyMonthOutsideTemperatureAverage = MonthOutsideTemperature?.AsEnumerable().Reverse().ToList();
+    
     List<double>? hourlyDayHumidityAverage = CalculateAverages(DayHumidity, 24)?.AsEnumerable().Reverse().ToList();
     List<double>? dailyWeekHumidityAverage = WeekHumidity?.AsEnumerable().Reverse().ToList();
     List<double>? dailyMonthHumidityAverage = MonthHumidity?.AsEnumerable().Reverse().ToList();
@@ -121,9 +138,12 @@ public class GraphData
         
         return new Dictionary<FrontendReadyData, List<double>>
         {
-            {FrontendReadyData.HourlyDayTemperatureAverage, hourlyDayTemperatureAverage},
-            {FrontendReadyData.DailyWeekTemperatureAverage, dailyWeekTemperatureAverage},
-            {FrontendReadyData.DailyMonthTemperatureAverage, dailyMonthTemperatureAverage},
+            {FrontendReadyData.HourlyDayInsideTemperatureAverage, hourlyDayInsideTemperatureAverage},
+            {FrontendReadyData.DailyWeekInsideTemperatureAverage, dailyWeekInsideTemperatureAverage},
+            {FrontendReadyData.DailyMonthInsideTemperatureAverage, dailyMonthInsideTemperatureAverage},
+            {FrontendReadyData.HourlyDayOutsideTemperatureAverage, hourlyDayOutsideTemperatureAverage},
+            {FrontendReadyData.DailyWeekOutsideTemperatureAverage, dailyWeekOutsideTemperatureAverage},
+            {FrontendReadyData.DailyMonthOutsideTemperatureAverage, dailyMonthOutsideTemperatureAverage},
             {FrontendReadyData.HourlyDayHumidityAverage, hourlyDayHumidityAverage},
             {FrontendReadyData.DailyWeekHumidityAverage, dailyWeekHumidityAverage},
             {FrontendReadyData.DailyMonthHumidityAverage, dailyMonthHumidityAverage},
@@ -133,7 +153,8 @@ public class GraphData
             {FrontendReadyData.HourlyDayPressureAverage, hourlyDayPressureAverage},
             {FrontendReadyData.DailyWeekPressureAverage, dailyWeekPressureAverage},
             {FrontendReadyData.DailyMonthPressureAverage, dailyMonthPressureAverage},
-            {FrontendReadyData.CurrentTemperature, CurrentTemperature},
+            {FrontendReadyData.CurrentInsideTemperature, CurrentInsideTemperature},
+            {FrontendReadyData.CurrentOutsideTemperature, CurrentOutsideTemperature},
             {FrontendReadyData.CurrentHumidity, CurrentHumidity},
             { FrontendReadyData.CurrentPressure, CurrentPressure},
             {FrontendReadyData.CurrentLight, CurrentLight},
@@ -151,21 +172,38 @@ public class GraphData
         {
             result.Add(gateway, new Dictionary<AccesableData, double>
             {
-                {AccesableData.maxRssi, DataAccess.GetGatewayData(AccesableData.maxRssi, gateway)},
+                {AccesableData.MaxRssi, DataAccess.GetGatewayData(AccesableData.MaxRssi, gateway)},
                 {AccesableData.MinRssi, DataAccess.GetGatewayData(AccesableData.MinRssi, gateway)},
                 {AccesableData.MaxSnr, DataAccess.GetGatewayData(AccesableData.MaxSnr, gateway)},
                 {AccesableData.MinSnr, DataAccess.GetGatewayData(AccesableData.MinSnr, gateway)},
-                {AccesableData.avgRssi, DataAccess.GetGatewayData(AccesableData.avgRssi, gateway)},
-                {AccesableData.avgSnr, DataAccess.GetGatewayData(AccesableData.avgSnr, gateway)},
-                {AccesableData.longitude, DataAccess.GetGatewayData(AccesableData.longitude, gateway)},
-                {AccesableData.latitude, DataAccess.GetGatewayData(AccesableData.latitude, gateway)},
-                {AccesableData.altitude, DataAccess.GetGatewayData(AccesableData.altitude, gateway)}
+                {AccesableData.AvgRssi, DataAccess.GetGatewayData(AccesableData.AvgRssi, gateway)},
+                {AccesableData.AvgSnr, DataAccess.GetGatewayData(AccesableData.AvgSnr, gateway)},
+                {AccesableData.Longitude, DataAccess.GetGatewayData(AccesableData.Longitude, gateway)},
+                {AccesableData.Latitude, DataAccess.GetGatewayData(AccesableData.Latitude, gateway)},
+                {AccesableData.Altitude, DataAccess.GetGatewayData(AccesableData.Altitude, gateway)}
             });
         }
         return result;
     }
-
-
+    
+    public Dictionary<List<string>, List<double>> FetchWeatherDataInRange(int days, AccesableData data, string location)
+    {
+        Dictionary<List<double>, List<double>> result;
+        List<double> values = new List<double>();
+        for(int i = 0; i < days; i++)
+        {
+            values.AddRange(DataAccess.GetWeatherData(data, i, location));
+        }
+        
+        List<string> XAxis = new List<string>();
+        for (int i = 0; i < days; i++)
+        {
+            XAxis.Add(DateTime.Now.AddDays(-i).Day.ToString("dd,MM"));
+        }
+        return new Dictionary<List<string>, List<double>> {{XAxis, values}};
+    }
+    
+    
     private static List<double> CalculateAverages(List<double> data, int datapoints)
     {
         if (datapoints <= 0)
@@ -174,7 +212,7 @@ public class GraphData
         }
         if (datapoints > data.Count)
         {
-            return Enumerable.Repeat(0.0, datapoints).ToList();
+            return Enumerable.Repeat(-100.0, datapoints).ToList();
         }
         var averages = new List<double>();
         for (int i = 0; i < datapoints; i++)
@@ -185,7 +223,7 @@ public class GraphData
             }
             else
             {
-                averages.Add(0);
+                averages.Add(-100.0);
             }
         }
         return averages;
