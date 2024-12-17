@@ -1,7 +1,32 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
-Welcome to your new app.
+<p>@message</p>
+
+<button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnEnschedeClick">Enschede</button>
+<button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnDeventerClick">Deventer</button>
+<button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnAppeldornClick">Appeldorn</button>
+
+
+
+
+@code {
+    string message = " nowhere";
+
+    private void OnEnschedeClick()
+    {
+        message = "in Enschede";
+    }
+    private void OnDeventerClick()
+    {
+        message = "in Deventer";
+    }
+    private void OnAppeldornClick()
+    {
+        message = "in Appeldorn";
+    }
+}

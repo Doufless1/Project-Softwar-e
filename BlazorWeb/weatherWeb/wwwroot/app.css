@@ -8,10 +8,21 @@ a, .btn-link {
 
 .btn-primary {
     color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    background-color: #e50000;
+    border-color: #000000;
 }
 
+.enschede {
+    color: #fff !important; /* Ensure text color is applied */
+    background-color: #b32121 !important; /* Ensure background color is applied */
+    border-color: #000000 !important; /* Ensure border color is applied */
+    font-size: 16px;
+    padding: 16px 24px;
+}
+    .enschede:hover {
+        color: #fff !important;
+        background-color: #772424 !important;
+    }
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
