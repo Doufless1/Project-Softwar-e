@@ -343,7 +343,8 @@ namespace Weather_App
                             );
                         });
                     }
-
+                    RaisePropertyChanged(nameof(CustomHumiditySeries));
+                    RaisePropertyChanged(nameof(XAxesCustom));
                     break;
             }
         }

@@ -188,21 +188,25 @@ public class GraphData
     
     public Dictionary<List<string>, List<double>> FetchWeatherDataInRange(int start_date, int end_date, AccesableData data, string location)
     {
-        Dictionary<List<double>, List<double>> result;
-        List<double> values = new List<double>();
-        for(int i = end_date; i < start_date; i++)
-        {
-            values.AddRange(DataAccess.GetWeatherData(data, i, location));
-        }
+        var result = new Dictionary<List<string>, List<double>>();
+        List<double> weatherValues = new List<double>();
         
-        List<string> XAxis = new List<string>();
-        for (int i = end_date; i < start_date; i++)
+        for (int i = start_date; i >= end_date; i--)
         {
-            XAxis.Add(DateTime.Now.AddDays(-i).Day.ToString("dd,MM"));
-            
+            weatherValues.Add(DataAccess.GetWeatherData(data, i, location).Average());
         }
-        return new Dictionary<List<string>, List<double>> {{XAxis, values}};
+
+        List<string> xAxisLabels = new List<string>();
+        for (int i = start_date; i >= end_date; i--)
+        {
+            // Generate date strings for the X-axis
+            xAxisLabels.Add(DateTime.Now.AddDays(-i).ToString("dd.MM"));
+        }
+
+        result.Add(xAxisLabels, weatherValues);
+        return result;
     }
+
     
     
     private static List<double> CalculateAverages(List<double> data, int datapoints)
