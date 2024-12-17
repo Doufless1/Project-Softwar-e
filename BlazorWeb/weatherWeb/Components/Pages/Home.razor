@@ -1,32 +1,141 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
-
-<h1>Hello, world!</h1>
-
 <p>@message</p>
 
-<button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnEnschedeClick">Enschede</button>
-<button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnDeventerClick">Deventer</button>
-<button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnAppeldornClick">Appeldorn</button>
 
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Weather Data Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+</head>
+<body>
+    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnEnschedeClick">Enschede</button>
+    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnDeventerClick">Deventer</button>
+    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnAppeldornClick">Appeldorn</button>
+  <!-- First Row: Chart Type -->
+  <div class="container">
+    <div class="tabs" id="dataTabs">
+        <div class="tab active" onclick="updateData('insideTemperature')">Inside Temperature</div>
+        <div class="tab" onclick="updateData('outsideTemperature')">Outside Temperature</div>
+        <div class="tab" onclick="updateData('humidity')">Humidity</div>
+        <div class="tab" onclick="updateData('luminocity')">Luminocity</div>
+        <div class="tab" onclick="updateData('airPressure')">Air Pressure</div>
+    </div>
 
+    <!-- Second Row: Dataset Selection -->
+    <div class="tabs" id="timeTabs">
+        <div class="tab active" onclick="updateTimeRange('day')">Day</div>
+        <div class="tab" onclick="updateTimeRange('week')">Week</div>
+        <div class="tab" onclick="updateTimeRange('month')">Month</div>
+    </div>
+
+    <!-- Chart Container -->
+    <canvas id="myChart"></canvas>
+  </div>
 
 @code {
-    string message = " nowhere";
+        string message = " nowhere";
 
-    private void OnEnschedeClick()
-    {
-        message = "in Enschede";
+        private void OnEnschedeClick()
+        {
+            message = "in Enschede";
+        }
+        private void OnDeventerClick()
+        {
+            message = "in Deventer";
+        }
+        private void OnAppeldornClick()
+        {
+            message = "in Appeldorn";
+        }
     }
-    private void OnDeventerClick()
-    {
-        message = "in Deventer";
+  <script>
+    // Initial Data
+    const weatherData = {
+      insideTemperature: {
+        day: [22, 23, 21, 20, 22, 24, 23],
+        week: [22, 21, 23, 24, 22, 20, 23],
+        month: [22, 21, 23, 22, 23, 21, 20, 22, 24, 23, 21, 22, 20, 21, 23, 22, 20, 21, 23, 24, 22, 23, 21, 20, 22, 24, 23, 21, 20, 22]
+      },
+      outsideTemperature: {
+        day: [15, 16, 14, 13, 15, 17, 16],
+        week: [15, 14, 16, 17, 15, 13, 16],
+        month: [15, 14, 16, 15, 16, 14, 13, 15, 17, 16, 14, 15, 13, 14, 16, 15, 13, 14, 16, 17, 15, 16, 14, 13, 15, 17, 16, 14, 13, 15]
+      },
+      humidity: {
+        day: [60, 62, 58, 57, 61, 63, 62],
+        week: [60, 58, 62, 63, 60, 57, 62],
+        month: [60, 58, 62, 61, 62, 58, 57, 60, 63, 62, 58, 60, 57, 58, 62, 61, 57, 58, 62, 63, 60, 62, 58, 57, 61, 63, 62, 58, 57, 60]
+      },
+      luminocity: {
+        day: [300, 320, 310, 290, 300, 330, 310],
+        week: [300, 310, 320, 330, 300, 290, 310],
+        month: [300, 310, 320, 300, 310, 320, 290, 300, 330, 310, 320, 300, 290, 310, 320, 300, 290, 310, 320, 330, 300, 310, 320, 290, 300, 330, 310, 320, 290, 300]
+      },
+      airPressure: {
+        day: [1012, 1013, 1011, 1010, 1012, 1014, 1013],
+        week: [1012, 1011, 1013, 1014, 1012, 1010, 1013],
+        month: [1012, 1011, 1013, 1012, 1013, 1011, 1010, 1012, 1014, 1013, 1011, 1012, 1010, 1011, 1013, 1012, 1010, 1011, 1013, 1014, 1012, 1013, 1011, 1010, 1012, 1014, 1013, 1011, 1010, 1012]
+      }
+    };
+
+    let currentDataType = 'insideTemperature';
+    let currentTimeRange = 'day';
+
+    // Chart.js Configuration
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: Array(weatherData[currentDataType][currentTimeRange].length).fill().map((_, i) => `20:30`),
+        datasets: [{
+          label: 'Weather Data',
+          data: weatherData[currentDataType][currentTimeRange],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        maintainAspectRatio: false,
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: false
+          }
+        }
+      }
+    });
+
+    // Update Chart Data
+    function updateChart() {
+      chart.data.labels = Array(weatherData[currentDataType][currentTimeRange].length).fill().map((_, i) => `20:30`);
+      chart.data.datasets[0].data = weatherData[currentDataType][currentTimeRange];
+      chart.update();
     }
-    private void OnAppeldornClick()
-    {
-        message = "in Appeldorn";
+
+    // Update Data Type
+    function updateData(type) {
+      currentDataType = type;
+      //remove highlighted tab
+      document.querySelectorAll('#dataTabs .tab').forEach(tab => tab.classList.remove('active'));
+      //Highlighted new wtab
+      document.querySelector(`#dataTabs .tab[onclick="updateData('${type}')"]`).classList.add('active');
+      updateChart();
     }
-}
+
+    // Update Time Range
+    function updateTimeRange(range) {
+      currentTimeRange = range;
+      //remove highlighted tab
+      document.querySelectorAll('#timeTabs .tab').forEach(tab => tab.classList.remove('active'));
+        //Highlighted new tab
+      document.querySelector(`#timeTabs .tab[onclick="updateTimeRange('${range}')"]`).classList.add('active');
+      updateChart();
+    }
+  </script>
+</body>
+</html>
+
+
