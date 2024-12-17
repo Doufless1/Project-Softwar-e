@@ -7,9 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\app.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Update="wwwroot\index.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

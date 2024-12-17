@@ -50,6 +50,11 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
 
 .tabs {
     display: flex;
@@ -70,11 +75,9 @@ h1:focus {
     color: white;
   }
   .container {
-      position:absolute;
-      top:35%;
-      right:0%;
+      position:relative;
       width:66.6%;
-      height:50%;
+      height:500px;
   }
   .enschede {
     color: #fff !important; /* Ensure text color is applied */
