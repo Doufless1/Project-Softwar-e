@@ -14,32 +14,7 @@
             <ColumnDefinition Width="85*" />
         </Grid.ColumnDefinitions>
         
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,-1300,0">
-            <!-- Battery Text -->
-            <TextBlock FontSize="14" FontWeight="Bold" Foreground="Black" Margin="0,0,10,0" 
-                       VerticalAlignment="Center"
-                       Text="{Binding SelectedBatteryPercentageText, Mode=OneWay}" />
-
-            <!-- Battery Visual Representation -->
-            <Border Width="100" Height="20" Background="#E0E0E0" CornerRadius="3" BorderBrush="Gray" BorderThickness="1">
-                <Grid>
-                    <!-- Battery Fill -->
-                    <Rectangle x:Name="BatteryLevel" 
-                               Width="{Binding BatteryWidth, Mode=OneWay}" 
-                               Fill="{Binding BatteryColor, Mode=OneWay}" 
-                               HorizontalAlignment="Right" 
-                              />
-                    <!-- Battery Cap -->
-                    <Rectangle Width="8" 
-                               Fill="#555555" 
-                               Height="12" 
-                               HorizontalAlignment="Left" 
-                               VerticalAlignment="Center" 
-                               Margin="1,0,1,0" />
-                </Grid>
-            </Border>
-        </StackPanel>
-
+        
         
         <!-- Current Location Placeholder -->
         <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" x:Name="CurrentLocationBlock"/>
@@ -49,20 +24,38 @@
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" x:Name="LocationStackPanel">
         </StackPanel>
         
-        <!-- Temperature and Humidity Info -->
-        <StackPanel Grid.Row="1" Grid.Column="1">
-            <TextBlock>
-                <Run Text="Current Temperature: " />
-                <Run Text="{Binding CurrentTemperature}" />
-            </TextBlock>
-            <TextBlock>
-                <Run Text="Current Humidity: " />
-                <Run Text="{Binding CurrentHumidity}" />
-            </TextBlock>
-            <TextBlock FontSize = "16" FontWeight="Bold">
-                <Run Text="{Binding SelectedBatteryPercentageText,  Mode=OneWay}" />
-                </TextBlock>
-        </StackPanel>
+        
+        <!-- ~1~ Temperature and Humidity Info @1@ -->
+        <!-- <StackPanel Grid.Row="1" Grid.Column="1"> -->
+        <!--     <TextBlock> -->
+        <!--         <Run Text="Current Temperature: " /> -->
+        <!--         <Run Text="{Binding CurrentTemperature}" /> -->
+        <!--     </TextBlock> -->
+        <!--     <TextBlock> -->
+        <!--         <Run Text="Current Humidity: " /> -->
+        <!--         <Run Text="{Binding CurrentHumidity}" /> -->
+        <!--     </TextBlock> -->
+        <!--     <TextBlock FontSize = "16" FontWeight="Bold"> -->
+        <!--         <Run Text="{Binding SelectedBatteryPercentageText,  Mode=OneWay}" /> -->
+        <!--         </TextBlock> -->
+        <!--      -->
+        <!--      -->
+        <!--      ~1~ Battery Visual Representation @1@ -->
+        <!--     <Grid Width="150" Height="40" Background="LightGray" Margin="5"> -->
+        <!--         ~1~ Battery Bar @1@ -->
+        <!--         <Rectangle x:Name="BatteryLevel"  -->
+        <!--                    Width="{Binding BatteryWidth, Mode=OneWay}"  -->
+        <!--                    Fill="{Binding BatteryColor, Mode=OneWay}"  -->
+        <!--                    HorizontalAlignment="Left"  -->
+        <!--                    Height="40" /> -->
+        <!--         ~1~ Battery Cap @1@ -->
+        <!--         <Rectangle Width="15"  -->
+        <!--                    HorizontalAlignment="Right"  -->
+        <!--                    Fill="Black"  -->
+        <!--                    Height="20"  -->
+        <!--                    VerticalAlignment="Center" /> -->
+        <!--     </Grid> -->
+        <!-- </StackPanel> -->
      
         
         <!-- Tab Control for Charts -->
@@ -108,6 +101,23 @@
                     </TabItem>
                     <TabItem Header="Month">
                         <wpf1:CartesianChart Series="{Binding HumidityMonthSeries}" XAxes="{Binding XAxesMonth}" />
+                    </TabItem>
+                    <TabItem Header="Custom">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+                            <DatePicker Grid.Row="0" Grid.Column="0" Text="Start Date: " SelectedDate="{Binding StartDate}"></DatePicker>
+                            <DatePicker Grid.Row="0" Grid.Column="1"  Text="End Date: " SelectedDate="{Binding EndDate}"></DatePicker>
+                            <Button Grid.Row="0" Grid.Column="2" Name="CustomHumidity" Content="Submit" Click="Custom_Click"></Button>
+                            <wpf1:CartesianChart Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Series="{Binding CustomHumidity}" XAxes="{Binding XAxesCustom}"></wpf1:CartesianChart>
+                        </Grid>
                     </TabItem>
                 </TabControl>
             </TabItem>
