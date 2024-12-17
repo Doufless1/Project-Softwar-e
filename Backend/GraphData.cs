@@ -91,18 +91,18 @@ public class GraphData
 
             if (i < 8)
             {
-                WeekInsideTemperature.Add(currentInsideTemperatureList.Any() ? currentInsideTemperatureList.Average() : 0);
-                WeekOutsideTemperature.Add(currentOutsideTemperatureList.Any() ? currentOutsideTemperatureList.Average() : 0);
-                WeekHumidity.Add(currentHumidityList.Any() ? currentHumidityList.Average() : 0);
-                WeekLight.Add(currentLightList.Any() ? currentLightList.Average() : 0);
-                WeekPressure.Add(currentPressureList.Any() ? currentPressureList.Average() : 0);
+                WeekInsideTemperature.Add(currentInsideTemperatureList.Any() ? currentInsideTemperatureList.Average() : -100);
+                WeekOutsideTemperature.Add(currentOutsideTemperatureList.Any() ? currentOutsideTemperatureList.Average() : -100);
+                WeekHumidity.Add(currentHumidityList.Any() ? currentHumidityList.Average() : -100);
+                WeekLight.Add(currentLightList.Any() ? currentLightList.Average() : -100);
+                WeekPressure.Add(currentPressureList.Any() ? currentPressureList.Average() : -100);
             }
 
-            MonthInsideTemperature.Add(currentInsideTemperatureList.Any() ? currentInsideTemperatureList.Average() : 0);
-            MonthOutsideTemperature.Add(currentOutsideTemperatureList.Any() ? currentOutsideTemperatureList.Average() : 0);
-            MonthHumidity.Add(currentHumidityList.Any() ? currentHumidityList.Average() : 0);
-            MonthLight.Add(currentLightList.Any() ? currentLightList.Average() : 0);
-            MonthPressure.Add(currentPressureList.Any() ? currentPressureList.Average() : 0);
+            MonthInsideTemperature.Add(currentInsideTemperatureList.Any() ? currentInsideTemperatureList.Average() : -100);
+            MonthOutsideTemperature.Add(currentOutsideTemperatureList.Any() ? currentOutsideTemperatureList.Average() : -100);
+            MonthHumidity.Add(currentHumidityList.Any() ? currentHumidityList.Average() : -100);
+            MonthLight.Add(currentLightList.Any() ? currentLightList.Average() : -100);
+            MonthPressure.Add(currentPressureList.Any() ? currentPressureList.Average() : -100);
         }
         
         CurrentInsideTemperature.Add(DataAccess.GetWeatherData(AccesableData.CurrentInsideTemperature, 0, location)?.FirstOrDefault() ?? -100);
@@ -186,19 +186,20 @@ public class GraphData
         return result;
     }
     
-    public Dictionary<List<string>, List<double>> FetchWeatherDataInRange(int days, AccesableData data, string location)
+    public Dictionary<List<string>, List<double>> FetchWeatherDataInRange(int start_date, int end_date, AccesableData data, string location)
     {
         Dictionary<List<double>, List<double>> result;
         List<double> values = new List<double>();
-        for(int i = 0; i < days; i++)
+        for(int i = end_date; i < start_date; i++)
         {
             values.AddRange(DataAccess.GetWeatherData(data, i, location));
         }
         
         List<string> XAxis = new List<string>();
-        for (int i = 0; i < days; i++)
+        for (int i = end_date; i < start_date; i++)
         {
             XAxis.Add(DateTime.Now.AddDays(-i).Day.ToString("dd,MM"));
+            
         }
         return new Dictionary<List<string>, List<double>> {{XAxis, values}};
     }

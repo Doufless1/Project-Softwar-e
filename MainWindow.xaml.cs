@@ -16,9 +16,15 @@ namespace Weather_App
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private readonly int DatapointsPerHour = 1; // Placeholder
-        private static readonly DataAccess DataAccess = new DataAccess();
 
         // Graph Properties
+        public List<ISeries> CustomInsideTemperatureSeries { get; private set; }
+        public List<ISeries> CustomOutsideTemperatureSeries { get; private set; }
+        public List<ISeries> CustomHumiditySeries { get; private set; }
+        public List<ISeries> CustomLightSeries { get; private set; }
+        public List<ISeries> CustomPressureSeries { get; private set; }
+        public List<ISeries> CustomLuminositySeries { get; private set; }
+        
         public List<ISeries> InsideTemperatureDaySeries { get; private set; }
         public List<ISeries> OutsideTemperatureDaySeries { get; private set; }
         public List<ISeries> HumidityDaySeries { get; private set; }
@@ -40,6 +46,7 @@ namespace Weather_App
         public List<ISeries> PressureMonthSeries { get; set; }
         public List<ISeries> LuminosityMonthSeries { get; set; }
 
+        public List<Axis> XAxesCustom { get; set; }
         public List<Axis> XAxesDay { get; set; }
         public List<Axis> XAxesWeek { get; set; }
         public List<Axis> XAxesMonth { get; set; }
@@ -137,7 +144,12 @@ namespace Weather_App
             Last30Days = Enumerable.Range(0, 30).Select(i => DateTime.Now.AddDays(-i)).Reverse().ToArray();
             LocationButtons = new List<Button>();
             CurrentLocations = new List<string>();
-            // CurrentLocations.Add(Locations.Wierden);
+            
+            CustomInsideTemperatureSeries = new List<ISeries>();
+            CustomOutsideTemperatureSeries = new List<ISeries>();
+            CustomHumiditySeries = new List<ISeries>();
+            CustomLightSeries = new List<ISeries>();
+            CustomPressureSeries = new List<ISeries>();
 
             InsideTemperatureDaySeries = new List<ISeries>();
             OutsideTemperatureDaySeries = new List<ISeries>();
@@ -292,10 +304,75 @@ namespace Weather_App
             }
         }
         
+        private void Custom_Click(object sender, RoutedEventArgs e)
+        {
+            string buttonName = ((Button)sender).Name;
+            switch (buttonName)
+            {
+                case "CustomHumidity":
+                    CustomHumiditySeries.Clear();
+                    int daysFromStartDate = (StartDate.HasValue) ? (DateTime.Now - StartDate.Value).Days : 0;
+                    int daysFromEndDate = (EndDate.HasValue) ? (DateTime.Now - EndDate.Value).Days : 0;
+                    
+                    foreach (string location in CurrentLocations)
+                    {
+                        GraphData graphDataObject = new GraphData();
+                        var data = graphDataObject.FetchWeatherDataInRange(daysFromStartDate, daysFromEndDate,
+                            AccesableData.DayHumidity, location);
+                        data.Keys.ToList().ForEach(key =>
+                        {
+                            XAxesCustom = new List<Axis>
+                            {
+                                new Axis
+                                {
+                                    Labels = key.ToArray(),
+                                    Name = "Date (DD/MM)"
+                                }
+                            };
+                            CustomHumiditySeries.Add(
+                                new LineSeries<double>
+                                {
+                                    Values = new ChartValues<double>(
+                                        data[key].Where(value => value != -100)),
+                                    Fill = null,
+                                    Stroke = new SolidColorPaint(SKColors.Red),
+                                    GeometrySize = 10,
+                                    Name = $"Humidity {location} (%)"
+                                    
+                                }
+                            );
+                        });
+                    }
+
+                    break;
+            }
+        }
     
         protected void RaisePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        
+        private DateTime? _startDate;
+        public DateTime? StartDate
+        {
+            get => _startDate;
+            set
+            {
+                _startDate = value;
+                RaisePropertyChanged(nameof(StartDate));
+            }
+        }
+
+        private DateTime? _endDate;
+        public DateTime? EndDate
+        {
+            get => _endDate;
+            set
+            {
+                _endDate = value;
+                RaisePropertyChanged(nameof(EndDate));
+            }
         }
         
         void RefreshData()
@@ -524,6 +601,7 @@ namespace Weather_App
                     }
                 );
             }
+            InvalidateVisual();
         }
     }
 }

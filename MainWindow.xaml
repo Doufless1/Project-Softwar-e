@@ -24,6 +24,7 @@
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" x:Name="LocationStackPanel">
         </StackPanel>
         
+        
         <!-- ~1~ Temperature and Humidity Info @1@ -->
         <!-- <StackPanel Grid.Row="1" Grid.Column="1"> -->
         <!--     <TextBlock> -->
@@ -100,6 +101,23 @@
                     </TabItem>
                     <TabItem Header="Month">
                         <wpf1:CartesianChart Series="{Binding HumidityMonthSeries}" XAxes="{Binding XAxesMonth}" />
+                    </TabItem>
+                    <TabItem Header="Custom">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+                            <DatePicker Grid.Row="0" Grid.Column="0" Text="Start Date: " SelectedDate="{Binding StartDate}"></DatePicker>
+                            <DatePicker Grid.Row="0" Grid.Column="1"  Text="End Date: " SelectedDate="{Binding EndDate}"></DatePicker>
+                            <Button Grid.Row="0" Grid.Column="2" Name="CustomHumidity" Content="Submit" Click="Custom_Click"></Button>
+                            <wpf1:CartesianChart Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Series="{Binding CustomHumidity}" XAxes="{Binding XAxesCustom}"></wpf1:CartesianChart>
+                        </Grid>
                     </TabItem>
                 </TabControl>
             </TabItem>
