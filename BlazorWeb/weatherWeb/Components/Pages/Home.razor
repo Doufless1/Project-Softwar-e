@@ -12,24 +12,26 @@
 
 </head>
 <body>
-    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnEnschedeClick">Enschede</button>
-    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnDeventerClick">Deventer</button>
-    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnAppeldornClick">Appeldorn</button>
+   
+    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnEnschedeClick" data-value="Enschede">Enschede</button>
+    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnDeventerClick" data-value="Deventer">Deventer</button>
+    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnAppeldornClick" data-value="Appeldorn">Appeldorn</button>
+    
   <!-- First Row: Chart Type -->
   <div class="container">
     <div class="tabs" id="dataTabs">
-        <div class="tab active" data-value="insideTemperature">Inside Temperature</div>
-        <div class="tab" data-value="outsideTemperature">Outside Temperature</div>
-        <div class="tab" data-value="humidity">Humidity</div>
-        <div class="tab" data-value="luminocity">Luminocity</div>
-        <div class="tab" data-value="airPressure">Air Pressure</div>
+        <div class="tab type active" data-value="insideTemperature">Inside Temperature</div>
+        <div class="tab type" data-value="outsideTemperature">Outside Temperature</div>
+        <div class="tab type" data-value="humidity">Humidity</div>
+        <div class="tab type" data-value="luminocity">Luminocity</div>
+        <div class="tab type" data-value="airPressure">Air Pressure</div>
     </div>
 
     <!-- Second Row: Dataset Selection -->
     <div class="tabs" id="timeTabs">
-        <div class="tab active" data-value="day">Day</div>
-        <div class="tab" data-value="week">Week</div>
-        <div class="tab" data-value="month">Month</div>
+        <div class="tab range active" data-value="day">Day</div>
+        <div class="tab range" data-value="week">Week</div>
+        <div class="tab range" data-value="month">Month</div>
     </div>
 
     <!-- Chart Container -->
@@ -56,19 +58,28 @@
 }
 
 <script type="module">
-    import { initializeChart, updateChartData } from '/weatherChart.js'
+    import { initializeChart, updateChartData, toggleCityData } from '/weatherChart.js'
 
     let currentDataType = 'insideTemperature';
     let currentTimeRange = 'day';
 
     initializeChart();
 
-    document.querySelectorAll('#dataTabs .tab').forEach(tab => {
+    document.querySelectorAll('#dataTabs .type').forEach(tab => {
         tab.addEventListener('click', () => {
             updateData(tab.dataset.value)
         })
     })
-
+    document.querySelectorAll('#timeTabs .range').forEach(tab => {
+        tab.addEventListener('click', () => {
+            updateTimeRange(tab.dataset.value)
+        })
+    })
+    document.querySelectorAll('.btn').forEach(button => {
+        button.addEventListener('click', () => {
+            toggleCityData(button.dataset.value, currentDataType,currentTimeRange)
+        })
+    })
     // Update Data Type
     function updateData(type) {
         currentDataType = type;
