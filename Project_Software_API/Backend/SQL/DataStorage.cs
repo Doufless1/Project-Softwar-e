@@ -48,14 +48,6 @@ namespace Project_Software_API.Properties.Backend.SQL
                     throw new Exception($"Failed to fetch data for {query}");
                 }
             }
-
-            public void Reload() //Reloads the data for all the queries in the list
-            {
-                for (int i = 0; i < Query.Count; i++)
-                {
-                    Data[i] = _dataFetcher.FetchData(Query[i]);
-                }
-            }
         }
     }
 } 

@@ -9,6 +9,8 @@ namespace Project_Software_API.Properties.Backend.SQL
 
         public class DataAccess
         {
+            
+            
             private static readonly string ConnectionString =
                 "Server=tcp:group13.database.windows.net,1433;" +
                 "Database=weather_state;" +
@@ -18,15 +20,24 @@ namespace Project_Software_API.Properties.Backend.SQL
                 "TrustServerCertificate=False;" +
                 "Connection Timeout=30;";
 
-            private static readonly DataFetcher DataFetcher = new DataFetcher(ConnectionString);
-            private static readonly DataStorage DataStorage = new DataStorage(DataFetcher);
-            private static readonly GatewayDataStorage GatewayDataStorage = new GatewayDataStorage(DataFetcher);
-
+            private readonly DataFetcher DataFetcher;
+            private readonly DataStorage DataStorage;
+            private readonly GatewayDataStorage GatewayDataStorage;
             public DataAccess()
+            {
+                DataFetcher = new DataFetcher(ConnectionString);
+                DataStorage = new DataStorage(DataFetcher);
+                GatewayDataStorage = new GatewayDataStorage(DataFetcher);
+                Initialize();
+            }
+
+
+
+            public void Initialize()
             {
                 try
                 {
-                    // Initialize queries in DataStorage.cs with the queries to be fetched
+                    // Heavy initialization logic
                     foreach (string location in Devices.GetDevices())
                     {
                         try
@@ -69,60 +80,53 @@ namespace Project_Software_API.Properties.Backend.SQL
                        where d.deviceID LIKE '%{location.ToString().ToLower()}'");
                             DataStorage.Add(AccesableData.SignalToNoiseRatio, 0, location,
                                 $"SELECT TOP 1 avg_rssi FROM gateway WHERE deviceID LIKE '%{location.ToString().ToLower()}' AND avg_rssi IS NOT NULL ORDER BY deviceID ASC");
-
-                            // Past datapoints
+                            // Past data points
                             for (int i = 1; i < 31; i++)
                             {
-                                try
-                                {
-                                    // Generate date range for the query
-                                    string dateRangeQuery =
-                                        $"BETWEEN DATEADD(DAY, -{i}, GETDATE()) AND DATEADD(DAY, -{i - 1}, GETDATE())";
+                                string dateRangeQuery =
+                                    $"BETWEEN DATEADD(DAY, -{i}, GETDATE()) AND DATEADD(DAY, -{i - 1}, GETDATE())";
 
-                                    DataStorage.Add(AccesableData.DayInsideTemperature, i, location,
-                                        $"SELECT inside_temperature FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
-                                    DataStorage.Add(AccesableData.DayOutsideTemperature, i, location,
-                                        $"SELECT external_temperature FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
-                                    DataStorage.Add(AccesableData.DayHumidity, i, location,
-                                        $"SELECT humidity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
-                                    DataStorage.Add(AccesableData.DayLight, i, location,
-                                        $"SELECT luminosity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
-                                    DataStorage.Add(AccesableData.DayPressure, i, location,
-                                        $"SELECT pressure FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
-                                    DataStorage.Add(AccesableData.SignalToNoiseRatio, 0, location,
-                                        $"SELECT TOP 1 avg_rssi FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND avg_rssi IS NOT NULL ORDER BY deviceID ASC");
-
-                                }
-                                catch (Exception ex)
-                                {
-                                    LogException($"Error while adding past data for day {i} and location {location}",
-                                        ex);
-                                }
+                                DataStorage.Add(AccesableData.DayInsideTemperature, i, location,
+                                    $"SELECT inside_temperature FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
+                                DataStorage.Add(AccesableData.DayOutsideTemperature, i, location,
+                                    $"SELECT external_temperature FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
+                                DataStorage.Add(AccesableData.DayHumidity, i, location,
+                                    $"SELECT humidity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
+                                DataStorage.Add(AccesableData.DayLight, i, location,
+                                    $"SELECT luminosity FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
+                                DataStorage.Add(AccesableData.DayPressure, i, location,
+                                    $"SELECT pressure FROM weather WHERE CONVERT(date, date) {dateRangeQuery} AND deviceID LIKE '%{location.ToString().ToLower()}'");
+                                DataStorage.Add(AccesableData.SignalToNoiseRatio, 0, location,
+                                    $"SELECT TOP 1 avg_rssi FROM gateway WHERE deviceID LIKE '%{location.ToLower()}' AND avg_rssi IS NOT NULL ORDER BY deviceID ASC");
                             }
                         }
                         catch (Exception ex)
                         {
-                            LogException($"Error while adding current data for location {location}", ex);
+                            LogException($"Error while adding data for location {location}", ex);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogException("Error in DataAccess constructor", ex);
+                    LogException("Error during DataAccess initialization", ex);
                     throw new InvalidOperationException("Failed to initialize data access.", ex);
                 }
             }
 
-            public List<double> GetWeatherData(AccesableData name, int dayFromNow, string location)
+
+
+            public async Task<List<double>> GetWeatherData(AccesableData name, int dayFromNow, string location)
             {
                 try
                 {
                     for (int i = 0; i < DataStorage.Name.Count; i++)
                     {
-                        if (DataStorage.Name[i] == name && DataStorage.Location[i] == location &&
+                        if (DataStorage.Name[i] == name && 
+                            DataStorage.Location[i] == location &&
                             DataStorage.DayFromNow[i] == dayFromNow)
                         {
-                            return DataStorage.Data[i];
+                            // Return right away as a Task
+                            return await Task.FromResult(DataStorage.Data[i]);
                         }
                     }
                 }
@@ -132,19 +136,22 @@ namespace Project_Software_API.Properties.Backend.SQL
                         $"Error while fetching data for {name}, dayFromNow: {dayFromNow}, location: {location}", ex);
                 }
 
-                // Return an empty list if no data found or an error occurred
-                return new List<double>();
+                // Return empty if no data found or error
+                return await Task.FromResult(new List<double>());
             }
 
-            public double GetGatewayData(AccesableData name, string gateway)
+
+            public async Task<double> GetGatewayData(AccesableData name, string gateway)
             {
                 try
                 {
                     for (int i = 0; i < GatewayDataStorage.Name.Count; i++)
                     {
-                        if (GatewayDataStorage.Name[i] == name && GatewayDataStorage.Gateways[i] == gateway)
+                        if (GatewayDataStorage.Name[i] == name && 
+                            GatewayDataStorage.Gateways[i] == gateway)
                         {
-                            return GatewayDataStorage.Data[i][0];
+                            double value = GatewayDataStorage.Data[i][0];
+                            return await Task.FromResult(value);
                         }
                     }
                 }
@@ -153,10 +160,12 @@ namespace Project_Software_API.Properties.Backend.SQL
                     LogException($"Error while fetching data for {name}, gateway: {gateway}", ex);
                 }
 
-                return -1;
+                // Return -1 if not found/error
+                return await Task.FromResult(-1.0);
             }
 
-            public List<string> FetchGateways(string location)
+
+            public async Task<List<string>> FetchGateways(string location)
             {
                 List<string> gateways = new List<string>();
                 try
@@ -165,18 +174,19 @@ namespace Project_Software_API.Properties.Backend.SQL
                     {
                         if (GatewayDataStorage.Location[i] == location &&
                             !gateways.Contains(GatewayDataStorage.Gateways[i]))
+                        {
                             gateways.Add(GatewayDataStorage.Gateways[i]);
+                        }
                     }
-
-                    return gateways;
                 }
                 catch (Exception ex)
                 {
                     LogException($"Error while fetching gateways for location {location}", ex);
                 }
 
-                return gateways;
+                return await Task.FromResult(gateways);
             }
+
 
             private void LogException(string context, Exception ex)
             {

@@ -1,13 +1,29 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Project_Software_API.Properties.Backend.Services;
+using Project_Software_API.Properties.Backend.SQL.sql_fetcher;
 
 // this create a webppapplicaiton which configure the applicaiton based on the arguments provided
 var builder = WebApplication.CreateBuilder(args);
 // this is for Dependency Injection container 
 
-// Add services to the container
-builder.Services.AddControllers(); 
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(50);
+    options.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(50);
+});
+
+
+builder.Services.AddControllers();
+
+// Register your custom services
+builder.Services.AddSingleton<DataAccess>();
+builder.Services.AddSingleton<GraphData>();
+
+// Add Authorization Services
+builder.Services.AddAuthorization();
 // this is the DI where all reigsters required services operates
 // like mine GraphController and GatewayController
 
@@ -17,9 +33,9 @@ builder.Services.AddControllers();
 // the allowanyheader is for the http headers
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("AllowAll", buildera =>
     {
-        builder.AllowAnyOrigin()
+        buildera.AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
@@ -34,9 +50,10 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage(); // Detailed error pages during development
 }
 
-//app.UseHttpsRedirection(); // Redirect HTTP to HTTPS
+
+app.UseHttpsRedirection(); // Redirect HTTP to HTTPS
 // the diffrence between http and https is that it secures the data 
-// if u remember we had to do somehting like wss for our websocket to work
+// if u remember we had to do somehting like wss for our websocket to workac
 
 app.UseRouting();
 // routing middleware to the pipe;ine 

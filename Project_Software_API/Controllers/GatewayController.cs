@@ -12,24 +12,27 @@
         public class GatewayController : ControllerBase
         {
             private readonly GraphData _graphData;
+            private readonly ILogger<GatewayController> _logger;
 
-            public GatewayController()
+            public GatewayController(GraphData graphData, ILogger<GatewayController> logger)
             {
-                // Initialize GraphData
-                _graphData = new GraphData();
+                _graphData = graphData ?? throw new ArgumentNullException(nameof(graphData));
+                _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             }
-
+            
             /// <summary>
             /// Fetch gateway  data for a given location.
             /// </summary>
             /// <param name="location">The location identifier.</param>
             /// <returns>Graph data as a dictionary.</returns>
             [HttpGet("{location}")]
-            public IActionResult GetGatewayData(string location)
+            public async Task<IActionResult> GetGatewayData(string location)
             {
                 try
                 {
-                    var gatewayData  = _graphData.FetchGatewayData(location);
+                    _logger.LogInformation("Fetching gateway data for location: {Location}", location);
+                    var gatewayData  = await _graphData.FetchGatewayData(location);
+                    _logger.LogInformation("Fetched gateway data: {Data}", gatewayData);
                     return Ok(gatewayData); // Returns HTTP 200 with data
                 }
                 catch (Exception ex)

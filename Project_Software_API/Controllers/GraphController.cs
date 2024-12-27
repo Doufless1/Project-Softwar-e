@@ -12,11 +12,12 @@
         public class GraphController : ControllerBase
         {
             private readonly GraphData _graphData;
+            private readonly ILogger<GraphController> _logger;
 
-            public GraphController()
+            public GraphController(GraphData graphData, ILogger<GraphController> logger)
             {
-                // Initialize GraphData
-                _graphData = new GraphData();
+                _graphData = graphData ?? throw new ArgumentNullException(nameof(graphData));
+                _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             }
 
             /// <summary>
@@ -25,11 +26,12 @@
             /// <param name="location">The location identifier.</param>
             /// <returns>Graph data as a dictionary.</returns>
             [HttpGet("{location}")]
-            public IActionResult GetGraphData(string location)
+            public async Task<IActionResult>GetGraphData(string location)
             {
                 try
                 {
-                    var graphData = _graphData.FetchGraphData(location);
+                    _logger.LogInformation("Fetching graph data for location: {Location}", location);
+                    var graphData = await _graphData.FetchGraphData(location);
                     return Ok(graphData); // Returns HTTP 200 with data
                 }
                 catch (Exception ex)

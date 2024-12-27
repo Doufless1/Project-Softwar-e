@@ -69,3 +69,4 @@ C:\Users\kokoa\RiderProjects\Project_Software_API\Project_Software_API\obj\Debug
 C:\Users\kokoa\RiderProjects\Project_Software_API\Project_Software_API\obj\Debug\net9.0\Project_Software_API.pdb
 C:\Users\kokoa\RiderProjects\Project_Software_API\Project_Software_API\obj\Debug\net9.0\Project_Software_API.genruntimeconfig.cache
 C:\Users\kokoa\RiderProjects\Project_Software_API\Project_Software_API\obj\Debug\net9.0\ref\Project_Software_API.dll
+C:\Users\kokoa\RiderProjects\Project_Software_API\Project_Software_API\obj\Debug\net9.0\Project_Software_API.sourcelink.json

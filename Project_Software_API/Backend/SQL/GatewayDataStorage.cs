@@ -25,39 +25,38 @@
                 Gateways = new List<string>();
             }
 
-            public void
-                Add(AccesableData name, string location,
-                    string query) //This function adds a query to the list of queries to be fetched with corresponding name and fetches the data once.
+            public void Add(AccesableData name, string location, string query)
             {
                 try
                 {
-                    for (int i = 0;
-                         i < _dataFetcher.FetchInt($"SELECT COUNT(*) FROM gateway WHERE deviceID = '{location}'");
-                         i++)
+                    // Fetch all gateways and their IDs in one query
+                    string gatewaysQuery = $@"
+            SELECT gatewayID 
+            FROM gateway 
+            WHERE deviceID = '{location}'
+            ORDER BY Latitude;";
+
+                    var gatewayIDs = _dataFetcher.FetchStringList(gatewaysQuery);
+
+                    // For each gateway, prepare the query and fetch data in bulk
+                    foreach (var gatewayID in gatewayIDs)
                     {
                         Name.Add(name);
                         Location.Add(location);
-                        Gateways.Add(_dataFetcher.FetchString($"WITH OrderedRows AS " +
-                                                              $"(SELECT *, ROW_NUMBER() OVER (ORDER BY Latitude) AS RowNum " +
-                                                              $"FROM gateway " +
-                                                              $"WHERE deviceID = '{location}')" +
-                                                              $"SELECT gatewayID FROM OrderedRows WHERE RowNum = {i + 1};"));
-                        string query_ = query.Replace("gateway_input", Gateways.Last());
+                        Gateways.Add(gatewayID);
+
+                        // Replace 'gateway_input' with the current gatewayID
+                        string query_ = query.Replace("gateway_input", gatewayID);
                         Query.Add(query_);
+
+                        // Fetch data for this query and store it
                         Data.Add(_dataFetcher.FetchData(query_));
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-                    throw new Exception($"Failed to fetch data for {query}");
-                }
-            }
-
-            public void Reload() //Reloads the data for all the queries in the list
-            {
-                for (int i = 0; i < Query.Count; i++)
-                {
-                    Data[i] = _dataFetcher.FetchData(Query[i]);
+                    Console.WriteLine($"Failed to fetch data for {query}: {ex.Message}");
+                    throw;
                 }
             }
         }
