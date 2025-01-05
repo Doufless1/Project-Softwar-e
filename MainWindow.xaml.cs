@@ -7,8 +7,6 @@ using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
-using sql_fetcher;
-using Backend;
 using enums;
 
 namespace Weather_App
@@ -16,6 +14,9 @@ namespace Weather_App
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private readonly int DatapointsPerHour = 1; // Placeholder
+        
+        private readonly ApiClient _apiClient;
+
 
         // Graph Properties
         public List<ISeries> CustomInsideTemperatureSeries { get; private set; }
@@ -71,8 +72,9 @@ namespace Weather_App
 
         public List<string> CurrentLocations { get; set; }
         public List<Button> LocationButtons { get; private set; }
-        public Dictionary<string, Dictionary<FrontendReadyData, List<double>>> GraphData { get; set; }
-        public Dictionary<string, Dictionary<string, Dictionary<AccesableData, double>>> GatewayData { get; set; }
+        
+        public Dictionary<string, Dictionary<FrontendReadyData, List<double>>> GraphData { get; private set; } = new();
+        public Dictionary<string, Dictionary<string, Dictionary<AccesableData, double>>> GatewayData { get; private set; } = new();
         public event PropertyChangedEventHandler? PropertyChanged;
         
         private double _selectedBatteryPercentage;
@@ -137,6 +139,9 @@ namespace Weather_App
             DataContext = this;
             SelectedBatteryPercentage = 50;
 
+            _apiClient = new ApiClient("https://software-api.azurewebsites.net/");
+            
+            
             // Initialize data
             CurrentDay = DateTime.Now.DayOfWeek.ToString();
             Last24Hours = Enumerable.Range(0, 24).Select(i => DateTime.Now.AddHours(-i)).Reverse().ToArray();
@@ -168,19 +173,18 @@ namespace Weather_App
             HumidityMonthSeries = new List<ISeries>();
             LightMonthSeries = new List<ISeries>();
             PressureMonthSeries = new List<ISeries>();
-
-            GraphData graphDataObject = new GraphData();
-
-            GraphData = new Dictionary<string, Dictionary<FrontendReadyData, List<double>>>();
-            GatewayData = new Dictionary<string, Dictionary<string, Dictionary<AccesableData, double>>>();
             
-            foreach (string location in Devices.GetDevices())
-            {
-                GraphData[location] = graphDataObject.FetchGraphData(location);
-                GatewayData[location] = graphDataObject.FetchGatewayData(location);
-            }
-            
-            RefreshData();
+
+          //  GraphData = new Dictionary<string, Dictionary<FrontendReadyData, List<double>>>();
+           // GatewayData = new Dictionary<string, Dictionary<string, Dictionary<AccesableData, double>>>();
+           
+           
+           this.Loaded += MainWindow_Loaded;
+           
+         
+// Call the asynchronous method
+          // FetchDataAsync();
+          //  RefreshData();
             
 
             // Initialize axes
@@ -303,50 +307,43 @@ namespace Weather_App
                 LocationStackPanel.Children.Add(button);
             }
         }
-        
-        private void Custom_Click(object sender, RoutedEventArgs e)
-        {
-            string buttonName = ((Button)sender).Name;
-            switch (buttonName)
-            {
-                case "CustomHumidity":
-                    CustomHumiditySeries.Clear();
-                    int daysFromStartDate = (StartDate.HasValue) ? (DateTime.Now - StartDate.Value).Days : 0;
-                    int daysFromEndDate = (EndDate.HasValue) ? (DateTime.Now - EndDate.Value).Days : 0;
-                    
-                    foreach (string location in CurrentLocations)
-                    {
-                        GraphData graphDataObject = new GraphData();
-                        var data = graphDataObject.FetchWeatherDataInRange(daysFromStartDate, daysFromEndDate,
-                            AccesableData.DayHumidity, location);
-                        data.Keys.ToList().ForEach(key =>
-                        {
-                            XAxesCustom = new List<Axis>
-                            {
-                                new Axis
-                                {
-                                    Labels = key.ToArray(),
-                                    Name = "Date (DD/MM)"
-                                }
-                            };
-                            CustomHumiditySeries.Add(
-                                new LineSeries<double>
-                                {
-                                    Values = new ChartValues<double>(
-                                        data[key].Where(value => value != -100)),
-                                    Fill = null,
-                                    Stroke = new SolidColorPaint(SKColors.Red),
-                                    GeometrySize = 10,
-                                    Name = $"Humidity {location} (%)"
-                                    
-                                }
-                            );
-                        });
-                    }
 
-                    break;
-            }
+    
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            await FetchDataAsync();
         }
+    
+        public async Task FetchDataAsync()
+        {
+            var devices = Devices.GetDevices();
+            if (devices == null || !devices.Any())
+            {
+                Console.WriteLine("No devices found.");
+                return;
+            }
+
+            var tasks = devices.Select(async location =>
+            {
+                try
+                {
+                    GraphData[location] = await _apiClient.GetGraphDataAsync(location);
+                    GatewayData[location] = await _apiClient.GetGatewayDataAsync(location);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error fetching data for location {location}: {ex.Message}");
+                }
+             });
+
+            await Task.WhenAll(tasks);
+
+            // Refresh the UI after all data is fetched
+            Dispatcher.Invoke(() => RefreshData());
+        }
+
+
+        
     
         protected void RaisePropertyChanged(string propertyName)
         {
@@ -374,6 +371,8 @@ namespace Weather_App
                 RaisePropertyChanged(nameof(EndDate));
             }
         }
+        
+        
         
         void RefreshData()
         {

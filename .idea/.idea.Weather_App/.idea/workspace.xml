@@ -7,10 +7,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="52ed0c5f-98f1-4478-8781-2faa48d46295" name="Changes" comment="Reverting to the previous code">
-      <change beforePath="$PROJECT_DIR$/Backend/GraphData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/GraphData.cs" afterDir="false" />
+    <list default="true" id="52ed0c5f-98f1-4478-8781-2faa48d46295" name="Changes" comment="commit so I can merge">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Weather_App/.idea/shelf/Uncommitted_changes_before_Update_at_12_14_2024_8_24_AM_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Weather_App/.idea/shelf/Uncommitted_changes_before_Update_at_12_14_2024_8_24_AM__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Weather_App/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Weather_App/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/GraphData.cs" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/MainWindow.xaml" beforeDir="false" afterPath="$PROJECT_DIR$/MainWindow.xaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainWindow.xaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MainWindow.xaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pictures/clouds.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pictures/google-maps.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pictures/location.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pictures/partly_cloudy.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pictures/rain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pictures/search.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pictures/settings.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pictures/snow.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pictures/storm.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pictures/sun.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pictures/wind.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SQL/DataAccess.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SQL/DataFetcher.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SQL/DataStorage.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SQL/GatewayDataStorage.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Weather_App.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Weather_App.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Weather_App.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Weather_App.sln.DotSettings.user" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,23 +57,32 @@
 }</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/1247563c5683b9a3b31cbd27ce4aaa465b33354d16f90f15db672ba2f186bb8/BindingExpression.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/13e79b2a7b78394ccf591d3454bff5bfb14e692da011a7e38b66c2312b365a/String.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/149dcb63c21975bc7a59944663b7c37d2c21a2c5b7527d41702e5774ce7c42c3/CulturePreservingExecutionContext.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2c8e7ca976f350cba9836d5565dac56b11e0b56656fa786460eb1395857a6fa/ThrowHelper.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/338efc8c78ffd1de56cecc4647ebd34d18f958c8a0963d89a12b9ea90a4ae/ExceptionWrapper.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/38ad98c9d60c1739a82dce92fa559af31b833496d8d3fba4a86361ff05bf017/XamlReader.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3965636461bfb8d650893177bcc539addb11a176a9acc0a7f56c09b0b4e0ae/DispatcherOperation.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/6665f2e3e843578225e3796b83c5342a58c3f72bfef19eeee7aa90d157d4949/Application.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/689d85e023b991246e6891ea24c22f4122448c5ce7f274cdb3176669d3d6ee4/XamlObjectWriter.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7e36858460ded64f5578f2ac488ff1e5e994adda695aace5a89a07dcbd74fa2/ClrObjectRuntime.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7f9c4390dc87f437b919e83dd6a5d351c130a966ca14cfac81b05d6cfe79303b/DependencyProperty.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/92f8a4d622ba1745f0d289a974deef58c0ca56af1231fe7efa4d2f575021d019/UIElement.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/955ec549fe664629353c3b5424b6ad6c7dfcec4ab59bae709ab962c228cf45/RuntimeType.CoreCLR.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/98b1adb3779ac728cd5b2742b677821659b656cd3c4454bbcae58f22daee42e/PropertyPathWorker.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/98bdaeb786e2c8dd5ae0d2adcefa27e6caf46f2d61d9347e7e75a7827e6ea77/XamlType.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9ac32f819d6853e0a6eda168c52b7f38eef9ae75936fb85d96a15c39d115245/Dispatcher.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9eda537f15ea23cdfae523c19e87eb303a3ded88937ae7e55919387a43f70/ExecutionContext.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ad49093fbcdcf5c1455da627b83f3c367b31b18719d89c897f2d26d2a8b/WpfXamlLoader.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/b05fc3ef644b7632d4481b3defa11634da02637d896cb5eca3eca7cf2f3ee3/String.Manipulation.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bd1d5c50194fea68ff3559c160230b0ab50f5acf4ce3061bffd6d62958e2182/ExceptionDispatchInfo.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c439425da351c75ac7d966a1cc8324b51a9c471865af79d2f2f3fcb65e392/HttpClient.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c5f4d338d48baab898bf7c91d35f4bef0a3cc69d9bdbd74fe236a8f224cb/ClrBindingWorker.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c6b8fd3013637abcbe651afdc75e15b7be4c8eccc574e1d53a51154cb5143cf5/WpfXamlType.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d882146b4f265f10bcbec2663fce248db9ffec5fa1aeaf76e32a11ba5eafcd6/MethodBaseInvoker.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/e4c59ecf2285bd73c67c23a96494bd21f2a54125734533573bc197eebaf7ac6/HwndWrapper.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ebe65732adf281db03e388c6486e28a574c76c8be32d99ca59dcfbecc65/Uri.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/fb97d5e02a9b6d9a62ed3ccb2c0bba31a3c5cd23fb1c16acc31dffe3718be2/DataBindEngine.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/kokoa/RiderProjects/Project-Software/Shared/Device_IDs.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/kokoa/RiderProjects/Project-Software/Shared/Device_IDs.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
@@ -68,28 +97,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Project.Weather_App.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.9191176&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;dotNetConsole&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Project.Weather_App.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "XThreadsFramesViewSplitterKey": "0.25742576",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "dotNetConsole",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;azure&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "azure"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="Weather_App" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="$PROJECT_DIR$/bin/Debug/net8.0-windows/Weather_App.exe" />
@@ -136,6 +165,13 @@
       <workItem from="1733909812884" duration="2239000" />
       <workItem from="1733916968812" duration="1940000" />
       <workItem from="1734161020040" duration="4573000" />
+      <workItem from="1734266141029" duration="5306000" />
+      <workItem from="1734705120627" duration="700000" />
+      <workItem from="1734856391786" duration="10579000" />
+      <workItem from="1734869808075" duration="464000" />
+      <workItem from="1734879837780" duration="1822000" />
+      <workItem from="1735035276108" duration="15998000" />
+      <workItem from="1735549000098" duration="4143000" />
     </task>
     <task id="LOCAL-00001" summary="I changed the labels to represent a little bit more the Celcius and the Humidy in %">
       <option name="closed" value="true" />
@@ -177,7 +213,15 @@
       <option name="project" value="LOCAL" />
       <updated>1733826229106</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="commit so I can merge">
+      <option name="closed" value="true" />
+      <created>1734266258878</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1734266258878</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -203,11 +247,56 @@
     <MESSAGE value="I was pusshing DD instead of dd" />
     <MESSAGE value="Battery changes" />
     <MESSAGE value="Reverting to the previous code" />
-    <option name="LAST_COMMIT_MESSAGE" value="Reverting to the previous code" />
+    <MESSAGE value="commit so I can merge" />
+    <option name="LAST_COMMIT_MESSAGE" value="commit so I can merge" />
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/MainWindow.xaml.cs</url>
+          <line>317</line>
+          <properties documentPath="C:\Users\kokoa\RiderProjects\Project-Software\MainWindow.xaml.cs" containingFunctionPresentation="Method 'FetchDataAsync'">
+            <startOffsets>
+              <option value="14211" />
+            </startOffsets>
+            <endOffsets>
+              <option value="14212" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/MainWindow.xaml.cs</url>
+          <line>329</line>
+          <properties documentPath="C:\Users\kokoa\RiderProjects\Project-Software\MainWindow.xaml.cs" containingFunctionPresentation="Lambda expression inside Method 'FetchDataAsync'">
+            <startOffsets>
+              <option value="14550" />
+            </startOffsets>
+            <endOffsets>
+              <option value="14617" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c439425da351c75ac7d966a1cc8324b51a9c471865af79d2f2f3fcb65e392/HttpClient.cs</url>
+          <line>363</line>
+          <properties documentPath="C:\Users\kokoa\AppData\Roaming\JetBrains\Rider2024.3\resharper-host\SourcesCache\c439425da351c75ac7d966a1cc8324b51a9c471865af79d2f2f3fcb65e392\HttpClient.cs" containingFunctionPresentation="Method 'GetAsync'">
+            <startOffsets>
+              <option value="15682" />
+            </startOffsets>
+            <endOffsets>
+              <option value="15713" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="22" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
+        <PinnedItemInfo parentTag="Frame#Weather_App.MainWindow.RefreshData" memberName="this" />
         <PinnedItemInfo parentTag="Frame#sql_fetcher.DataAccess..ctor" memberName="i" />
         <PinnedItemInfo parentTag="Frame#Weather_App.MainWindow..ctor" memberName="this" />
       </pinned-members>
