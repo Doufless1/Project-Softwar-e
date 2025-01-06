@@ -11,7 +11,8 @@ public class Devices
             "lht-saxion",
             "mkr-saxion",
             "mkr-gronau",
-            "lht-gronau"
+            "lht-gronau",
+            "ibfkloranew",
         ];
     }
 }
