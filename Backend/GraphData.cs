@@ -1,3 +1,5 @@
+using Microsoft.IdentityModel.Tokens;
+
 namespace Backend;
 using sql_fetcher;
 using enums;
@@ -105,11 +107,18 @@ public class GraphData
             MonthPressure.Add(currentPressureList.Any() ? currentPressureList.Average() : -100);
         }
         
-        CurrentInsideTemperature.Add(DataAccess.GetWeatherData(AccesableData.CurrentInsideTemperature, 0, location)?.FirstOrDefault() ?? -100);
-        CurrentOutsideTemperature.Add(DataAccess.GetWeatherData(AccesableData.CurrentOutsideTemperature, 0, location)?.FirstOrDefault() ?? -100);
-        CurrentHumidity.Add(DataAccess.GetWeatherData(AccesableData.CurrentHumidity, 0, location)?.FirstOrDefault() ?? -100);
-        CurrentLight.Add(DataAccess.GetWeatherData(AccesableData.CurrentLight, 0, location)?.FirstOrDefault() ?? -100);
-        CurrentPressure.Add(DataAccess.GetWeatherData(AccesableData.CurrentPressure, 0, location)?.FirstOrDefault() ?? -100);
+        CurrentInsideTemperature.Add(
+            DataAccess.GetWeatherData(AccesableData.CurrentInsideTemperature, 0, location)
+                .FirstOrDefault(value => value != null, -100)
+        );
+        CurrentOutsideTemperature.Add(DataAccess.GetWeatherData(AccesableData.CurrentOutsideTemperature, 0, location)
+            .FirstOrDefault(value => value != null, -100));
+        CurrentHumidity.Add(DataAccess.GetWeatherData(AccesableData.CurrentHumidity, 0, location)
+            .FirstOrDefault(value => value != null, -100));
+        CurrentLight.Add(DataAccess.GetWeatherData(AccesableData.CurrentLight, 0, location)
+                .FirstOrDefault(value => value != null, -100));
+        CurrentPressure.Add(DataAccess.GetWeatherData(AccesableData.CurrentPressure, 0, location)
+            .FirstOrDefault(value => value != null, -100));
         
         BatteryVoltage.Add(DataAccess.GetWeatherData(AccesableData.BatteryVoltage, 0, location)?.FirstOrDefault() ?? -100);
         ModelID.Add(DataAccess.GetWeatherData(AccesableData.ModelId, 0, location)?.FirstOrDefault() ?? -100);
@@ -156,7 +165,7 @@ public class GraphData
             {FrontendReadyData.CurrentInsideTemperature, CurrentInsideTemperature},
             {FrontendReadyData.CurrentOutsideTemperature, CurrentOutsideTemperature},
             {FrontendReadyData.CurrentHumidity, CurrentHumidity},
-            { FrontendReadyData.CurrentPressure, CurrentPressure},
+            {FrontendReadyData.CurrentPressure, CurrentPressure},
             {FrontendReadyData.CurrentLight, CurrentLight},
             {FrontendReadyData.BatteryVoltage, BatteryVoltage},
             {FrontendReadyData.BatteryPercentage, BatteryPercentage},
@@ -189,18 +198,22 @@ public class GraphData
     public Dictionary<List<string>, List<double>> FetchWeatherDataInRange(int start_date, int end_date, AccesableData data, string location)
     {
         var result = new Dictionary<List<string>, List<double>>();
-        List<double> weatherValues = new List<double>();
+        List<double>? weatherValues = new List<double>();
         
         for (int i = start_date; i >= end_date; i--)
         {
-            weatherValues.Add(DataAccess.GetWeatherData(data, i, location).Average());
+            List<double> input = DataAccess.GetWeatherData(data, i, location);
+            if(input.IsNullOrEmpty())
+            {
+                input.Add(-100);
+            }
+            weatherValues.Add(input.Average());
         }
 
         List<string> xAxisLabels = new List<string>();
         for (int i = start_date; i >= end_date; i--)
         {
-            // Generate date strings for the X-axis
-            xAxisLabels.Add(DateTime.Now.AddDays(-i).ToString("dd.MM"));
+            xAxisLabels.Add(DateTime.Now.AddDays(-i).ToString("dd/MM"));
         }
 
         result.Add(xAxisLabels, weatherValues);

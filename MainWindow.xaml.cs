@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -7,44 +8,34 @@ using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
-using sql_fetcher;
 using Backend;
 using enums;
+using LiveChartsCore.SkiaSharpView.WPF;
 
 namespace Weather_App
 {
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private readonly int DatapointsPerHour = 1; // Placeholder
-
         // Graph Properties
-        public List<ISeries> CustomInsideTemperatureSeries { get; private set; }
-        public List<ISeries> CustomOutsideTemperatureSeries { get; private set; }
-        public List<ISeries> CustomHumiditySeries { get; private set; }
-        public List<ISeries> CustomLightSeries { get; private set; }
-        public List<ISeries> CustomPressureSeries { get; private set; }
-        public List<ISeries> CustomLuminositySeries { get; private set; }
+        public List<ISeries> CustomSeries { get; set; }
         
-        public List<ISeries> InsideTemperatureDaySeries { get; private set; }
-        public List<ISeries> OutsideTemperatureDaySeries { get; private set; }
-        public List<ISeries> HumidityDaySeries { get; private set; }
+        public List<ISeries> InsideTemperatureDaySeries { get; set; }
+        public List<ISeries> OutsideTemperatureDaySeries { get; set; }
+        public List<ISeries> HumidityDaySeries { get; set; }
         public List<ISeries> LightDaySeries { get; set; }
         public List<ISeries> PressureDaySeries { get; set; }
-        public List<ISeries> LuminosityDaySeries { get; set; }
-
+        
         public List<ISeries> InsideTemperatureWeekSeries { get; private set; }
         public List<ISeries> OutsideTemperatureWeekSeries { get; private set; }
         public List<ISeries> HumidityWeekSeries { get; private set; }
         public List<ISeries> LightWeekSeries { get; set; }
         public List<ISeries> PressureWeekSeries { get; set; }
-        public List<ISeries> LuminosityWeekSeries { get; set; }
 
         public List<ISeries> InsideTemperatureMonthSeries { get; private set; }
         public List<ISeries> OutsideTemperatureMonthSeries { get; private set; }
         public List<ISeries> HumidityMonthSeries { get; private set; }
         public List<ISeries> LightMonthSeries { get; set; }
         public List<ISeries> PressureMonthSeries { get; set; }
-        public List<ISeries> LuminosityMonthSeries { get; set; }
 
         public List<Axis> XAxesCustom { get; set; }
         public List<Axis> XAxesDay { get; set; }
@@ -61,18 +52,19 @@ namespace Weather_App
         public double CurrentHumidity { get; set; }
         public double CurrentLight { get; set; }
         public double CurrentPressure { get; set; }
-
-
+        
         public double CurrentSignalToNoiseRatio { get; set; }
         public double CurrentModelId { get; set; }
         public double CurrentBatteryVoltage { get; set; }
-        
         public double CurrentBatteryPercentage { get; set; }
 
         public List<string> CurrentLocations { get; set; }
         public List<Button> LocationButtons { get; private set; }
         public Dictionary<string, Dictionary<FrontendReadyData, List<double>>> GraphData { get; set; }
         public Dictionary<string, Dictionary<string, Dictionary<AccesableData, double>>> GatewayData { get; set; }
+        
+        private GraphData graphDataObject { get; set; }
+        
         public event PropertyChangedEventHandler? PropertyChanged;
         
         private double _selectedBatteryPercentage;
@@ -145,11 +137,7 @@ namespace Weather_App
             LocationButtons = new List<Button>();
             CurrentLocations = new List<string>();
             
-            CustomInsideTemperatureSeries = new List<ISeries>();
-            CustomOutsideTemperatureSeries = new List<ISeries>();
-            CustomHumiditySeries = new List<ISeries>();
-            CustomLightSeries = new List<ISeries>();
-            CustomPressureSeries = new List<ISeries>();
+            CustomSeries = new List<ISeries>();
 
             InsideTemperatureDaySeries = new List<ISeries>();
             OutsideTemperatureDaySeries = new List<ISeries>();
@@ -169,7 +157,7 @@ namespace Weather_App
             LightMonthSeries = new List<ISeries>();
             PressureMonthSeries = new List<ISeries>();
 
-            GraphData graphDataObject = new GraphData();
+             graphDataObject = new GraphData();
 
             GraphData = new Dictionary<string, Dictionary<FrontendReadyData, List<double>>>();
             GatewayData = new Dictionary<string, Dictionary<string, Dictionary<AccesableData, double>>>();
@@ -211,7 +199,6 @@ namespace Weather_App
                 }
             };
 
-            // Create location buttons
             // Create location buttons
             foreach (string location in Devices.GetDevices())
             {
@@ -306,30 +293,52 @@ namespace Weather_App
         
         private void Custom_Click(object sender, RoutedEventArgs e)
         {
+            DataContext = this;
             string buttonName = ((Button)sender).Name;
-            switch (buttonName)
-            {
-                case "CustomHumidity":
-                    CustomHumiditySeries.Clear();
-                    int daysFromStartDate = (StartDate.HasValue) ? (DateTime.Now - StartDate.Value).Days : 0;
-                    int daysFromEndDate = (EndDate.HasValue) ? (DateTime.Now - EndDate.Value).Days : 0;
+
+            CustomSeries.Clear();
+            int daysFromStartDate = (StartDate.HasValue) ? (DateTime.Now - StartDate.Value).Days : 0;
+            int daysFromEndDate = (EndDate.HasValue) ? (DateTime.Now - EndDate.Value).Days : 0;
                     
-                    foreach (string location in CurrentLocations)
-                    {
-                        GraphData graphDataObject = new GraphData();
-                        var data = graphDataObject.FetchWeatherDataInRange(daysFromStartDate, daysFromEndDate,
-                            AccesableData.DayHumidity, location);
-                        data.Keys.ToList().ForEach(key =>
+            foreach (string location in CurrentLocations)
+            {
+                var data = new Dictionary<List<string>, List<double>>();
+                string data_type = "";
+                switch (buttonName)
+                {
+                    case("CustomInsideTemperature"):
+                        data = graphDataObject.FetchWeatherDataInRange(daysFromStartDate, daysFromEndDate, AccesableData.DayInsideTemperature, location);
+                        data_type = $"Temperature {location} (°C)";
+                        break;
+                    case("CustomOutsideTemperature"):
+                        data = graphDataObject.FetchWeatherDataInRange(daysFromStartDate, daysFromEndDate, AccesableData.DayOutsideTemperature, location);
+                        data_type = $"Temperature {location} (°C)";
+                        break;
+                    case("CustomHumidity"):
+                        data = graphDataObject.FetchWeatherDataInRange(daysFromStartDate, daysFromEndDate, AccesableData.DayHumidity, location);
+                        data_type = $"Temperature {location} (%)";
+                        break;
+                    case("CustomLight"):
+                        data = graphDataObject.FetchWeatherDataInRange(daysFromStartDate, daysFromEndDate, AccesableData.DayLight, location);
+                        data_type = $"Luminosity {location} (%)";
+                        break;
+                    case("CustomPressure"):
+                        data = graphDataObject.FetchWeatherDataInRange(daysFromStartDate, daysFromEndDate, AccesableData.DayPressure, location);
+                        data_type = $"Pressure {location} (Pa)";
+                        break;
+                }
+                
+                    data.Keys.ToList().ForEach(key =>
+                    { 
+                        XAxesCustom = new List<Axis> 
                         {
-                            XAxesCustom = new List<Axis>
-                            {
                                 new Axis
                                 {
                                     Labels = key.ToArray(),
                                     Name = "Date (DD/MM)"
                                 }
                             };
-                            CustomHumiditySeries.Add(
+                            CustomSeries.Add(
                                 new LineSeries<double>
                                 {
                                     Values = new ChartValues<double>(
@@ -337,14 +346,19 @@ namespace Weather_App
                                     Fill = null,
                                     Stroke = new SolidColorPaint(SKColors.Red),
                                     GeometrySize = 10,
-                                    Name = $"Humidity {location} (%)"
-                                    
+                                    Name = data_type
                                 }
                             );
                         });
-                    }
-                    RaisePropertyChanged(nameof(CustomHumiditySeries));
-                    RaisePropertyChanged(nameof(XAxesCustom));
+                    
+                    
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        var customChartWindow = new CustomChartWindow(data_type, CustomSeries, XAxesCustom);
+                        customChartWindow.Show();
+                    });
+                    
+                    CustomSeries.Clear();
                     break;
             }
         }
@@ -603,6 +617,20 @@ namespace Weather_App
                 );
             }
             InvalidateVisual();
+        }
+    }
+
+    public class CustomChartWindow : Window
+    {
+        public CustomChartWindow(string title, IEnumerable<ISeries> series, List<Axis> xAxes)
+        {
+            Title = title;
+            var chart = new CartesianChart
+            {
+                Series = series.ToArray(),
+                XAxes = xAxes
+            };
+            Content = chart;
         }
     }
 }
