@@ -13,6 +13,7 @@ public class Devices
             "mkr-gronau",
             "lht-gronau",
             "ibfkloranew",
+            "lht-tester"
         ];
     }
 }

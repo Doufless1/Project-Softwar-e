@@ -1,5 +1,6 @@
-﻿namespace Project_Software_API.Properties.Backend.Services;
+﻿using Microsoft.IdentityModel.Tokens;
 
+namespace Project_Software_API.Properties.Backend.Services;
 
 using Models;
 using System.Linq;
@@ -52,181 +53,142 @@ using SQL.sql_fetcher;
         /// </summary>
         public async Task<Dictionary<FrontendReadyData, List<double>>> FetchGraphData(string location)
         {
-            // Initialize containers
-            CurrentInsideTemperature = new List<double>();
-            CurrentOutsideTemperature = new List<double>();
-            CurrentHumidity = new List<double>();
-            CurrentLight = new List<double>();
-            CurrentPressure = new List<double>();
-            
-            BatteryVoltage = new List<double>();
-            BatteryPercentage = new List<double>();
-            ModelID = new List<double>();
-            
-            WeekInsideTemperature = new List<double>();
-            WeekOutsideTemperature = new List<double>();
-            WeekHumidity = new List<double>();
-            WeekLight = new List<double>();
-            WeekPressure = new List<double>();
-            
-            MonthInsideTemperature = new List<double>();
-            MonthOutsideTemperature = new List<double>();
-            MonthHumidity = new List<double>();
-            MonthLight = new List<double>();
-            MonthPressure = new List<double>();
+        CurrentInsideTemperature = new List<double>();
+        CurrentOutsideTemperature = new List<double>();
+        CurrentHumidity = new List<double>();
+        CurrentLight = new List<double>();
+        CurrentPressure = new List<double>();
+        
+        BatteryVoltage = new List<double>();
+        BatteryPercentage = new List<double>();
+        ModelID = new List<double>();
+        
+        WeekInsideTemperature = new List<double>();
+        WeekOutsideTemperature = new List<double>();
+        WeekHumidity = new List<double>();
+        WeekLight = new List<double>();
+        WeekPressure = new List<double>();
+        
+        MonthInsideTemperature = new List<double>();
+        MonthOutsideTemperature = new List<double>();
+        MonthHumidity = new List<double>();
+        MonthLight = new List<double>();
+        MonthPressure = new List<double>();
+        
+        
+        DayInsideTemperature = await DataAccess.GetWeatherData(AccesableData.DayInsideTemperature, 1, location) ?? new List<double>();
+        DayOutsideTemperature = await DataAccess.GetWeatherData(AccesableData.DayOutsideTemperature, 1, location) ?? new List<double>();
+        DayHumidity = await DataAccess.GetWeatherData(AccesableData.DayHumidity, 1, location) ?? new List<double>();
+        DayLight = await DataAccess.GetWeatherData(AccesableData.DayLight, 1, location) ?? new List<double>();
+        DayPressure = await DataAccess.GetWeatherData(AccesableData.DayPressure, 1, location) ?? new List<double>();
+        
+        for (int i = 1; i < 31; i++)
+        {
+            List<double> currentInsideTemperatureList = new List<double>();
+            List<double> currentOutsideTemperatureList = new List<double>();
+            List<double> currentHumidityList = new List<double>();
+            List<double> currentLightList = new List<double>();
+            List<double> currentPressureList = new List<double>();
 
-            // -- Get 1-day data:
-            DayInsideTemperature = (await DataAccess.GetWeatherData(AccesableData.DayInsideTemperature, 1, location))
-                                   ?? new List<double>();
-            DayOutsideTemperature = (await DataAccess.GetWeatherData(AccesableData.DayOutsideTemperature, 1, location))
-                                    ?? new List<double>();
-            DayHumidity = (await DataAccess.GetWeatherData(AccesableData.DayHumidity, 1, location))
-                          ?? new List<double>();
-            DayLight = (await DataAccess.GetWeatherData(AccesableData.DayLight, 1, location))
-                       ?? new List<double>();
-            DayPressure = (await DataAccess.GetWeatherData(AccesableData.DayPressure, 1, location))
-                         ?? new List<double>();
+            currentInsideTemperatureList = await DataAccess.GetWeatherData(AccesableData.DayInsideTemperature, i, location);
+            currentOutsideTemperatureList = await DataAccess.GetWeatherData(AccesableData.DayOutsideTemperature, i, location);
+            currentHumidityList = await DataAccess.GetWeatherData(AccesableData.DayHumidity, i, location);
+            currentLightList = await DataAccess.GetWeatherData(AccesableData.DayLight, i, location);
+            currentPressureList = await DataAccess.GetWeatherData(AccesableData.DayPressure, i, location);
 
-            // -- Fill up week & month data from i=1 to 30 days:
-            for (int i = 1; i < 31; i++)
+            if (currentInsideTemperatureList.Any()) 
+                if (currentInsideTemperatureList.Average() > 40)
+                    currentInsideTemperatureList.Clear();
+            if (currentOutsideTemperatureList.Any()) 
+                if (currentOutsideTemperatureList.Average() > 40)
+                    currentOutsideTemperatureList.Clear();
+                
+            
+            
+            if (i < 8)
             {
-                var currentInsideTemperatureList = (await DataAccess.GetWeatherData(AccesableData.DayInsideTemperature, i, location))
-                                                   ?? new List<double>();
-                var currentOutsideTemperatureList = (await DataAccess.GetWeatherData(AccesableData.DayOutsideTemperature, i, location))
-                                                    ?? new List<double>();
-                var currentHumidityList = (await DataAccess.GetWeatherData(AccesableData.DayHumidity, i, location))
-                                          ?? new List<double>();
-                var currentLightList = (await DataAccess.GetWeatherData(AccesableData.DayLight, i, location))
-                                       ?? new List<double>();
-                var currentPressureList = (await DataAccess.GetWeatherData(AccesableData.DayPressure, i, location))
-                                          ?? new List<double>();
-
-                // If within first 7 days, add weekly data
-                if (i < 8)
-                {
-                    WeekInsideTemperature.Add(currentInsideTemperatureList.Any() ? currentInsideTemperatureList.Average() : 0);
-                    WeekOutsideTemperature.Add(currentOutsideTemperatureList.Any() ? currentOutsideTemperatureList.Average() : 0);
-                    WeekHumidity.Add(currentHumidityList.Any() ? currentHumidityList.Average() : 0);
-                    WeekLight.Add(currentLightList.Any() ? currentLightList.Average() : 0);
-                    WeekPressure.Add(currentPressureList.Any() ? currentPressureList.Average() : 0);
-                }
-
-                // Always add to monthly data
-                MonthInsideTemperature.Add(currentInsideTemperatureList.Any() ? currentInsideTemperatureList.Average() : 0);
-                MonthOutsideTemperature.Add(currentOutsideTemperatureList.Any() ? currentOutsideTemperatureList.Average() : 0);
-                MonthHumidity.Add(currentHumidityList.Any() ? currentHumidityList.Average() : 0);
-                MonthLight.Add(currentLightList.Any() ? currentLightList.Average() : 0);
-                MonthPressure.Add(currentPressureList.Any() ? currentPressureList.Average() : 0);
+                WeekInsideTemperature.Add(currentInsideTemperatureList.Any() ? currentInsideTemperatureList.Average() : -100);
+                WeekOutsideTemperature.Add(currentOutsideTemperatureList.Any() ? currentOutsideTemperatureList.Average() : -100);
+                WeekHumidity.Add(currentHumidityList.Any() ? currentHumidityList.Average() : -100);
+                WeekLight.Add(currentLightList.Any() ? currentLightList.Average() : -100);
+                WeekPressure.Add(currentPressureList.Any() ? currentPressureList.Average() : -100);
             }
 
-            // -- Now fetch "current" values (dayFromNow=0):
-            var currentInsideList = (await DataAccess.GetWeatherData(AccesableData.CurrentInsideTemperature, 0, location))
-                                    ?? new List<double>();
-            var insideValue = (double?)currentInsideList.FirstOrDefault() ?? -100;
-            CurrentInsideTemperature.Add(insideValue);
+            MonthInsideTemperature.Add(currentInsideTemperatureList.Any() ? currentInsideTemperatureList.Average() : -100);
+            MonthOutsideTemperature.Add(currentOutsideTemperatureList.Any() ? currentOutsideTemperatureList.Average() : -100);
+            MonthHumidity.Add(currentHumidityList.Any() ? currentHumidityList.Average() : -100);
+            MonthLight.Add(currentLightList.Any() ? currentLightList.Average() : -100);
+            MonthPressure.Add(currentPressureList.Any() ? currentPressureList.Average() : -100);
+        }
+        
+        CurrentInsideTemperature.Add(
+            (await DataAccess.GetWeatherData(AccesableData.CurrentInsideTemperature, 0, location))
+                .FirstOrDefault(value => value != null, -100)
+        );
+        CurrentOutsideTemperature.Add(
+            (await DataAccess.GetWeatherData(AccesableData.CurrentOutsideTemperature, 0, location))
+            .FirstOrDefault(value => value != null, -100));
+        CurrentHumidity.Add(
+            (await DataAccess.GetWeatherData(AccesableData.CurrentHumidity, 0, location))
+            .FirstOrDefault(value => value != null, -100));
+        CurrentLight.Add(
+            (await DataAccess.GetWeatherData(AccesableData.CurrentLight, 0, location))
+                .FirstOrDefault(value => value != null, -100));
+        CurrentPressure.Add(
+            (await DataAccess.GetWeatherData(AccesableData.CurrentPressure, 0, location))
+            .FirstOrDefault(value => value != null, -100));
+        
+        BatteryVoltage.Add((await DataAccess.GetWeatherData(AccesableData.BatteryVoltage, 0, location))?.FirstOrDefault() ?? -100);
+        ModelID.Add((await DataAccess.GetWeatherData(AccesableData.ModelId, 0, location))?.FirstOrDefault() ?? -100);
+        BatteryPercentage.Add((await DataAccess.GetWeatherData(AccesableData.BatteryPercentage, 0, location))?.FirstOrDefault() ?? -100);
+        
+    // Calculate averages safely`
+    List<double>? hourlyDayInsideTemperatureAverage = CalculateAverages(DayInsideTemperature, 24)?.AsEnumerable().Reverse().ToList();
+    List<double>? dailyWeekInsideTemperatureAverage = WeekInsideTemperature?.AsEnumerable().Reverse().ToList();
+    List<double>? dailyMonthInsideTemperatureAverage = MonthInsideTemperature?.AsEnumerable().Reverse().ToList();
+    
+    List<double>? hourlyDayOutsideTemperatureAverage = CalculateAverages(DayOutsideTemperature, 24)?.AsEnumerable().Reverse().ToList();
+    List<double>? dailyWeekOutsideTemperatureAverage = WeekOutsideTemperature?.AsEnumerable().Reverse().ToList();
+    List<double>? dailyMonthOutsideTemperatureAverage = MonthOutsideTemperature?.AsEnumerable().Reverse().ToList();
+    
+    List<double>? hourlyDayHumidityAverage = CalculateAverages(DayHumidity, 24)?.AsEnumerable().Reverse().ToList();
+    List<double>? dailyWeekHumidityAverage = WeekHumidity?.AsEnumerable().Reverse().ToList();
+    List<double>? dailyMonthHumidityAverage = MonthHumidity?.AsEnumerable().Reverse().ToList();
 
-            var currentOutsideList = (await DataAccess.GetWeatherData(AccesableData.CurrentOutsideTemperature, 0, location))
-                                     ?? new List<double>();
-            var outsideValue = (double?)currentOutsideList.FirstOrDefault() ?? -100;
-            CurrentOutsideTemperature.Add(outsideValue);
+    List<double>? hourlyDayLightAverage = CalculateAverages(DayLight, 24)?.AsEnumerable().Reverse().ToList();
+    List<double>? dailyWeekLightAverage = WeekLight?.AsEnumerable().Reverse().ToList();
+    List<double>? dailyMonthLightAverage = MonthLight?.AsEnumerable().Reverse().ToList();
 
-            var currentHumidityList2 = (await DataAccess.GetWeatherData(AccesableData.CurrentHumidity, 0, location))
-                                       ?? new List<double>();
-            var humidityValue = (double?)currentHumidityList2.FirstOrDefault() ?? -100;
-            CurrentHumidity.Add(humidityValue);
-
-            var currentLightList2 = (await DataAccess.GetWeatherData(AccesableData.CurrentLight, 0, location))
-                                    ?? new List<double>();
-            var lightValue = (double?)currentLightList2.FirstOrDefault() ?? -100;
-            CurrentLight.Add(lightValue);
-
-            var currentPressureList2 = (await DataAccess.GetWeatherData(AccesableData.CurrentPressure, 0, location))
-                                       ?? new List<double>();
-            var pressureValue = (double?)currentPressureList2.FirstOrDefault() ?? -100;
-            CurrentPressure.Add(pressureValue);
-
-            // -- Battery, model, etc.
-            var batteryVoltList = (await DataAccess.GetWeatherData(AccesableData.BatteryVoltage, 0, location))
-                                  ?? new List<double>();
-            BatteryVoltage.Add((double?)batteryVoltList.FirstOrDefault() ?? -100);
-
-            var modelIdList = (await DataAccess.GetWeatherData(AccesableData.ModelId, 0, location))
-                              ?? new List<double>();
-            ModelID.Add((double?)modelIdList.FirstOrDefault() ?? -100);
-
-            var batteryPercentList = (await DataAccess.GetWeatherData(AccesableData.BatteryPercentage, 0, location))
-                                     ?? new List<double>();
-            BatteryPercentage.Add((double?)batteryPercentList.FirstOrDefault() ?? -100);
-
-            // -- Calculate "hourly day" or "daily week" or "daily month" averages (safely):
-            var hourlyDayInsideTemperatureAverage = 
-                CalculateAverages(DayInsideTemperature, 24)?.AsEnumerable().Reverse().ToList();
-            var dailyWeekInsideTemperatureAverage = 
-                WeekInsideTemperature?.AsEnumerable().Reverse().ToList();
-            var dailyMonthInsideTemperatureAverage = 
-                MonthInsideTemperature?.AsEnumerable().Reverse().ToList();
-            
-            var hourlyDayOutsideTemperatureAverage = 
-                CalculateAverages(DayOutsideTemperature, 24)?.AsEnumerable().Reverse().ToList();
-            var dailyWeekOutsideTemperatureAverage = 
-                WeekOutsideTemperature?.AsEnumerable().Reverse().ToList();
-            var dailyMonthOutsideTemperatureAverage = 
-                MonthOutsideTemperature?.AsEnumerable().Reverse().ToList();
-            
-            var hourlyDayHumidityAverage = 
-                CalculateAverages(DayHumidity, 24)?.AsEnumerable().Reverse().ToList();
-            var dailyWeekHumidityAverage = 
-                WeekHumidity?.AsEnumerable().Reverse().ToList();
-            var dailyMonthHumidityAverage = 
-                MonthHumidity?.AsEnumerable().Reverse().ToList();
-
-            var hourlyDayLightAverage = 
-                CalculateAverages(DayLight, 24)?.AsEnumerable().Reverse().ToList();
-            var dailyWeekLightAverage = 
-                WeekLight?.AsEnumerable().Reverse().ToList();
-            var dailyMonthLightAverage = 
-                MonthLight?.AsEnumerable().Reverse().ToList();
-
-            var hourlyDayPressureAverage = 
-                CalculateAverages(DayPressure, 24)?.AsEnumerable().Reverse().ToList();
-            var dailyWeekPressureAverage = 
-                WeekPressure?.AsEnumerable().Reverse().ToList();
-            var dailyMonthPressureAverage = 
-                MonthPressure?.AsEnumerable().Reverse().ToList();
-            
-            // -- Return final dictionary with all data
-            return new Dictionary<FrontendReadyData, List<double>>
-            {
-                { FrontendReadyData.HourlyDayInsideTemperatureAverage,  hourlyDayInsideTemperatureAverage },
-                { FrontendReadyData.DailyWeekInsideTemperatureAverage,  dailyWeekInsideTemperatureAverage },
-                { FrontendReadyData.DailyMonthInsideTemperatureAverage, dailyMonthInsideTemperatureAverage },
-
-                { FrontendReadyData.HourlyDayOutsideTemperatureAverage,  hourlyDayOutsideTemperatureAverage },
-                { FrontendReadyData.DailyWeekOutsideTemperatureAverage,  dailyWeekOutsideTemperatureAverage },
-                { FrontendReadyData.DailyMonthOutsideTemperatureAverage, dailyMonthOutsideTemperatureAverage },
-
-                { FrontendReadyData.HourlyDayHumidityAverage,  hourlyDayHumidityAverage },
-                { FrontendReadyData.DailyWeekHumidityAverage,  dailyWeekHumidityAverage },
-                { FrontendReadyData.DailyMonthHumidityAverage, dailyMonthHumidityAverage },
-
-                { FrontendReadyData.HourlyDayLightAverage,  hourlyDayLightAverage },
-                { FrontendReadyData.DailyWeekLightAverage,  dailyWeekLightAverage },
-                { FrontendReadyData.DailyMonthLightAverage, dailyMonthLightAverage },
-
-                { FrontendReadyData.HourlyDayPressureAverage,  hourlyDayPressureAverage },
-                { FrontendReadyData.DailyWeekPressureAverage,  dailyWeekPressureAverage },
-                { FrontendReadyData.DailyMonthPressureAverage, dailyMonthPressureAverage },
-
-                { FrontendReadyData.CurrentInsideTemperature,  CurrentInsideTemperature },
-                { FrontendReadyData.CurrentOutsideTemperature, CurrentOutsideTemperature },
-                { FrontendReadyData.CurrentHumidity,           CurrentHumidity },
-                { FrontendReadyData.CurrentPressure,          CurrentPressure },
-                { FrontendReadyData.CurrentLight,             CurrentLight },
-
-                { FrontendReadyData.BatteryVoltage,      BatteryVoltage },
-                { FrontendReadyData.BatteryPercentage,   BatteryPercentage },
-                { FrontendReadyData.ModelId,             ModelID }
-            };
+    List<double>? hourlyDayPressureAverage = CalculateAverages(DayPressure, 24)?.AsEnumerable().Reverse().ToList();
+    List<double>? dailyWeekPressureAverage = WeekPressure?.AsEnumerable().Reverse().ToList();
+    List<double>? dailyMonthPressureAverage = MonthPressure?.AsEnumerable().Reverse().ToList();
+        
+        return new Dictionary<FrontendReadyData, List<double>>
+        {
+            {FrontendReadyData.HourlyDayInsideTemperatureAverage, hourlyDayInsideTemperatureAverage},
+            {FrontendReadyData.DailyWeekInsideTemperatureAverage, dailyWeekInsideTemperatureAverage},
+            {FrontendReadyData.DailyMonthInsideTemperatureAverage, dailyMonthInsideTemperatureAverage},
+            {FrontendReadyData.HourlyDayOutsideTemperatureAverage, hourlyDayOutsideTemperatureAverage},
+            {FrontendReadyData.DailyWeekOutsideTemperatureAverage, dailyWeekOutsideTemperatureAverage},
+            {FrontendReadyData.DailyMonthOutsideTemperatureAverage, dailyMonthOutsideTemperatureAverage},
+            {FrontendReadyData.HourlyDayHumidityAverage, hourlyDayHumidityAverage},
+            {FrontendReadyData.DailyWeekHumidityAverage, dailyWeekHumidityAverage},
+            {FrontendReadyData.DailyMonthHumidityAverage, dailyMonthHumidityAverage},
+            {FrontendReadyData.HourlyDayLightAverage, hourlyDayLightAverage},
+            {FrontendReadyData.DailyWeekLightAverage, dailyWeekLightAverage},
+            {FrontendReadyData.DailyMonthLightAverage, dailyMonthLightAverage},
+            {FrontendReadyData.HourlyDayPressureAverage, hourlyDayPressureAverage},
+            {FrontendReadyData.DailyWeekPressureAverage, dailyWeekPressureAverage},
+            {FrontendReadyData.DailyMonthPressureAverage, dailyMonthPressureAverage},
+            {FrontendReadyData.CurrentInsideTemperature, CurrentInsideTemperature},
+            {FrontendReadyData.CurrentOutsideTemperature, CurrentOutsideTemperature},
+            {FrontendReadyData.CurrentHumidity, CurrentHumidity},
+            {FrontendReadyData.CurrentPressure, CurrentPressure},
+            {FrontendReadyData.CurrentLight, CurrentLight},
+            {FrontendReadyData.BatteryVoltage, BatteryVoltage},
+            {FrontendReadyData.BatteryPercentage, BatteryPercentage},
+            {FrontendReadyData.ModelId, ModelID}
+        };
         }
 
         /// <summary>
@@ -276,29 +238,29 @@ using SQL.sql_fetcher;
         /// <summary>
         /// Example: fetch weather data in range (still synchronous).
         /// </summary>
-        public Dictionary<List<string>, List<double>> FetchWeatherDataInRange(int days, AccesableData data, string location)
+        public async Task<Dictionary<List<string>, List<double>>> FetchWeatherDataInRange(int start_date, int end_date, AccesableData data, string location)
         {
-            List<double> values = new();
-
-            for (int i = 0; i < days; i++)
+            var result = new Dictionary<List<string>, List<double>>();
+            List<double>? weatherValues = new List<double>();
+        
+            for (int i = start_date; i >= end_date; i--)
             {
-                // If GetWeatherData is async, you'd do "await" in an async method:
-                // var dataList = await DataAccess.GetWeatherData(data, i, location);
-                // values.AddRange(dataList);
-                values.AddRange(DataAccess.GetWeatherData(data, i, location).Result);
+                List<double> input = await DataAccess.GetWeatherData(data, i, location);
+                if(input.IsNullOrEmpty())
+                {
+                    input.Add(-100);
+                }
+                weatherValues.Add(input.Average());
             }
 
-            // Build X-axis labels
-            List<string> XAxis = new();
-            for (int i = 0; i < days; i++)
+            List<string> xAxisLabels = new List<string>();
+            for (int i = start_date; i >= end_date; i--)
             {
-                XAxis.Add(DateTime.Now.AddDays(-i).ToString("dd,MM"));
+                xAxisLabels.Add(DateTime.Now.AddDays(-i).ToString("dd/MM"));
             }
 
-            return new Dictionary<List<string>, List<double>> 
-            {
-                { XAxis, values }
-            };
+            result.Add(xAxisLabels, weatherValues);
+            return result;
         }
 
         /// <summary>

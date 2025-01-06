@@ -1,24 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\kokoa\\RiderProjects\\Project_Software_API\\Project_Software_API\\Project_Software_API.csproj": {}
+    "C:\\Users\\basva\\RiderProjects\\Project-Software-Back\\Project-Software\\Project_Software_API\\Project_Software_API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\kokoa\\RiderProjects\\Project_Software_API\\Project_Software_API\\Project_Software_API.csproj": {
+    "C:\\Users\\basva\\RiderProjects\\Project-Software-Back\\Project-Software\\Project_Software_API\\Project_Software_API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kokoa\\RiderProjects\\Project_Software_API\\Project_Software_API\\Project_Software_API.csproj",
+        "projectUniqueName": "C:\\Users\\basva\\RiderProjects\\Project-Software-Back\\Project-Software\\Project_Software_API\\Project_Software_API.csproj",
         "projectName": "Project_Software_API",
-        "projectPath": "C:\\Users\\kokoa\\RiderProjects\\Project_Software_API\\Project_Software_API\\Project_Software_API.csproj",
-        "packagesPath": "C:\\Users\\kokoa\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kokoa\\RiderProjects\\Project_Software_API\\Project_Software_API\\obj\\",
+        "projectPath": "C:\\Users\\basva\\RiderProjects\\Project-Software-Back\\Project-Software\\Project_Software_API\\Project_Software_API.csproj",
+        "packagesPath": "C:\\Users\\basva\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\basva\\RiderProjects\\Project-Software-Back\\Project-Software\\Project_Software_API\\obj\\",
         "projectStyle": "PackageReference",
         "UsingMicrosoftNETSdk": false,
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\kokoa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\basva\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -44,7 +44,7 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "direct"
+          "auditMode": "all"
         }
       },
       "frameworks": {
@@ -79,7 +79,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
