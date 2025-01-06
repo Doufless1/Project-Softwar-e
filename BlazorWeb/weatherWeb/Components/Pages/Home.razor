@@ -1,4 +1,10 @@
 ﻿@page "/"
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using Microsoft.JSInterop
+
 @rendermode InteractiveServer
 
 <p>@message</p>
@@ -12,10 +18,14 @@
 
 </head>
 <body>
-   
-    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnEnschedeClick" data-value="Enschede">Enschede</button>
-    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnDeventerClick" data-value="Deventer">Deventer</button>
-    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnAppeldornClick" data-value="Appeldorn">Appeldorn</button>
+    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnUpdateClick" data-value="update">update</button>
+    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnDeventerClick" data-value="Enschede">b1</button>
+    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnDeventerClick" data-value="Deventer">b2</button>
+    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnAppeldornClick" data-value="Appeldorn">b3</button>
+    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnDeventerClick" data-value="Deventer">b4</button>
+    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnAppeldornClick" data-value="Appeldorn">b5</button>
+    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnAppeldornClick" data-value="Appeldorn">b6</button>
+
     
   <!-- First Row: Chart Type -->
   <div class="container">
@@ -40,13 +50,43 @@
   
 </body>
 </html>
+
 @code {
     string message = " nowhere";
-
-    private void OnEnschedeClick()
+    Dictionary<string, List<double>> weatherData;
+    async Task OnUpdateClick()
     {
-        message = "in Enschede";
+        try
+        {
+            message = "fetching";
+            StateHasChanged();
+
+            HttpClient.Timeout = TimeSpan.FromSeconds(200);
+            
+            // Make an HTTP GET request to a sample endpoint
+            HttpResponseMessage response = await HttpClient.GetAsync("https://software-api.azurewebsites.net/api/graph/lht-saxion");
+
+            if (response.IsSuccessStatusCode)
+            {
+                message = "fetched api for Enschede";
+                StateHasChanged();
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+
+                weatherData = JsonSerializer.Deserialize<Dictionary<string, List<double>>>(jsonResponse);
+            }
+            else
+            {
+                message = $"Error: {response.StatusCode}";
+
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Exception: {ex.Message}";
+        }
     }
+
+
     private void OnDeventerClick()
     {
         message = "in Deventer";
@@ -57,8 +97,9 @@
     }
 }
 
+
 <script type="module">
-    import { initializeChart, updateChartData, toggleCityData } from '/weatherChart.js'
+    import { initializeChart, updateChartData, toggleCityData} from '/weatherChart.js'
 
     let currentDataType = 'insideTemperature';
     let currentTimeRange = 'day';
@@ -89,6 +130,7 @@
         document.querySelector(`#dataTabs .tab[data-value="${type}"]`).classList.add('active');
         updateChartData(currentDataType, currentTimeRange);
     }
+
 
     // Update Time Range
     function updateTimeRange(range) {
