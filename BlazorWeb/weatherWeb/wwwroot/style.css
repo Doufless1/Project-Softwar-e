@@ -79,14 +79,14 @@ body {
       width:66.6%;
       height:500px;
   }
-  .enschede {
+  .device-button {
     color: #fff !important; /* Ensure text color is applied */
     background-color: #b32121 !important; /* Ensure background color is applied */
     border-color: #000000 !important; /* Ensure border color is applied */
     font-size: 16px;
     padding: 16px 24px;
 }
-    .enschede:hover {
+    .device-button:hover {
         color: #fff !important;
         background-color: #772424 !important;
     }

@@ -12,6 +12,9 @@ namespace weatherWeb
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
+            builder.Services.AddHttpClient();
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -31,6 +34,7 @@ namespace weatherWeb
 
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
+
 
             app.Run();
         }

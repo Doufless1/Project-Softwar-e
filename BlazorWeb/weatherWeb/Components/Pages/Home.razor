@@ -1,13 +1,13 @@
 ﻿@page "/"
 @inject HttpClient HttpClient
 @inject IJSRuntime JSRuntime
+
 @using System.Text.Json
 @using System.Text.Json.Serialization
 @using Microsoft.JSInterop
 
 @rendermode InteractiveServer
 
-<p>@message</p>
 
 
 <!DOCTYPE html>
@@ -18,13 +18,13 @@
 
 </head>
 <body>
-    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnUpdateClick" data-value="update">update</button>
-    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnDeventerClick" data-value="Enschede">b1</button>
-    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnDeventerClick" data-value="Deventer">b2</button>
-    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnAppeldornClick" data-value="Appeldorn">b3</button>
-    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnDeventerClick" data-value="Deventer">b4</button>
-    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnAppeldornClick" data-value="Appeldorn">b5</button>
-    <button class="btn enschede" style="display: block; margin-bottom: 10px;" @onclick="OnAppeldornClick" data-value="Appeldorn">b6</button>
+    <button class="btn device-button" style="display: block; margin-bottom: 10px;" onclick="callApiJS('lht-saxion')" data-value="ibfkloranew">ibfkloranew</button>
+    <button class="btn device-button" style="display: block; margin-bottom: 10px;" onclick="callApiJS('lht-saxion')" data-value="lht-saxion">lht-saxion</button>
+    <button class="btn device-button" style="display: block; margin-bottom: 10px;" onclick="callApiJS('lht-gronau')" data-value="lht-gronau">lht-gronau</button>
+    <button class="btn device-button" style="display: block; margin-bottom: 10px;" onclick="callApiJS('lht-wierden')" data-value="lht-wierden">lht-wierden</button>
+    <button class="btn device-button" style="display: block; margin-bottom: 10px;" onclick="callApiJS('mkr-wierden')" data-value="mkr-wierden">mkr-wierden</button>
+    <button class="btn device-button" style="display: block; margin-bottom: 10px;" onclick="callApiJS('mkr-saxion')" data-value="mkr-saxion">mkr-saxion</button>
+
 
     
   <!-- First Row: Chart Type -->
@@ -51,58 +51,13 @@
 </body>
 </html>
 
-@code {
-    string message = " nowhere";
-    Dictionary<string, List<double>> weatherData;
-    async Task OnUpdateClick()
-    {
-        try
-        {
-            message = "fetching";
-            StateHasChanged();
-
-            HttpClient.Timeout = TimeSpan.FromSeconds(200);
-            
-            // Make an HTTP GET request to a sample endpoint
-            HttpResponseMessage response = await HttpClient.GetAsync("https://software-api.azurewebsites.net/api/graph/lht-saxion");
-
-            if (response.IsSuccessStatusCode)
-            {
-                message = "fetched api for Enschede";
-                StateHasChanged();
-                string jsonResponse = await response.Content.ReadAsStringAsync();
-
-                weatherData = JsonSerializer.Deserialize<Dictionary<string, List<double>>>(jsonResponse);
-            }
-            else
-            {
-                message = $"Error: {response.StatusCode}";
-
-            }
-        }
-        catch (Exception ex)
-        {
-            message = $"Exception: {ex.Message}";
-        }
-    }
-
-
-    private void OnDeventerClick()
-    {
-        message = "in Deventer";
-    }
-    private void OnAppeldornClick()
-    {
-        message = "in Appeldorn";
-    }
-}
-
 
 <script type="module">
-    import { initializeChart, updateChartData, toggleCityData} from '/weatherChart.js'
+    import { initializeChart, updateChartData, toggleCityData, updateChartInfo} from '/weatherChart.js'
 
     let currentDataType = 'insideTemperature';
     let currentTimeRange = 'day';
+    let currentDevice = 'lht-saxion';
 
     initializeChart();
 
@@ -119,6 +74,7 @@
     document.querySelectorAll('.btn').forEach(button => {
         button.addEventListener('click', () => {
             toggleCityData(button.dataset.value, currentDataType,currentTimeRange)
+            currentDevice = button.dataset.value;
         })
     })
     // Update Data Type
@@ -129,6 +85,8 @@
         //Highlighted new wtab
         document.querySelector(`#dataTabs .tab[data-value="${type}"]`).classList.add('active');
         updateChartData(currentDataType, currentTimeRange);
+
+        updateChartInfo(currentDevice, currentTimeRange, currentDataType);
     }
 
 
